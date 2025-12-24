@@ -2,10 +2,14 @@
 # Exit on error
 set -o errexit
 
+# 1. Install dependencies
 pip install -r requirements.txt
 
-# Convert static files
+# 2. Convert static files (CSS/Images)
 python manage.py collectstatic --no-input
 
-# Apply database migrations
+# 3. Apply database migrations
 python manage.py migrate
+
+# 4. Auto-Create Admin User (The "Backdoor" Fix)
+python create_admin.py
