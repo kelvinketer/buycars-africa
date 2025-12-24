@@ -1,6 +1,7 @@
 from pathlib import Path
-from decouple import config # Using python-decouple for security
+from decouple import config
 import os
+import dj_database_url # <--- Added for Cloud Database
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,9 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-replace-me-please')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# We cast to bool so 'False' string becomes Python False
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['*'] # Change this to ['buycars.africa'] in production
+ALLOWED_HOSTS = ['*'] 
 
 
 # Application definition
@@ -26,17 +28,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third Party Apps
-    'rest_framework', # Ready for API integration
+    'rest_framework', 
 
-    # Local Apps (Based on our Schema)
-    'users.apps.UsersConfig',   # Handles Admin/Dealer/Buyer logic
-    'cars.apps.CarsConfig',     # Handles Inventory & Images
-    'saas.apps.SaasConfig',     # Handles Subscriptions & Payments
+    # Local Apps
+    'users.apps.UsersConfig',   
+    'cars.apps.CarsConfig',     
+    'saas.apps.SaasConfig',     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # For serving static files
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- Critical for Production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,7 +52,7 @@ ROOT_URLCONF = 'buycars_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Global templates folder
+        'DIRS': [BASE_DIR / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,28 +68,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'buycars_project.wsgi.application'
 
 
-# --- DATABASE CONFIGURATION ---
+# --- DATABASE CONFIGURATION (SMART SWITCHING) ---
 
-# OPTION 1: Use this if you have PostgreSQL installed and running
+# This checks if there is a DATABASE_URL (Cloud). 
+# If not, it falls back to SQLite (Your Laptop).
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='buycars_db'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='password'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
+        conn_max_age=600
+    )
 }
-
-# OPTION 2: Use this if you just want to run it NOW without setting up Postgres
-# (Uncomment the lines below and comment out Option 1 above if you get DB errors)
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 # Password validation
@@ -101,32 +91,32 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-
-# CRITICAL FOR KENYA: Set Timezone to Nairobi
 TIME_ZONE = 'Africa/Nairobi' 
-
 USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+# --- STATIC & MEDIA FILES (PRODUCTION READY) ---
+
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Media Files (Where car photos are stored)
-# This is crucial for a car listing site
+# This compresses CSS/JS and caches it forever (Great for speed)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# Default primary key field type
+# --- AUTH SETTINGS ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Custom User Model Config
-# This tells Django to use our custom user model instead of the default one
 AUTH_USER_MODEL = 'users.User'
 
-# Email Configuration (For Lead Notifications)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Prints to console for testing
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # Enable for production
+# Redirects users to dashboard after logging in
+LOGIN_REDIRECT_URL = 'dealer_dashboard'
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'
+
+# Email (Console for now)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

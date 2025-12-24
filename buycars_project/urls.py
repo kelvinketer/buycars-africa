@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from cars import views as car_views 
-from users import views as user_views # <--- NEW IMPORT
+from users import views as user_views 
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -10,8 +10,10 @@ urlpatterns = [
     
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
+    # This is the new line that allows us to click "View Details"
+    path('car/<int:pk>/', car_views.car_detail, name='car_detail'), 
     
-    # --- AUTHENTICATION (New) ---
+    # --- AUTHENTICATION ---
     path('login/', user_views.login_view, name='login'),
     path('signup/', user_views.signup_view, name='signup'),
     path('logout/', user_views.logout_view, name='logout'),

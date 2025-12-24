@@ -1,48 +1,109 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="bg-dark text-white p-5 mb-5 text-center">
-    <h1 class="display-4 fw-bold">Find Your Dream Car</h1>
-    <p class="lead">Search cars from trusted dealers in Kenya</p>
-    
-    <div class="card p-3 shadow-lg text-dark mx-auto" style="max-width: 700px;">
-        <form method="GET" class="row g-2">
-            <div class="col-md-9">
-                <input type="text" name="q" class="form-control" placeholder="Search by Make or Model (e.g. Toyota Prado)">
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-3 fw-bold mb-3">Find Your Drive.</h1>
+                <p class="lead mb-5 text-light opacity-75">Access thousands of certified vehicles from Kenya's top trusted dealers.</p>
+                
+                <div class="search-card">
+                    <form method="GET" class="row g-2 align-items-center">
+                        <div class="col-md-9">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="e.g. Toyota Prado, Mercedes Benz...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary-custom w-100 btn-lg">
+                                Search Cars
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-danger w-100">Search</button>
+        </div>
+    </div>
+</section>
+
+<div class="container mb-5">
+    <div class="row text-center g-4">
+        <div class="col-md-4">
+            <div class="p-3">
+                <i class="fas fa-shield-alt fa-3x text-danger mb-3"></i>
+                <h5>Verified Dealers</h5>
+                <p class="text-muted small">Every dealer is vetted for authenticity and safety.</p>
             </div>
-        </form>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <i class="fas fa-bolt fa-3x text-danger mb-3"></i>
+                <h5>Fast Connections</h5>
+                <p class="text-muted small">Direct WhatsApp links to sellers. No middlemen.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <i class="fas fa-globe-africa fa-3x text-danger mb-3"></i>
+                <h5>Pan-African Vision</h5>
+                <p class="text-muted small">Building the largest automotive network in Africa.</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="container">
-    <h3 class="mb-4">Latest Arrivals</h3>
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">Latest Arrivals</h3>
+        <a href="#" class="text-decoration-none text-danger fw-bold">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+
     <div class="row">
         {% for car in cars %}
         <div class="col-md-3 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div style="height: 200px; overflow: hidden; background: #eee;">
+            <div class="card car-card h-100">
+                
+                <div class="car-image-container">
+                    <span class="car-badge">{{ car.year }}</span>
                     {% if car.images.first %}
                         <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
                     {% else %}
-                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                        <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
                             <i class="fas fa-car fa-3x"></i>
                         </div>
                     {% endif %}
                 </div>
                 
                 <div class="card-body">
-                    <h5 class="card-title">{{ car.make }} {{ car.model }}</h5>
-                    <p class="text-danger fw-bold">KES {{ car.price }}</p>
-                    <small class="text-muted">{{ car.year }} | {{ car.transmission }}</small>
+                    <div class="text-muted small mb-1">{{ car.make }}</div>
+                    <h5 class="card-title fw-bold">{{ car.model }}</h5>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="text-danger fw-bold fs-5">KES {{ car.price }}</span>
+                    </div>
+                    
+                    <hr class="my-3 opacity-25">
+                    
+                    <div class="d-flex justify-content-between text-muted small mb-3">
+                        <span><i class="fas fa-gas-pump me-1"></i> {{ car.fuel_type|title }}</span>
+                        <span><i class="fas fa-cog me-1"></i> {{ car.transmission|title }}</span>
+                    </div>
+                    
+                    <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark w-100 btn-sm">
+                        View Details
+                    </a>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <h4>No cars found.</h4>
+            <div class="text-muted">
+                <i class="fas fa-search fa-3x mb-3 opacity-25"></i>
+                <h4>No cars found matching your search.</h4>
+                <p>Try different keywords or browse all cars.</p>
+            </div>
         </div>
         {% endfor %}
     </div>

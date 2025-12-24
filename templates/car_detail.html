@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ car.make }} {{ car.model }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                {% if car.images.first %}
+                    <img src="{{ car.images.first.image.url }}" class="card-img-top" alt="{{ car.model }}">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                        <i class="fas fa-car fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="card shadow-sm border-0 p-4">
+                <h4 class="mb-3">Description</h4>
+                <p class="text-muted">{{ car.description }}</p>
+                
+                <hr>
+                
+                <div class="row text-center mt-4">
+                    <div class="col-3 border-end">
+                        <small class="text-muted d-block">Year</small>
+                        <strong>{{ car.year }}</strong>
+                    </div>
+                    <div class="col-3 border-end">
+                        <small class="text-muted d-block">Mileage</small>
+                        <strong>{{ car.mileage_km }} km</strong>
+                    </div>
+                    <div class="col-3 border-end">
+                        <small class="text-muted d-block">Fuel</small>
+                        <strong>{{ car.get_fuel_type_display }}</strong>
+                    </div>
+                    <div class="col-3">
+                        <small class="text-muted d-block">Trans</small>
+                        <strong>{{ car.get_transmission_display }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 mb-3">
+                <div class="card-body p-4">
+                    <h2 class="text-danger fw-bold mb-0">KES {{ car.price }}</h2>
+                    <p class="text-muted mb-4">{{ car.make }} {{ car.model }}</p>
+
+                    <div class="d-grid gap-2">
+                        <a href="tel:{{ car.dealer.dealer_profile.phone_number }}" class="btn btn-dark btn-lg">
+                            <i class="fas fa-phone-alt me-2"></i> Call Seller
+                        </a>
+                        <button class="btn btn-outline-success btn-lg">
+                            <i class="fab fa-whatsapp me-2"></i> WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    Seller Information
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user text-muted"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ car.dealer.username }}</h6>
+                            <small class="text-success"><i class="fas fa-check-circle"></i> Verified Dealer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

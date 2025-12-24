@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404 # <--- Added get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q 
@@ -21,6 +21,16 @@ def public_homepage(request):
         
     context = {'cars': cars}
     return render(request, 'home.html', context)
+
+def car_detail(request, pk):
+    # This fetches the car with the specific ID (pk)
+    # If the ID doesn't exist, it automatically shows a 404 Not Found error
+    car = get_object_or_404(Car, pk=pk)
+    
+    context = {
+        'car': car
+    }
+    return render(request, 'car_detail.html', context)
 
 
 # --- DEALER VIEWS ---
