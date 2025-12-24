@@ -1,0 +1,17 @@
+# Ignore the virtual environment
+venv/
+.venv/
+env/
+
+# Ignore the database (if using sqlite)
+db.sqlite3
+
+# Ignore compiled python files
+__pycache__/
+*.pyc
+
+# CRITICAL: Ignore environment variables (passwords)
+.env
+
+# Ignore media uploads (optional, usually we don't commit large user uploads)
+media/

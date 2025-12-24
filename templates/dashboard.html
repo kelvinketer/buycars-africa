@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dealer Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'add_car' %}" class="btn btn-danger">
+            <i class="fas fa-plus"></i> Add New Car
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-left-danger">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Total Inventory</h5>
+                <h2 class="fw-bold">{{ total_cars }} Cars</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Total Views</h5>
+                <h2 class="fw-bold">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-muted">Current Plan</h5>
+                <h2 class="fw-bold text-success">Standard</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-5">My Active Cars</h3>
+<div class="table-responsive bg-white shadow-sm p-3 rounded">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Car Details</th>
+                <th>Price (KES)</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for car in cars %}
+            <tr>
+                <td>
+                    <strong>{{ car.make }} {{ car.model }}</strong><br>
+                    <small class="text-muted">{{ car.year }} | {{ car.get_transmission_display }} | {{ car.get_fuel_type_display }}</small>
+                </td>
+                <td>{{ car.price }}</td> 
+                
+                <td>
+                    {% if car.status == 'AVAILABLE' %}
+                        <span class="badge bg-success">Available</span>
+                    {% elif car.status == 'SOLD' %}
+                        <span class="badge bg-danger">Sold</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">{{ car.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center py-4">
+                    <p class="text-muted">No cars added yet.</p>
+                    <a href="{% url 'add_car' %}" class="btn btn-sm btn-danger">Add your first car</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

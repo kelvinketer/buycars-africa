@@ -1,0 +1,18 @@
+# Core Framework
+Django>=5.0,<6.0
+
+# Database (PostgreSQL)
+psycopg2-binary>=2.9
+
+# Image Handling (Crucial for Car Photos)
+Pillow>=10.0
+
+# Environment Variable Management
+python-decouple>=3.8
+
+# Production Server (For later deployment)
+gunicorn>=21.2
+whitenoise>=6.6
+
+# Optional: API handling (Good to have for future mobile apps)
+djangorestframework>=3.14

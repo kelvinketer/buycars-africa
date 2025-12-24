@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-dark text-white p-5 mb-5 text-center">
+    <h1 class="display-4 fw-bold">Find Your Dream Car</h1>
+    <p class="lead">Search cars from trusted dealers in Kenya</p>
+    
+    <div class="card p-3 shadow-lg text-dark mx-auto" style="max-width: 700px;">
+        <form method="GET" class="row g-2">
+            <div class="col-md-9">
+                <input type="text" name="q" class="form-control" placeholder="Search by Make or Model (e.g. Toyota Prado)">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-danger w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <h3 class="mb-4">Latest Arrivals</h3>
+    <div class="row">
+        {% for car in cars %}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div style="height: 200px; overflow: hidden; background: #eee;">
+                    {% if car.images.first %}
+                        <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                    {% else %}
+                        <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                            <i class="fas fa-car fa-3x"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ car.make }} {{ car.model }}</h5>
+                    <p class="text-danger fw-bold">KES {{ car.price }}</p>
+                    <small class="text-muted">{{ car.year }} | {{ car.transmission }}</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h4>No cars found.</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

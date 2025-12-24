@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-car"></i> Add New Vehicle</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h5 class="text-muted border-bottom pb-2 mb-3">1. Basic Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Make (Brand)</label>
+                                <input type="text" name="make" class="form-control" placeholder="e.g. Toyota" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Model</label>
+                                <input type="text" name="model" class="form-control" placeholder="e.g. Prado TX" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Year of Manufacture</label>
+                                <input type="number" name="year" class="form-control" placeholder="2018" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Transmission</label>
+                                <select name="transmission" class="form-select">
+                                    <option value="AUTO">Automatic</option>
+                                    <option value="MANUAL">Manual</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fuel Type</label>
+                                <select name="fuel_type" class="form-select">
+                                    <option value="PETROL">Petrol</option>
+                                    <option value="DIESEL">Diesel</option>
+                                    <option value="HYBRID">Hybrid</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">2. Sales Info</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Price (KES)</label>
+                                <input type="number" name="price" class="form-control" placeholder="e.g. 5200000" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mileage (Km)</label>
+                                <input type="number" name="mileage" class="form-control" placeholder="e.g. 65000" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description / Seller's Notes</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Clean car, no accident history, lady owner..."></textarea>
+                        </div>
+
+                        <h5 class="text-muted border-bottom pb-2 mb-3 mt-4">3. Photos</h5>
+                        <div class="mb-4">
+                            <label class="form-label">Upload Car Image</label>
+                            <input type="file" name="image" class="form-control" accept="image/*" required>
+                            <small class="text-muted">For now, let's upload one main image.</small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">Post Car Now</button>
+                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-light">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
