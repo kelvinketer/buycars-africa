@@ -13,14 +13,14 @@
                     <form method="GET" class="row g-2">
                         
                         <div class="col-md-6 mb-2">
-                            <div class="input-group input-group-lg border rounded-3 overflow-hidden bg-light">
+                            <div class="input-group custom-search-input overflow-hidden bg-light rounded-3">
                                 <span class="input-group-text bg-light border-0 ps-3"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" name="q" class="form-control border-0 shadow-none bg-light" placeholder="Keyword (e.g. Sunroof, Turbo...)" value="{{ request.GET.q }}">
+                                <input type="text" name="q" class="form-control border-0 shadow-none bg-light h-100" placeholder="Keyword (e.g. Sunroof...)" value="{{ request.GET.q }}">
                             </div>
                         </div>
 
                         <div class="col-md-3 mb-2">
-                            <select name="make" class="form-select form-select-lg border-0 bg-light rounded-3">
+                            <select name="make" class="form-select custom-search-input border-0 bg-light rounded-3">
                                 <option value="">All Makes</option>
                                 {% for make in all_makes %}
                                     <option value="{{ make }}" {% if request.GET.make == make %}selected{% endif %}>{{ make }}</option>
@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-md-3 mb-2">
-                            <select name="body_type" class="form-select form-select-lg border-0 bg-light rounded-3">
+                            <select name="body_type" class="form-select custom-search-input border-0 bg-light rounded-3">
                                 <option value="">Body Type</option>
                                 {% for bt in all_body_types %}
                                     <option value="{{ bt }}" {% if request.GET.body_type == bt %}selected{% endif %}>{{ bt }}</option>
@@ -38,21 +38,21 @@
                         </div>
 
                         <div class="col-md-2">
-                            <input type="number" name="min_year" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Year" value="{{ request.GET.min_year }}">
+                            <input type="number" name="min_year" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Year" value="{{ request.GET.min_year }}">
                         </div>
                         <div class="col-md-2">
-                            <input type="number" name="max_year" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Year" value="{{ request.GET.max_year }}">
+                            <input type="number" name="max_year" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Year" value="{{ request.GET.max_year }}">
                         </div>
 
                         <div class="col-md-3">
-                            <input type="number" name="min_price" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Price" value="{{ request.GET.min_price }}">
+                            <input type="number" name="min_price" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Price" value="{{ request.GET.min_price }}">
                         </div>
                         <div class="col-md-3">
-                            <input type="number" name="max_price" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Price" value="{{ request.GET.max_price }}">
+                            <input type="number" name="max_price" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Price" value="{{ request.GET.max_price }}">
                         </div>
 
                         <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary-custom w-100 btn-lg shadow-sm fw-bold">
+                            <button type="submit" class="btn btn-primary-custom w-100 shadow-sm fw-bold custom-search-input d-flex align-items-center justify-content-center">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -156,7 +156,7 @@
                         <div class="d-flex gap-2">
                             <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=Hi,%20I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20listed%20for%20KES%20{{ car.price|floatformat:0|intcomma }}" 
                                class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
-                               style="width: 32px; height: 32px;"
+                               style="width: 40px; height: 40px;"
                                target="_blank" 
                                title="Chat on WhatsApp">
                                 <i class="fab fa-whatsapp"></i>
@@ -185,16 +185,39 @@
 </div>
 
 <style>
-    /* Custom CSS to shrink placeholder text specifically for search inputs */
+    /* 1. Enforce specific height for ALL search inputs to match */
+    .custom-search-input {
+        height: 50px !important;
+        font-size: 1rem;
+    }
+
+    /* 2. Style the placeholders to be readable but not huge */
     .small-placeholder::placeholder {
-        font-size: 0.85rem; /* Smaller font size */
-        color: #6c757d;    /* Standard muted gray */
+        font-size: 0.9rem;
+        color: #6c757d;
         opacity: 0.8;
     }
-    
-    /* Ensure the input text itself is still readable when typing */
-    .small-placeholder {
-        font-size: 1rem; 
+
+    /* 3. Mobile Optimizations (Stacked layout) */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding-top: 2rem !important;
+            padding-bottom: 4rem !important;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+        
+        .search-card {
+            padding: 1rem !important;
+        }
+        
+        .search-card .col-md-6, 
+        .search-card .col-md-3, 
+        .search-card .col-md-2 {
+            margin-bottom: 0.5rem;
+        }
     }
 </style>
 {% endblock %}
