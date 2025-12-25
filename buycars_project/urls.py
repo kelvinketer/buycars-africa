@@ -15,6 +15,9 @@ urlpatterns = [
     # --- DEALER SHOWROOM (Public Profile) ---
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
 
+    # --- NEW: LEAD TRACKING (This was missing!) ---
+    path('track/<int:car_id>/<str:action_type>/', car_views.track_action, name='track_action'),
+
     # --- AUTHENTICATION ---
     path('login/', user_views.login_view, name='login'),
     path('signup/', user_views.signup_view, name='signup'),
@@ -24,7 +27,7 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # --- NEW: DEALER SETTINGS ---
+    # --- DEALER SETTINGS ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
     
     # --- EDIT & DELETE ROUTES ---
