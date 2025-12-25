@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q 
-from django.contrib.auth import get_user_model  # <--- NEW IMPORT
+from django.contrib.auth import get_user_model 
 
 from .models import Car, CarImage
 from .forms import CarForm 
 
-User = get_user_model()  # <--- Initialize User Model
+User = get_user_model() 
 
 # --- PUBLIC VIEWS ---
 
@@ -45,26 +45,34 @@ def public_homepage(request):
             pass
 
     # 4. Get a list of unique 'Makes' for the dropdown menu
-    # distinct() prevents showing "Toyota" 50 times
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
 
     context = {
         'cars': cars,
-        'all_makes': all_makes, # We pass this to populate the dropdown
+        'all_makes': all_makes, 
     }
     return render(request, 'home.html', context)
 
 def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
+    
+    # --- RECOMMENDATION ENGINE ---
+    # Fetch 3 other cars with the same Body Type (e.g., SUV, Sedan)
+    # exclude(id=car.id) ensures we don't recommend the same car they are currently viewing.
+    similar_cars = Car.objects.filter(
+        body_type=car.body_type, 
+        status='AVAILABLE'
+    ).exclude(id=car.id).order_by('-created_at')[:3]
+    
     context = {
-        'car': car
+        'car': car,
+        'similar_cars': similar_cars, # <--- We pass the list to the template here
     }
     return render(request, 'cars/car_detail.html', context)
 
-# --- NEW: PUBLIC DEALER SHOWROOM ---
+# --- PUBLIC DEALER SHOWROOM ---
 def dealer_showroom(request, username):
     # 1. Get the dealer based on the username in the URL
-    # If username doesn't exist, it shows a 404 error
     dealer = get_object_or_404(User, username=username)
     
     # 2. Get ONLY this dealer's available cars
