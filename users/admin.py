@@ -8,16 +8,18 @@ class DealerProfileInline(admin.StackedInline):
     verbose_name_plural = 'Dealer Profile'
 
 class CustomUserAdmin(UserAdmin):
-    # This adds the "role" column to the list view
-    list_display = ('username', 'email', 'role', 'is_staff', 'is_verified')
+    # ADDED 'phone_number' to this list so you see it immediately in the table
+    list_display = ('username', 'email', 'phone_number', 'role', 'is_verified', 'is_staff')
+    
+    # Filters allow you to click "Show me only Dealers" on the right sidebar
     list_filter = ('role', 'is_verified', 'is_staff')
     
-    # This enables editing the Profile inside the User page
+    # This enables editing the Profile (Logo/City) inside the User page
     inlines = (DealerProfileInline,)
     
-    # Add 'role' and 'phone_number' to the edit form
+    # This adds the fields to the "Edit User" page
     fieldsets = UserAdmin.fieldsets + (
-        ('Custom Fields', {'fields': ('role', 'phone_number', 'is_verified')}),
+        ('Extra Contact Info', {'fields': ('role', 'phone_number', 'is_verified')}),
     )
 
 admin.site.register(User, CustomUserAdmin)
