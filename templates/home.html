@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
-{% load humanize %} {% block content %}
+{% load humanize %} 
+
+{% block content %}
 
 <section class="hero-section text-center position-relative">
     <div class="container position-relative" style="z-index: 2;">
@@ -111,7 +113,7 @@
                     </div>
                     
                     <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                        <span class="car-price">KES {{ car.price }}</span>
+                        <span class="car-price">KES {{ car.price|intcomma }}</span>
                         <a href="{% url 'car_detail' car.id %}" class="btn btn-dark btn-sm rounded-pill px-3">
                             Details
                         </a>
