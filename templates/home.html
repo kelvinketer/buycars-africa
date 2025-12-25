@@ -38,17 +38,17 @@
                         </div>
 
                         <div class="col-md-2">
-                            <input type="number" name="min_year" class="form-control form-control-lg border-0 bg-light rounded-3" placeholder="Min Year" value="{{ request.GET.min_year }}">
+                            <input type="number" name="min_year" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Year" value="{{ request.GET.min_year }}">
                         </div>
                         <div class="col-md-2">
-                            <input type="number" name="max_year" class="form-control form-control-lg border-0 bg-light rounded-3" placeholder="Max Year" value="{{ request.GET.max_year }}">
+                            <input type="number" name="max_year" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Year" value="{{ request.GET.max_year }}">
                         </div>
 
                         <div class="col-md-3">
-                            <input type="number" name="min_price" class="form-control form-control-lg border-0 bg-light rounded-3" placeholder="Min Price" value="{{ request.GET.min_price }}">
+                            <input type="number" name="min_price" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Price" value="{{ request.GET.min_price }}">
                         </div>
                         <div class="col-md-3">
-                            <input type="number" name="max_price" class="form-control form-control-lg border-0 bg-light rounded-3" placeholder="Max Price" value="{{ request.GET.max_price }}">
+                            <input type="number" name="max_price" class="form-control form-control-lg border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Price" value="{{ request.GET.max_price }}">
                         </div>
 
                         <div class="col-md-2">
@@ -183,4 +183,18 @@
         {% endfor %}
     </div>
 </div>
+
+<style>
+    /* Custom CSS to shrink placeholder text specifically for search inputs */
+    .small-placeholder::placeholder {
+        font-size: 0.85rem; /* Smaller font size */
+        color: #6c757d;    /* Standard muted gray */
+        opacity: 0.8;
+    }
+    
+    /* Ensure the input text itself is still readable when typing */
+    .small-placeholder {
+        font-size: 1rem; 
+    }
+</style>
 {% endblock %}
