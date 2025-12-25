@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block head_extra %}
 <meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} - KES {{ car.price }}">
@@ -11,137 +12,212 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <nav aria-label="breadcrumb">
+<div class="container py-4">
+    
+    <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ car.make }} {{ car.model }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ car.year }} {{ car.make }} {{ car.model }}</li>
         </ol>
     </nav>
 
     <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0 mb-4">
-                {% if car.images.first %}
-                    <img src="{{ car.images.first.image.url }}" class="card-img-top" alt="{{ car.model }}">
-                {% else %}
-                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
-                        <i class="fas fa-car fa-5x text-muted"></i>
-                    </div>
-                {% endif %}
-            </div>
+        <div class="col-lg-8">
             
-            <div class="card shadow-sm border-0 p-4">
-                <h4 class="mb-3">Description</h4>
-                <p class="text-muted">{{ car.description }}</p>
-                
-                <hr>
-                
-                <div class="row text-center mt-4">
-                    <div class="col-3 border-end">
-                        <small class="text-muted d-block">Year</small>
-                        <strong>{{ car.year }}</strong>
+            <div class="card border-0 shadow-sm overflow-hidden mb-4">
+                <div id="carCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner" style="height: 500px; background-color: #f1f5f9;">
+                        {% for image in car.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %} h-100">
+                                <img src="{{ image.image.url }}" class="d-block w-100 h-100" style="object-fit: cover;" alt="{{ car.make }}">
+                            </div>
+                        {% empty %}
+                            <div class="carousel-item active h-100 d-flex align-items-center justify-content-center">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-camera fa-4x mb-3"></i>
+                                    <p>No images available</p>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-                    <div class="col-3 border-end">
-                        <small class="text-muted d-block">Mileage</small>
-                        <strong>{{ car.mileage_km }} km</strong>
-                    </div>
-                    <div class="col-3 border-end">
-                        <small class="text-muted d-block">Fuel</small>
-                        <strong>{{ car.get_fuel_type_display }}</strong>
-                    </div>
-                    <div class="col-3">
-                        <small class="text-muted d-block">Trans</small>
-                        <strong>{{ car.get_transmission_display }}</strong>
+                    
+                    {% if car.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">Vehicle Specifications</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-calendar-alt text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Year</div>
+                                <div class="fw-bold">{{ car.year }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-tachometer-alt text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Mileage</div>
+                                <div class="fw-bold">{{ car.mileage|intcomma }} km</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-gas-pump text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Fuel</div>
+                                <div class="fw-bold">{{ car.get_fuel_type_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-cog text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Transmission</div>
+                                <div class="fw-bold">{{ car.get_transmission_display }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-engine text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Engine</div>
+                                <div class="fw-bold">{{ car.engine_size|default:"N/A" }} cc</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-palette text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Color</div>
+                                <div class="fw-bold">{{ car.color|default:"-" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-car-side text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Body</div>
+                                <div class="fw-bold">{{ car.body_type|default:"SUV" }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="p-3 bg-light rounded text-center h-100">
+                                <i class="fas fa-map-marker-alt text-danger mb-2"></i>
+                                <div class="small text-muted text-uppercase">Location</div>
+                                <div class="fw-bold">{{ car.location|default:"Nairobi" }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">Seller's Notes</h4>
+                            <p class="text-muted" style="line-height: 1.8;">
+                                {{ car.description|linebreaks }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow-lg border-0 mb-3">
-                <div class="card-body p-4">
-                    <h2 class="text-danger fw-bold mb-0">KES {{ car.price }}</h2>
-                    <p class="text-muted mb-4">{{ car.make }} {{ car.model }}</p>
-
-                    <div class="d-grid gap-2">
-                        <a href="tel:{{ car.dealer.phone_number|default:'+254700000000' }}" class="btn btn-dark btn-lg">
-                            <i class="fas fa-phone-alt me-2"></i> Call Seller
-                        </a>
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 100px;">
+                
+                <div class="card border-0 shadow-lg mb-4 bg-white">
+                    <div class="card-body p-4">
+                        <h6 class="text-muted text-uppercase mb-1">{{ car.make }} {{ car.model }}</h6>
+                        <h2 class="text-danger fw-bold mb-3">KES {{ car.price|floatformat:0|intcomma }}</h2>
                         
-                        <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=Hi,%20I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20listed%20for%20KES%20{{ car.price }}" 
-                           class="btn btn-success btn-lg" target="_blank">
-                            <i class="fab fa-whatsapp me-2"></i> WhatsApp
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow-sm border-0 mb-3">
-                <div class="card-header bg-light fw-bold text-dark">
-                    <i class="fas fa-calculator me-2"></i> Asset Finance Estimate
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="small text-muted">Down Payment (30%)</label>
-                        <input type="text" id="deposit" class="form-control form-control-sm" value="" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="small text-muted">Monthly Installment (60 Months)</label>
-                        <h4 class="text-primary fw-bold" id="monthlyPayment">KES 0</h4>
-                    </div>
-                    <p class="small text-muted mb-0" style="font-size: 0.75rem;">
-                        *Est. based on 18% p.a. interest. Subject to bank approval.
-                    </p>
-                </div>
-            </div>
-
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white fw-bold">
-                    Seller Information
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                            <i class="fas fa-user text-muted"></i>
+                        <div class="d-grid gap-2">
+                            <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20(ID:%20{{ car.id }})" target="_blank" class="btn btn-success btn-lg rounded-pill fw-bold">
+                                <i class="fab fa-whatsapp me-2"></i> WhatsApp Seller
+                            </a>
+                            <a href="tel:{{ car.dealer.phone_number|default:'+254700000000' }}" class="btn btn-outline-dark btn-lg rounded-pill fw-bold">
+                                <i class="fas fa-phone-alt me-2"></i> Call Now
+                            </a>
                         </div>
-                        <div>
-                            <h6 class="mb-0">{{ car.dealer.username }}</h6>
-                            {% if car.dealer.is_verified %}
-                                <small class="text-success"><i class="fas fa-check-circle"></i> Verified Dealer</small>
-                            {% else %}
-                                <small class="text-muted">Registered Dealer</small>
-                            {% endif %}
+                        
+                        <div class="text-center mt-3 d-flex align-items-center justify-content-center gap-2">
+                             {% if car.dealer.is_verified %}
+                                <i class="fas fa-check-circle text-success"></i> <span class="fw-bold small">Verified Dealer</span>
+                             {% else %}
+                                <i class="fas fa-user-circle text-muted"></i> <span class="text-muted small">Registered Dealer</span>
+                             {% endif %}
                         </div>
                     </div>
                 </div>
+
+                <div class="card border-0 shadow-sm bg-light">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2"></i>Loan Estimator</h5>
+                        
+                        <div class="mb-3">
+                            <label class="small text-muted">Vehicle Price</label>
+                            <input type="text" class="form-control fw-bold" value="KES {{ car.price|floatformat:0|intcomma }}" disabled>
+                        </div>
+                        
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="small text-muted">Deposit (30%)</label>
+                                <input type="text" class="form-control" id="deposit" value="0" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label class="small text-muted">Months</label>
+                                <select class="form-select" id="months" onchange="calculateLoan()">
+                                    <option value="12">12 Months</option>
+                                    <option value="24">24 Months</option>
+                                    <option value="36" selected>36 Months</option>
+                                    <option value="48">48 Months</option>
+                                    <option value="60">60 Months</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded text-center border">
+                            <small class="text-muted d-block mb-1">Estimated Monthly Pay</small>
+                            <h3 class="text-dark fw-bold mb-0" id="monthlyPayment">...</h3>
+                        </div>
+                        <div class="text-center mt-2">
+                            <small class="text-muted" style="font-size: 0.7rem;">*Est. @ 18% Interest. Subject to approval.</small>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get the car price from Django
-        let carPrice = {{ car.price }}; 
+    function calculateLoan() {
+        const price = {{ car.price }};
+        const deposit = price * 0.30; // 30% Deposit
+        const principal = price - deposit;
+        const months = document.getElementById('months').value;
+        const rate = 0.18 / 12; // 18% Annual Interest (Monthly)
         
-        // 1. Calculate Minimum Deposit (30% is standard in Kenya)
-        let deposit = carPrice * 0.30;
-        
-        // 2. Format Deposit with Commas
-        document.getElementById("deposit").value = "KES " + deposit.toLocaleString();
-        
-        // 3. Calculate Loan Amount
-        let principal = carPrice - deposit;
-        let rate = 0.18 / 12; // 18% Annual Rate (Monthly)
-        let terms = 60; // 5 Years
-        
-        // 4. PMT Formula
-        let x = Math.pow(1 + rate, terms);
-        let monthly = (principal * x * rate) / (x - 1);
-        
-        // 5. Update the Display
-        document.getElementById("monthlyPayment").innerText = "KES " + Math.round(monthly).toLocaleString();
-    });
+        // PMT Formula
+        const x = Math.pow(1 + rate, months);
+        const monthly = (principal * x * rate) / (x - 1);
+
+        // Format numbers
+        document.getElementById('deposit').value = "KES " + Math.floor(deposit).toLocaleString();
+        document.getElementById('monthlyPayment').innerText = "KES " + Math.floor(monthly).toLocaleString();
+    }
+
+    // Run on load
+    document.addEventListener('DOMContentLoaded', calculateLoan);
 </script>
+
 {% endblock %}
