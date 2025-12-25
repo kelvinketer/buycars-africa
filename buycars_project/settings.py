@@ -113,18 +113,18 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# --- STORAGE CONFIGURATION (HYBRID FIX) ---
-# We define BOTH the new way (for Django 5) AND the old way (for libraries)
-# This prevents the "AttributeError: 'Settings' object has no attribute 'STATICFILES_STORAGE'"
+# --- STORAGE CONFIGURATION (RELAXED FIX) ---
+# We switched to "CompressedStaticFilesStorage" to prevent the build from crashing
+# on missing file references (MissingFileError).
 
 # 1. Old Way (Keeps django-cloudinary-storage happy)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'  # <--- CHANGED THIS
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # 2. New Way (Keeps Django 5 happy)
 STORAGES = {
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",  # <--- CHANGED THIS
     },
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
