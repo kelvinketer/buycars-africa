@@ -112,6 +112,16 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     border-bottom: 1px solid #f1f5f9;
 }
 
+/* --- NEW: ZOOM EFFECT --- */
+.car-image-container img {
+    transition: transform 0.5s ease;
+}
+
+.card:hover .car-image-container img {
+    transform: scale(1.05); /* Subtle zoom effect */
+}
+/* ------------------------ */
+
 .card-body {
     padding: 1.25rem;
 }
