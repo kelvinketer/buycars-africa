@@ -1,17 +1,13 @@
 from pathlib import Path
 from decouple import config
 import os
-import dj_database_url # <--- Added for Cloud Database
+import dj_database_url 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-replace-me-please')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# We cast to bool so 'False' string becomes Python False
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['*'] 
@@ -20,6 +16,10 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    # --- CLOUDINARY APPS (Must be at the top) ---
+    'cloudinary_storage',
+    'cloudinary',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- Critical for Production
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Critical for Static Files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,10 +68,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'buycars_project.wsgi.application'
 
 
-# --- DATABASE CONFIGURATION (SMART SWITCHING) ---
-
-# This checks if there is a DATABASE_URL (Cloud). 
-# If not, it falls back to SQLite (Your Laptop).
+# --- DATABASE CONFIGURATION ---
+# Falls back to SQLite if DATABASE_URL is missing
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
@@ -96,27 +94,34 @@ USE_I18N = True
 USE_TZ = True
 
 
-# --- STATIC & MEDIA FILES (PRODUCTION READY) ---
-
+# --- STATIC FILES (CSS/JS - Managed by WhiteNoise) ---
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# This compresses CSS/JS and caches it forever (Great for speed)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+
+# --- MEDIA FILES (Images - Managed by Cloudinary) ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloudinary Configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
+    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+}
+
+# This tells Django: "Don't save images to the folder. Send them to Cloudinary."
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # --- AUTH SETTINGS ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
-# Redirects users to dashboard after logging in
 LOGIN_REDIRECT_URL = 'dealer_dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-# Email (Console for now)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
