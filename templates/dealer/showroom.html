@@ -7,8 +7,8 @@
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-5 text-center">
                 <div class="mb-3">
-                    {% if dealer.dealerprofile.logo %}
-                        <img src="{{ dealer.dealerprofile.logo.url }}" 
+                    {% if profile.logo %}
+                        <img src="{{ profile.logo.url }}" 
                              alt="{{ dealer.username }}" 
                              class="rounded-circle shadow-sm border" 
                              style="width: 100px; height: 100px; object-fit: cover;">
@@ -20,15 +20,15 @@
                 </div>
                 
                 <h1 class="fw-bold mb-1">
-                    {% if dealer.dealerprofile.business_name %}
-                        {{ dealer.dealerprofile.business_name }}
+                    {% if profile.business_name %}
+                        {{ profile.business_name }}
                     {% else %}
                         {{ dealer.username }}
                     {% endif %}
                 </h1>
                 
-                {% if dealer.dealerprofile.city %}
-                    <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> {{ dealer.dealerprofile.city }}</p>
+                {% if profile.city %}
+                    <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> {{ profile.city }}</p>
                 {% endif %}
                 
                 {% if dealer.is_verified %}
@@ -73,7 +73,7 @@
                         <h5 class="card-title fw-bold mb-3">{{ car.model }}</h5>
                         
                         <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <h5 class="text-danger fw-bold mb-0">KES {{ car.price|intcomma }}</h5>
+                            <h5 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h5>
                             <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3">View</a>
                         </div>
                     </div>

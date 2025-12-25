@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.db.models import Q 
 from django.contrib.auth import get_user_model 
 
+from users.models import DealerProfile # <--- NEW IMPORT ADDED HERE
+
 from .models import Car, CarImage
 from .forms import CarForm 
 
@@ -66,7 +68,7 @@ def car_detail(request, car_id):
     
     context = {
         'car': car,
-        'similar_cars': similar_cars, # <--- We pass the list to the template here
+        'similar_cars': similar_cars, 
     }
     return render(request, 'cars/car_detail.html', context)
 
@@ -75,11 +77,16 @@ def dealer_showroom(request, username):
     # 1. Get the dealer based on the username in the URL
     dealer = get_object_or_404(User, username=username)
     
-    # 2. Get ONLY this dealer's available cars
+    # 2. Explicitly fetch the profile (This fixes the missing logo issue)
+    # We use .first() so it doesn't crash if the profile is missing
+    profile = DealerProfile.objects.filter(user=dealer).first()
+    
+    # 3. Get ONLY this dealer's available cars
     cars = Car.objects.filter(dealer=dealer, status='AVAILABLE').order_by('-created_at')
     
     context = {
         'dealer': dealer,
+        'profile': profile, # <--- We pass the profile directly
         'cars': cars,
     }
     return render(request, 'dealer/showroom.html', context)
