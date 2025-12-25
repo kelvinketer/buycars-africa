@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
+{% load humanize %} {% block content %}
 
-{% block content %}
-<section class="hero-section text-center">
-    <div class="container">
+<section class="hero-section text-center position-relative">
+    <div class="container position-relative" style="z-index: 2;">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h1 class="display-3 fw-bold mb-3">Find Your Drive.</h1>
-                <p class="lead mb-5 text-light opacity-75">Access thousands of certified vehicles from Kenya's top trusted dealers.</p>
+                <h1 class="display-4 fw-bold mb-3 text-white">Find Your <span class="text-danger">Drive.</span></h1>
+                <p class="lead mb-5 text-white-50">Access thousands of verified vehicles from Kenya's top trusted dealers.</p>
                 
-                <div class="search-card">
+                <div class="search-card mx-auto" style="max-width: 700px;">
                     <form method="GET" class="row g-2 align-items-center">
-                        <div class="col-md-9">
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="e.g. Toyota Prado, Mercedes Benz...">
+                        <div class="col-md-8">
+                            <div class="input-group input-group-lg border rounded-pill overflow-hidden">
+                                <span class="input-group-text bg-white border-0 ps-4"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" name="q" class="form-control border-0 shadow-none ps-2" placeholder="e.g. Toyota Prado, Mercedes C200..." value="{{ request.GET.q }}">
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary-custom w-100 btn-lg">
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary-custom w-100 btn-lg shadow-sm">
                                 Search Cars
                             </button>
                         </div>
@@ -28,81 +28,104 @@
     </div>
 </section>
 
-<div class="container mb-5">
-    <div class="row text-center g-4">
+<div class="container mb-5 mt-n5 position-relative" style="z-index: 3;">
+    <div class="row g-4 justify-content-center">
         <div class="col-md-4">
-            <div class="p-3">
-                <i class="fas fa-shield-alt fa-3x text-danger mb-3"></i>
-                <h5>Verified Dealers</h5>
-                <p class="text-muted small">Every dealer is vetted for authenticity and safety.</p>
+            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded-circle text-danger" style="width: 60px; height: 60px;">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">Verified Dealers</h5>
+                <p class="text-muted small mb-0">Every dealer is vetted. We check IDs and stock so you don't have to.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3">
-                <i class="fas fa-bolt fa-3x text-danger mb-3"></i>
-                <h5>Fast Connections</h5>
-                <p class="text-muted small">Direct WhatsApp links to sellers. No middlemen.</p>
+            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle text-primary" style="width: 60px; height: 60px;">
+                        <i class="fas fa-bolt fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">Fast Connections</h5>
+                <p class="text-muted small mb-0">Direct WhatsApp links to sellers. No middlemen, no waiting.</p>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3">
-                <i class="fas fa-globe-africa fa-3x text-danger mb-3"></i>
-                <h5>Pan-African Vision</h5>
-                <p class="text-muted small">Building the largest automotive network in Africa.</p>
+            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle text-success" style="width: 60px; height: 60px;">
+                        <i class="fas fa-globe-africa fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">Pan-African Vision</h5>
+                <p class="text-muted small mb-0">Building the largest, most trusted automotive network in Africa.</p>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0">Latest Arrivals</h3>
-        <a href="#" class="text-decoration-none text-danger fw-bold">View All <i class="fas fa-arrow-right"></i></a>
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h6 class="text-danger fw-bold text-uppercase small mb-1">Showroom</h6>
+            <h2 class="fw-bold mb-0">Latest Arrivals</h2>
+        </div>
+        <a href="#" class="btn btn-outline-dark rounded-pill px-4 btn-sm">View All <i class="fas fa-arrow-right ms-1"></i></a>
     </div>
 
     <div class="row">
         {% for car in cars %}
-        <div class="col-md-3 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card car-card h-100">
                 
-                <div class="car-image-container">
+                <div class="car-image-container position-relative">
                     <span class="car-badge">{{ car.year }}</span>
                     {% if car.images.first %}
-                        <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                        <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
                     {% else %}
                         <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-                            <i class="fas fa-car fa-3x"></i>
+                            <i class="fas fa-car fa-3x opacity-50"></i>
                         </div>
                     {% endif %}
                 </div>
                 
-                <div class="card-body">
-                    <div class="text-muted small mb-1">{{ car.make }}</div>
-                    <h5 class="card-title fw-bold">{{ car.model }}</h5>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-muted small mb-1 text-uppercase fw-bold" style="font-size: 0.75rem;">{{ car.make }}</div>
+                    <h5 class="card-title fw-bold mb-3">{{ car.model }}</h5>
                     
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="text-danger fw-bold fs-5">KES {{ car.price }}</span>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="bg-light rounded p-2 text-center">
+                                <i class="fas fa-gas-pump text-muted me-1 small"></i>
+                                <span class="small fw-semibold">{{ car.get_fuel_type_display }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light rounded p-2 text-center">
+                                <i class="fas fa-cog text-muted me-1 small"></i>
+                                <span class="small fw-semibold">{{ car.get_transmission_display }}</span>
+                            </div>
+                        </div>
                     </div>
                     
-                    <hr class="my-3 opacity-25">
-                    
-                    <div class="d-flex justify-content-between text-muted small mb-3">
-                        <span><i class="fas fa-gas-pump me-1"></i> {{ car.fuel_type|title }}</span>
-                        <span><i class="fas fa-cog me-1"></i> {{ car.transmission|title }}</span>
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                        <span class="car-price">KES {{ car.price }}</span>
+                        <a href="{% url 'car_detail' car.id %}" class="btn btn-dark btn-sm rounded-pill px-3">
+                            Details
+                        </a>
                     </div>
-                    
-                    <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark w-100 btn-sm">
-                        View Details
-                    </a>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
-            <div class="text-muted">
-                <i class="fas fa-search fa-3x mb-3 opacity-25"></i>
-                <h4>No cars found matching your search.</h4>
-                <p>Try different keywords or browse all cars.</p>
+            <div class="bg-light rounded-4 p-5">
+                <i class="fas fa-search fa-3x mb-3 text-muted opacity-50"></i>
+                <h4>No cars found matching "{{ request.GET.q }}"</h4>
+                <p class="text-muted">Try adjusting your search terms.</p>
+                <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-pill mt-2">Clear Search</a>
             </div>
         </div>
         {% endfor %}

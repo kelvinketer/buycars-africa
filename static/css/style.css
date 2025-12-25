@@ -1,108 +1,170 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+/* --- 1. FONTS & VARIABLES --- */
+/* We import both Inter (for easy reading) and Poppins (for headers) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --primary-red: #E63946;
-    --dark-navy: #1D3557;
-    --light-bg: #F1FAEE;
-    --text-main: #2b2d42;
+    /* --- NEW EXECUTIVE SCHEME --- */
+    --primary-color: #0f172a; /* Deep Navy (Trust) */
+    --accent-color: #dc2626;  /* Vivid Red (Action) */
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --bg-light: #f8fafc;
+    
+    /* --- LEGACY COMPATIBILITY (Prevents breaking old code) --- */
+    --primary-red: var(--accent-color);
+    --dark-navy: var(--primary-color);
+    --text-main: var(--text-dark);
+    
+    /* --- SHADOWS & RADIUS --- */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius: 12px;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f8f9fa;
-    color: var(--text-main);
+    font-family: 'Inter', sans-serif; /* Cleaner for body text */
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
 }
 
-/* --- NAVBAR --- */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+    font-family: 'Poppins', sans-serif; /* Keep Poppins for headings */
+    font-weight: 600;
+}
+
+/* --- 2. NAVBAR --- */
 .navbar {
-    background-color: var(--dark-navy) !important;
+    background-color: var(--primary-color) !important;
     padding: 1rem 0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .navbar-brand {
     font-weight: 700;
-    letter-spacing: -0.5px;
     font-size: 1.5rem;
+    letter-spacing: -0.5px;
 }
 
-/* --- HERO SECTION --- */
+.nav-link {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* --- 3. BUTTONS --- */
+.btn-primary-custom {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50px; /* Modern pill shape */
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: #b91c1c; /* Darker red on hover */
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* --- 4. HERO SECTION (Updated) --- */
+/* I kept your original image background but updated the overlay colors */
 .hero-section {
-    background: linear-gradient(rgba(29, 53, 87, 0.9), rgba(29, 53, 87, 0.7)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
     background-size: cover;
     background-position: center;
     color: white;
     padding: 100px 0;
-    border-radius: 0 0 50px 50px; /* Modern curve at bottom */
+    border-radius: 0 0 50px 50px; /* Kept your modern curve */
     margin-bottom: 3rem;
 }
 
 .search-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     border-radius: 15px;
     padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* --- CAR CARDS --- */
-.car-card {
+/* --- 5. CAR CARDS (Premium Upgrade) --- */
+/* This targets both .card and .car-card to cover all bases */
+.card, .car-card {
     border: none;
-    border-radius: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
+    border-radius: var(--radius);
     background: white;
-}
-
-.car-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-}
-
-.car-image-container {
-    height: 220px;
-    position: relative;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
     overflow: hidden;
 }
 
+.card:hover, .car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.card-img-top, .car-image-container {
+    height: 220px;
+    width: 100%;
+    object-fit: cover;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.car-price {
+    color: var(--accent-color);
+    font-weight: 700;
+    font-size: 1.25rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Premium Badge */
 .car-badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.6);
+    top: 15px;
+    right: 15px;
+    background: rgba(15, 23, 42, 0.85); /* Semi-transparent Navy */
     color: white;
-    padding: 4px 12px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 0.8rem;
-    backdrop-filter: blur(5px);
-}
-
-.btn-primary-custom {
-    background-color: var(--primary-red);
-    color: white;
-    border: none;
-    border-radius: 8px;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 10px 20px;
-    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+    z-index: 2;
 }
 
-.btn-primary-custom:hover {
-    background-color: #d62828;
-    color: white;
-    transform: scale(1.02);
+/* --- 6. DETAILS PAGE & UTILS --- */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    font-size: 0.9rem;
 }
 
-/* --- FOOTER --- */
+.breadcrumb-item a {
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* --- 7. FOOTER --- */
 .footer {
-    background-color: var(--dark-navy);
+    background-color: var(--primary-color);
     color: white;
-    padding: 60px 0 20px;
-    margin-top: 80px;
+    padding: 4rem 0 2rem;
+    margin-top: auto;
 }
 
 .footer a {
-    color: #a8dadc;
+    color: #94a3b8;
     text-decoration: none;
     transition: color 0.2s;
 }
