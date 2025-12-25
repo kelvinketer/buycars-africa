@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q 
 from .models import Car, CarImage
-from .forms import CarForm # Make sure you created cars/forms.py!
+from .forms import CarForm 
 
 # --- PUBLIC VIEWS ---
 
@@ -23,7 +23,7 @@ def public_homepage(request):
     context = {'cars': cars}
     return render(request, 'home.html', context)
 
-def car_detail(request, car_id): # Changed 'pk' to 'car_id' to match URLs
+def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
     context = {
         'car': car
@@ -42,17 +42,15 @@ def dealer_dashboard(request):
     total_value = sum(car.price for car in my_cars)
     
     context = {
-        'my_cars': my_cars,
+        'cars': my_cars, # I renamed this key to 'cars' to match your dashboard.html template
         'total_cars': my_cars.count(),
         'total_value': total_value,
     }
-    # Points to the new template we created
     return render(request, 'dealer/dashboard.html', context)
 
 @login_required
 def add_car(request):
     if request.method == 'POST':
-        # Use the Form to handle validation automatically
         form = CarForm(request.POST, request.FILES)
         
         if form.is_valid():
@@ -63,7 +61,6 @@ def add_car(request):
             car.save()
             
             # 2. Handle Image Upload
-            # We check request.FILES for the 'image' field we added to the form
             image_file = request.FILES.get('image')
             if image_file:
                 CarImage.objects.create(car=car, image=image_file, is_main=True)
@@ -74,3 +71,43 @@ def add_car(request):
         form = CarForm()
     
     return render(request, 'dealer/add_car.html', {'form': form})
+
+# --- NEW EDIT & DELETE VIEWS ---
+
+@login_required
+def edit_car(request, car_id):
+    # Get the car only if it belongs to the logged-in user (Security)
+    car = get_object_or_404(Car, pk=car_id, dealer=request.user)
+    
+    if request.method == 'POST':
+        form = CarForm(request.POST, request.FILES, instance=car)
+        if form.is_valid():
+            form.save()
+            
+            # Handle Image Update (Optional: Update main image if new one provided)
+            new_image = request.FILES.get('image')
+            if new_image:
+                # Get existing main image or create a new one
+                car_img, created = CarImage.objects.get_or_create(car=car, is_main=True)
+                car_img.image = new_image
+                car_img.save()
+
+            messages.success(request, 'Vehicle details updated successfully!')
+            return redirect('dealer_dashboard')
+    else:
+        # Pre-fill form with existing data
+        form = CarForm(instance=car)
+    
+    return render(request, 'dealer/edit_car.html', {'form': form, 'car': car})
+
+@login_required
+def delete_car(request, car_id):
+    # Get the car only if it belongs to the logged-in user
+    car = get_object_or_404(Car, pk=car_id, dealer=request.user)
+    
+    if request.method == 'POST':
+        car.delete()
+        messages.success(request, 'Vehicle removed from inventory.')
+        return redirect('dealer_dashboard')
+    
+    return render(request, 'dealer/delete_confirm.html', {'car': car})

@@ -2,7 +2,8 @@
 {% load humanize %}
 
 {% block content %}
-<div class="container-fluid py-4"> <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <div>
             <h1 class="h2 d-inline-block me-2">Dealer Dashboard</h1>
             
@@ -85,7 +86,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for car in cars %} <tr>
+                    {% for car in cars %}
+                    <tr>
                         <td class="ps-4">
                             <div class="d-flex align-items-center">
                                 <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
@@ -114,10 +116,15 @@
                         </td>
                         
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-outline-secondary me-1" title="Edit Car (Coming Soon)">
+                            <a href="{% url 'edit_car' car.id %}" class="btn btn-sm btn-outline-secondary me-1" title="Edit Car">
                                 <i class="fas fa-edit"></i>
-                            </button>
-                            <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-outline-primary" title="View Live">
+                            </a>
+                            
+                            <a href="{% url 'delete_car' car.id %}" class="btn btn-sm btn-outline-danger me-1" title="Delete Car">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-outline-primary" title="View Live" target="_blank">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
                         </td>

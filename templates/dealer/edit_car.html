@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-warning text-dark p-4">
+                    <h3 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i>Edit Vehicle</h3>
+                    <p class="mb-0 opacity-75">Update the details for your {{ car.year }} {{ car.make }} {{ car.model }}</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h5 class="fw-bold mb-3">Basic Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6"><label class="form-label">Make</label> {{ form.make }} </div>
+                            <div class="col-md-6"><label class="form-label">Model</label> {{ form.model }} </div>
+                            <div class="col-md-4"><label class="form-label">Year</label> {{ form.year }} </div>
+                            <div class="col-md-4"><label class="form-label">Price (KES)</label> {{ form.price }} </div>
+                            <div class="col-md-4"><label class="form-label">Condition</label> {{ form.condition }} </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3">Technical Specs</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4"><label class="form-label">Transmission</label> {{ form.transmission }} </div>
+                            <div class="col-md-4"><label class="form-label">Fuel Type</label> {{ form.fuel_type }} </div>
+                            <div class="col-md-4"><label class="form-label">Mileage (km)</label> {{ form.mileage }} </div>
+                            <div class="col-md-6"><label class="form-label">Engine Size (cc)</label> {{ form.engine_size }} </div>
+                            <div class="col-md-6"><label class="form-label">Color</label> {{ form.color }} </div>
+                            <div class="col-md-6"><label class="form-label">Body Type</label> {{ form.body_type }} </div>
+                            <div class="col-md-6"><label class="form-label">Location</label> {{ form.location }} </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3">Description</h5>
+                        <div class="mb-4">
+                            <label class="form-label">Seller's Notes</label>
+                            {{ form.description }}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Update Photo (Optional)</label>
+                            {% if car.images.first %}
+                                <div class="mb-2">
+                                    <img src="{{ car.images.first.image.url }}" alt="Current" class="img-thumbnail" style="height: 100px;">
+                                    <small class="text-muted d-block">Current Image</small>
+                                </div>
+                            {% endif %}
+                            {{ form.image }}
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-warning px-5 py-2 fw-bold">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

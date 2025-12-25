@@ -10,11 +10,9 @@ urlpatterns = [
     
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
-    
-    # FIX: Changed <int:pk> to <int:car_id> to match your views.py
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     
-    # --- AUTHENTICATION (Keep these safe!) ---
+    # --- AUTHENTICATION ---
     path('login/', user_views.login_view, name='login'),
     path('signup/', user_views.signup_view, name='signup'),
     path('logout/', user_views.logout_view, name='logout'),
@@ -22,6 +20,11 @@ urlpatterns = [
     # --- DEALER SIDE ---
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
+    
+    # --- NEW EDIT & DELETE ROUTES ---
+    # These connect the buttons to the views we just wrote
+    path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
+    path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
 ]
 
 # Allow images to load in development
