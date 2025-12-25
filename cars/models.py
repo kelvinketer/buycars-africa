@@ -91,9 +91,9 @@ class CarAnalytics(models.Model):
     # Track IP to eventually filter out spam/duplicate clicks
     ip_address = models.GenericIPAddressField(null=True, blank=True)
 
-    # --- ADDED TO FORCE MIGRATION ---
+    # --- UPDATED: CHANGED TO 'Car Leads' TO FORCE MIGRATION ---
     class Meta:
-        verbose_name_plural = "Car Analytics"
+        verbose_name_plural = "Car Leads"
 
     def __str__(self):
         return f"{self.action} on {self.car} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
