@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # --- UTILITIES ---
-    'django.contrib.humanize',  # <--- ADDED THIS TO FIX THE ERROR
+    'django.contrib.humanize',  # To fix the comma error
 
     # Third Party Apps
     'rest_framework', 
@@ -101,8 +101,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 
 # --- MEDIA FILES (Images - Managed by Cloudinary) ---
 MEDIA_URL = '/media/'
@@ -115,8 +113,17 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# This tells Django: "Don't save images to the folder. Send them to Cloudinary."
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# --- DJANGO 5 STORAGES CONFIGURATION (The Fix) ---
+STORAGES = {
+    # 1. Store Static Files (CSS/JS) with WhiteNoise
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+    # 2. Store Media Files (Images) with Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+}
 
 
 # --- AUTH SETTINGS ---
