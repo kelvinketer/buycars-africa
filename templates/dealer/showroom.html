@@ -7,12 +7,29 @@
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body p-5 text-center">
                 <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-circle shadow-sm" style="width: 80px; height: 80px; font-size: 2rem; text-transform: uppercase;">
-                        {{ dealer.username|slice:":1" }}
-                    </div>
+                    {% if dealer.dealerprofile.logo %}
+                        <img src="{{ dealer.dealerprofile.logo.url }}" 
+                             alt="{{ dealer.username }}" 
+                             class="rounded-circle shadow-sm border" 
+                             style="width: 100px; height: 100px; object-fit: cover;">
+                    {% else %}
+                        <div class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-circle shadow-sm" style="width: 100px; height: 100px; font-size: 2.5rem; text-transform: uppercase;">
+                            {{ dealer.username|slice:":1" }}
+                        </div>
+                    {% endif %}
                 </div>
                 
-                <h1 class="fw-bold mb-1">{{ dealer.username }}</h1>
+                <h1 class="fw-bold mb-1">
+                    {% if dealer.dealerprofile.business_name %}
+                        {{ dealer.dealerprofile.business_name }}
+                    {% else %}
+                        {{ dealer.username }}
+                    {% endif %}
+                </h1>
+                
+                {% if dealer.dealerprofile.city %}
+                    <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> {{ dealer.dealerprofile.city }}</p>
+                {% endif %}
                 
                 {% if dealer.is_verified %}
                     <span class="badge bg-success mb-3"><i class="fas fa-check-circle me-1"></i> Verified Dealer</span>
