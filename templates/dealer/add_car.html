@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary-custom text-white p-4" style="background-color: #0f172a;">
+                    <h3 class="mb-0 fw-bold"><i class="fas fa-plus-circle me-2"></i>Upload New Vehicle</h3>
+                    <p class="mb-0 opacity-75">Fill in the details below to list your car.</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h5 class="text-danger fw-bold mb-3">Basic Information</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Make</label>
+                                {{ form.make }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Model</label>
+                                {{ form.model }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Year of Manufacture</label>
+                                {{ form.year }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Price (KES)</label>
+                                {{ form.price }}
+                            </div>
+                        </div>
+
+                        <h5 class="text-danger fw-bold mb-3">Technical Specs</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">Transmission</label>
+                                {{ form.transmission }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fuel Type</label>
+                                {{ form.fuel_type }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Mileage (km)</label>
+                                {{ form.mileage }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Engine Size (cc)</label>
+                                {{ form.engine_size }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Body Type</label>
+                                {{ form.body_type }}
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Location</label>
+                                {{ form.location }}
+                            </div>
+                        </div>
+
+                        <h5 class="text-danger fw-bold mb-3">Description & Media</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Seller's Notes</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Main Photo</label>
+                            {{ form.image }}
+                            <div class="form-text">Upload a high-quality clear image (Max 5MB).</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-5 py-2 fw-bold" style="background-color: #dc2626; color: white; border-radius: 50px;">
+                                Upload Car
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

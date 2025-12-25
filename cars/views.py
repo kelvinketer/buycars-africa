@@ -1,17 +1,18 @@
-from django.shortcuts import render, redirect, get_object_or_404 # <--- Added get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q 
 from .models import Car, CarImage
+from .forms import CarForm # Make sure you created cars/forms.py!
 
 # --- PUBLIC VIEWS ---
 
 def public_homepage(request):
-    # 1. Get all cars that are marked as 'AVAILABLE'
+    # 1. Get all cars that are available
     cars = Car.objects.filter(status='AVAILABLE').order_by('-created_at')
     
-    # 2. Simple Search Logic
-    query = request.GET.get('q') # Gets the text from search bar
+    # 2. Search Logic
+    query = request.GET.get('q')
     if query:
         cars = cars.filter(
             Q(make__icontains=query) | 
@@ -22,66 +23,54 @@ def public_homepage(request):
     context = {'cars': cars}
     return render(request, 'home.html', context)
 
-def car_detail(request, pk):
-    # This fetches the car with the specific ID (pk)
-    # If the ID doesn't exist, it automatically shows a 404 Not Found error
-    car = get_object_or_404(Car, pk=pk)
-    
+def car_detail(request, car_id): # Changed 'pk' to 'car_id' to match URLs
+    car = get_object_or_404(Car, pk=car_id)
     context = {
         'car': car
     }
-    return render(request, 'car_detail.html', context)
+    return render(request, 'cars/car_detail.html', context)
 
 
 # --- DEALER VIEWS ---
 
 @login_required
 def dealer_dashboard(request):
-    # Fetch cars that belong ONLY to this logged-in dealer
+    # 1. Fetch cars belonging to this dealer
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
     
+    # 2. Calculate Stats
+    total_value = sum(car.price for car in my_cars)
+    
     context = {
-        'cars': my_cars,
-        'total_cars': my_cars.count()
+        'my_cars': my_cars,
+        'total_cars': my_cars.count(),
+        'total_value': total_value,
     }
-    return render(request, 'dashboard.html', context)
+    # Points to the new template we created
+    return render(request, 'dealer/dashboard.html', context)
 
 @login_required
 def add_car(request):
     if request.method == 'POST':
-        # 1. Get data from the form
-        make = request.POST.get('make')
-        model = request.POST.get('model')
-        year = request.POST.get('year')
-        transmission = request.POST.get('transmission')
-        fuel = request.POST.get('fuel_type')
-        price = request.POST.get('price')
-        mileage = request.POST.get('mileage')
-        desc = request.POST.get('description')
+        # Use the Form to handle validation automatically
+        form = CarForm(request.POST, request.FILES)
         
-        # 2. Get the image
-        image_file = request.FILES.get('image')
-
-        # 3. Create the Car object in the Database
-        new_car = Car.objects.create(
-            dealer=request.user, # Link it to the logged-in user
-            make=make,
-            model=model,
-            year=year,
-            transmission=transmission,
-            fuel_type=fuel,
-            price=price,
-            mileage_km=mileage,
-            description=desc,
-            status='AVAILABLE'
-        )
-
-        # 4. Save the Image (if uploaded)
-        if image_file:
-            CarImage.objects.create(car=new_car, image=image_file, is_main=True)
-
-        # 5. Success! Redirect to dashboard
-        messages.success(request, 'Car added successfully!')
-        return redirect('dealer_dashboard')
-
-    return render(request, 'add_car.html')
+        if form.is_valid():
+            # 1. Create Car instance but don't save to DB yet
+            car = form.save(commit=False)
+            car.dealer = request.user  # Assign logged-in user
+            car.status = 'AVAILABLE'
+            car.save()
+            
+            # 2. Handle Image Upload
+            # We check request.FILES for the 'image' field we added to the form
+            image_file = request.FILES.get('image')
+            if image_file:
+                CarImage.objects.create(car=car, image=image_file, is_main=True)
+            
+            messages.success(request, 'Vehicle uploaded successfully!')
+            return redirect('dealer_dashboard')
+    else:
+        form = CarForm()
+    
+    return render(request, 'dealer/add_car.html', {'form': form})
