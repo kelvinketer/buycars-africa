@@ -23,7 +23,7 @@
                             <select name="make" class="form-select custom-search-input border-0 bg-light rounded-3">
                                 <option value="">All Makes</option>
                                 {% for make in all_makes %}
-                                    <option value="{{ make }}" {% if request.GET.make == make %}selected{% endif %}>{{ make }}</option>
+                                    <option value="{{ make }}" {% if request.GET.make == make %}selected{% endif %}>{{ make|title }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -32,7 +32,7 @@
                             <select name="body_type" class="form-select custom-search-input border-0 bg-light rounded-3">
                                 <option value="">Body Type</option>
                                 {% for bt in all_body_types %}
-                                    <option value="{{ bt }}" {% if request.GET.body_type == bt %}selected{% endif %}>{{ bt }}</option>
+                                    <option value="{{ bt }}" {% if request.GET.body_type == bt %}selected{% endif %}>{{ bt|title }}</option>
                                 {% endfor %}
                             </select>
                         </div>
