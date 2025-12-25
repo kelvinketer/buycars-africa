@@ -8,19 +8,46 @@ from .forms import CarForm
 # --- PUBLIC VIEWS ---
 
 def public_homepage(request):
-    # 1. Get all cars that are available
+    # 1. Start with ALL available cars
     cars = Car.objects.filter(status='AVAILABLE').order_by('-created_at')
     
-    # 2. Search Logic
-    query = request.GET.get('q')
-    if query:
+    # 2. Capture Filter Parameters from the URL
+    q = request.GET.get('q')           # Search text
+    make = request.GET.get('make')     # Selected brand
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    # 3. Apply Filters if they exist
+    if q:
         cars = cars.filter(
-            Q(make__icontains=query) | 
-            Q(model__icontains=query) | 
-            Q(description__icontains=query)
+            Q(make__icontains=q) | 
+            Q(model__icontains=q) | 
+            Q(description__icontains=q)
         )
+    
+    if make:
+        cars = cars.filter(make__iexact=make)
         
-    context = {'cars': cars}
+    if min_price:
+        try:
+            cars = cars.filter(price__gte=min_price)
+        except ValueError:
+            pass # Ignore if user types text instead of numbers
+        
+    if max_price:
+        try:
+            cars = cars.filter(price__lte=max_price)
+        except ValueError:
+            pass
+
+    # 4. Get a list of unique 'Makes' for the dropdown menu
+    # distinct() prevents showing "Toyota" 50 times
+    all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
+
+    context = {
+        'cars': cars,
+        'all_makes': all_makes, # We pass this to populate the dropdown
+    }
     return render(request, 'home.html', context)
 
 def car_detail(request, car_id): 
@@ -42,7 +69,7 @@ def dealer_dashboard(request):
     total_value = sum(car.price for car in my_cars)
     
     context = {
-        'cars': my_cars, # I renamed this key to 'cars' to match your dashboard.html template
+        'cars': my_cars, 
         'total_cars': my_cars.count(),
         'total_value': total_value,
     }
@@ -72,7 +99,7 @@ def add_car(request):
     
     return render(request, 'dealer/add_car.html', {'form': form})
 
-# --- NEW EDIT & DELETE VIEWS ---
+# --- EDIT & DELETE VIEWS ---
 
 @login_required
 def edit_car(request, car_id):
@@ -84,10 +111,9 @@ def edit_car(request, car_id):
         if form.is_valid():
             form.save()
             
-            # Handle Image Update (Optional: Update main image if new one provided)
+            # Handle Image Update
             new_image = request.FILES.get('image')
             if new_image:
-                # Get existing main image or create a new one
                 car_img, created = CarImage.objects.get_or_create(car=car, is_main=True)
                 car_img.image = new_image
                 car_img.save()
