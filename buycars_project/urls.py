@@ -12,6 +12,9 @@ urlpatterns = [
     path('', car_views.public_homepage, name='home'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     
+    # --- NEW: DEALER SHOWROOM (Public Profile) ---
+    path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
+
     # --- AUTHENTICATION ---
     path('login/', user_views.login_view, name='login'),
     path('signup/', user_views.signup_view, name='signup'),
@@ -21,8 +24,7 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # --- NEW EDIT & DELETE ROUTES ---
-    # These connect the buttons to the views we just wrote
+    # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
 ]

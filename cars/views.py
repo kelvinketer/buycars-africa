@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q 
+from django.contrib.auth import get_user_model  # <--- NEW IMPORT
+
 from .models import Car, CarImage
 from .forms import CarForm 
+
+User = get_user_model()  # <--- Initialize User Model
 
 # --- PUBLIC VIEWS ---
 
@@ -56,6 +60,21 @@ def car_detail(request, car_id):
         'car': car
     }
     return render(request, 'cars/car_detail.html', context)
+
+# --- NEW: PUBLIC DEALER SHOWROOM ---
+def dealer_showroom(request, username):
+    # 1. Get the dealer based on the username in the URL
+    # If username doesn't exist, it shows a 404 error
+    dealer = get_object_or_404(User, username=username)
+    
+    # 2. Get ONLY this dealer's available cars
+    cars = Car.objects.filter(dealer=dealer, status='AVAILABLE').order_by('-created_at')
+    
+    context = {
+        'dealer': dealer,
+        'cars': cars,
+    }
+    return render(request, 'dealer/showroom.html', context)
 
 
 # --- DEALER VIEWS ---

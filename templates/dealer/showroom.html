@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-5 text-center">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-circle shadow-sm" style="width: 80px; height: 80px; font-size: 2rem; text-transform: uppercase;">
+                        {{ dealer.username|slice:":1" }}
+                    </div>
+                </div>
+                
+                <h1 class="fw-bold mb-1">{{ dealer.username }}</h1>
+                
+                {% if dealer.is_verified %}
+                    <span class="badge bg-success mb-3"><i class="fas fa-check-circle me-1"></i> Verified Dealer</span>
+                {% else %}
+                    <span class="badge bg-secondary mb-3">Registered Seller</span>
+                {% endif %}
+                
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <a href="https://wa.me/{{ dealer.phone_number }}" target="_blank" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
+                        <i class="fab fa-whatsapp me-2"></i> WhatsApp
+                    </a>
+                    <a href="tel:{{ dealer.phone_number }}" class="btn btn-outline-dark rounded-pill px-4 shadow-sm fw-bold">
+                        <i class="fas fa-phone-alt me-2"></i> Call
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0">Current Inventory</h4>
+            <span class="badge bg-white text-dark border px-3 py-2 rounded-pill">{{ cars.count }} Cars Available</span>
+        </div>
+
+        <div class="row">
+            {% for car in cars %}
+            <div class="col-md-4 mb-4">
+                <div class="card car-card h-100 shadow-sm border-0">
+                    <div class="car-image-container position-relative">
+                        <span class="car-badge">{{ car.year }}</span>
+                        {% if car.images.first %}
+                            <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
+                                <i class="fas fa-car fa-3x opacity-50"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-muted small mb-1 text-uppercase fw-bold">{{ car.make }}</div>
+                        <h5 class="card-title fw-bold mb-3">{{ car.model }}</h5>
+                        
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <h5 class="text-danger fw-bold mb-0">KES {{ car.price|intcomma }}</h5>
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="bg-white p-5 rounded shadow-sm">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3 opacity-50"></i>
+                    <p class="text-muted">This dealer has no active stock right now.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
