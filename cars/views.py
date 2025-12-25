@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Q 
 from django.contrib.auth import get_user_model 
 
-from users.models import DealerProfile # <--- NEW IMPORT ADDED HERE
+from users.models import DealerProfile
 
 from .models import Car, CarImage
 from .forms import CarForm 
@@ -20,8 +20,11 @@ def public_homepage(request):
     # 2. Capture Filter Parameters from the URL
     q = request.GET.get('q')           # Search text
     make = request.GET.get('make')     # Selected brand
+    body_type = request.GET.get('body_type') # <--- NEW: Body Type
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
+    min_year = request.GET.get('min_year')   # <--- NEW: Min Year
+    max_year = request.GET.get('max_year')   # <--- NEW: Max Year
 
     # 3. Apply Filters if they exist
     if q:
@@ -33,6 +36,9 @@ def public_homepage(request):
     
     if make:
         cars = cars.filter(make__iexact=make)
+        
+    if body_type: # <--- NEW FILTER
+        cars = cars.filter(body_type__iexact=body_type)
         
     if min_price:
         try:
@@ -46,12 +52,28 @@ def public_homepage(request):
         except ValueError:
             pass
 
-    # 4. Get a list of unique 'Makes' for the dropdown menu
+    if min_year: # <--- NEW FILTER
+        try:
+            cars = cars.filter(year__gte=min_year)
+        except ValueError:
+            pass
+
+    if max_year: # <--- NEW FILTER
+        try:
+            cars = cars.filter(year__lte=max_year)
+        except ValueError:
+            pass
+
+    # 4. Get lists for dropdown menus
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
+    
+    # NEW: Get all unique body types (SUV, Sedan, etc.) for the dropdown
+    all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
 
     context = {
         'cars': cars,
         'all_makes': all_makes, 
+        'all_body_types': all_body_types, # <--- Pass this to the template
     }
     return render(request, 'home.html', context)
 
@@ -77,8 +99,7 @@ def dealer_showroom(request, username):
     # 1. Get the dealer based on the username in the URL
     dealer = get_object_or_404(User, username=username)
     
-    # 2. Explicitly fetch the profile (This fixes the missing logo issue)
-    # We use .first() so it doesn't crash if the profile is missing
+    # 2. Explicitly fetch the profile
     profile = DealerProfile.objects.filter(user=dealer).first()
     
     # 3. Get ONLY this dealer's available cars
@@ -86,7 +107,7 @@ def dealer_showroom(request, username):
     
     context = {
         'dealer': dealer,
-        'profile': profile, # <--- We pass the profile directly
+        'profile': profile,
         'cars': cars,
     }
     return render(request, 'dealer/showroom.html', context)
