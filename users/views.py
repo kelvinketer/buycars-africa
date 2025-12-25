@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from .forms import CustomUserCreationForm  # <--- IMPORT THE NEW FORM
 
 # 1. Login View
 def login_view(request):
@@ -18,18 +19,21 @@ def login_view(request):
                 messages.error(request, "Invalid username or password.")
         else:
             messages.error(request, "Invalid username or password.")
-    return render(request, 'login.html')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
 
-# 2. Signup View
+# 2. Signup View (FIXED)
 def signup_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        # Use our Custom Form that knows about phone numbers
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user) # Log them in automatically
             return redirect('dealer_dashboard')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
 # 3. Logout View
