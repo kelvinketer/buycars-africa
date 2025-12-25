@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 
+{% block head_extra %}
+<meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} - KES {{ car.price }}">
+<meta property="og:description" content="{{ car.description|truncatewords:20 }}">
+{% if car.images.first %}
+    <meta property="og:image" content="{{ car.images.first.image.url }}">
+{% else %}
+    <meta property="og:image" content="https://buycars-africa.onrender.com/static/images/preview_default.jpg">
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
     <nav aria-label="breadcrumb">
@@ -55,13 +65,34 @@
                     <p class="text-muted mb-4">{{ car.make }} {{ car.model }}</p>
 
                     <div class="d-grid gap-2">
-                        <a href="tel:{{ car.dealer.dealer_profile.phone_number }}" class="btn btn-dark btn-lg">
+                        <a href="tel:{{ car.dealer.phone_number|default:'+254700000000' }}" class="btn btn-dark btn-lg">
                             <i class="fas fa-phone-alt me-2"></i> Call Seller
                         </a>
-                        <button class="btn btn-outline-success btn-lg">
+                        
+                        <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=Hi,%20I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20listed%20for%20KES%20{{ car.price }}" 
+                           class="btn btn-success btn-lg" target="_blank">
                             <i class="fab fa-whatsapp me-2"></i> WhatsApp
-                        </button>
+                        </a>
                     </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header bg-light fw-bold text-dark">
+                    <i class="fas fa-calculator me-2"></i> Asset Finance Estimate
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="small text-muted">Down Payment (30%)</label>
+                        <input type="text" id="deposit" class="form-control form-control-sm" value="" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted">Monthly Installment (60 Months)</label>
+                        <h4 class="text-primary fw-bold" id="monthlyPayment">KES 0</h4>
+                    </div>
+                    <p class="small text-muted mb-0" style="font-size: 0.75rem;">
+                        *Est. based on 18% p.a. interest. Subject to bank approval.
+                    </p>
                 </div>
             </div>
 
@@ -76,7 +107,11 @@
                         </div>
                         <div>
                             <h6 class="mb-0">{{ car.dealer.username }}</h6>
-                            <small class="text-success"><i class="fas fa-check-circle"></i> Verified Dealer</small>
+                            {% if car.dealer.is_verified %}
+                                <small class="text-success"><i class="fas fa-check-circle"></i> Verified Dealer</small>
+                            {% else %}
+                                <small class="text-muted">Registered Dealer</small>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -84,4 +119,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the car price from Django
+        let carPrice = {{ car.price }}; 
+        
+        // 1. Calculate Minimum Deposit (30% is standard in Kenya)
+        let deposit = carPrice * 0.30;
+        
+        // 2. Format Deposit with Commas
+        document.getElementById("deposit").value = "KES " + deposit.toLocaleString();
+        
+        // 3. Calculate Loan Amount
+        let principal = carPrice - deposit;
+        let rate = 0.18 / 12; // 18% Annual Rate (Monthly)
+        let terms = 60; // 5 Years
+        
+        // 4. PMT Formula
+        let x = Math.pow(1 + rate, terms);
+        let monthly = (principal * x * rate) / (x - 1);
+        
+        // 5. Update the Display
+        document.getElementById("monthlyPayment").innerText = "KES " + Math.round(monthly).toLocaleString();
+    });
+</script>
 {% endblock %}
