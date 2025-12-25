@@ -2,25 +2,65 @@ from django.db import models
 from django.conf import settings
 
 class Car(models.Model):
+    # --- DROPDOWN CHOICES ---
     STATUS_CHOICES = (
         ('AVAILABLE', 'Available'),
         ('SOLD', 'Sold'),
         ('RESERVED', 'Reserved'),
     )
     
-    # Link to the Dealer (User)
+    CONDITION_CHOICES = [
+        ('NEW', 'Brand New'),
+        ('FOREIGN', 'Foreign Used'),
+        ('LOCAL', 'Local Used'),
+    ]
+    
+    TRANSMISSION_CHOICES = [
+        ('AUTOMATIC', 'Automatic'),
+        ('MANUAL', 'Manual'),
+        ('CVT', 'CVT'),
+    ]
+    
+    FUEL_CHOICES = [
+        ('PETROL', 'Petrol'),
+        ('DIESEL', 'Diesel'),
+        ('HYBRID', 'Hybrid'),
+        ('ELECTRIC', 'Electric'),
+    ]
+    
+    BODY_TYPE_CHOICES = [
+        ('SUV', 'SUV'),
+        ('SEDAN', 'Sedan'),
+        ('HATCHBACK', 'Hatchback'),
+        ('PICKUP', 'Pickup'),
+        ('COUPE', 'Coupe'),
+        ('BUS', 'Bus/Van'),
+        ('TRUCK', 'Truck'),
+        ('CONVERTIBLE', 'Convertible'),
+    ]
+
+    # --- DATABASE FIELDS ---
     dealer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cars')
     
     make = models.CharField(max_length=50) 
     model = models.CharField(max_length=50) 
     year = models.IntegerField()
-    transmission = models.CharField(max_length=20, choices=(('AUTO', 'Automatic'), ('MANUAL', 'Manual')))
-    fuel_type = models.CharField(max_length=20, choices=(('PETROL', 'Petrol'), ('DIESEL', 'Diesel'), ('HYBRID', 'Hybrid')))
-    
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    mileage_km = models.IntegerField()
-    description = models.TextField()
     
+    # Renamed from 'mileage_km' to 'mileage' to match your Form
+    mileage = models.IntegerField(default=0, help_text="Mileage in km")
+    
+    # New Fields required by the Form
+    engine_size = models.IntegerField(help_text="Engine cc", null=True, blank=True)
+    color = models.CharField(max_length=50, default='White')
+    location = models.CharField(max_length=100, default='Nairobi')
+    
+    condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='FOREIGN')
+    transmission = models.CharField(max_length=20, choices=TRANSMISSION_CHOICES, default='AUTOMATIC')
+    fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES, default='PETROL')
+    body_type = models.CharField(max_length=20, choices=BODY_TYPE_CHOICES, default='SUV')
+    
+    description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE')
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
