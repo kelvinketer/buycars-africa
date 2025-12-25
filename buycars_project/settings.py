@@ -113,18 +113,18 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# --- STORAGE CONFIGURATION (RELAXED FIX) ---
-# We switched to "CompressedStaticFilesStorage" to prevent the build from crashing
-# on missing file references (MissingFileError).
+# --- STORAGE CONFIGURATION (SAFE MODE) ---
+# We switched 'staticfiles' to the standard Django storage to disable
+# the compression step that was crashing the build.
 
-# 1. Old Way (Keeps django-cloudinary-storage happy)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'  # <--- CHANGED THIS
+# 1. Old Way (Compatibility)
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# 2. New Way (Keeps Django 5 happy)
+# 2. New Way (Django 5)
 STORAGES = {
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",  # <--- CHANGED THIS
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
