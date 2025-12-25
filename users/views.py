@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import CustomUserCreationForm  # Checks for phone_number
+from django.contrib.auth.decorators import login_required # <--- Added
+from django.contrib import messages # <--- Added
+from .models import DealerProfile # <--- Added
+from .forms import CustomUserCreationForm, DealerProfileForm  # <--- Added DealerProfileForm
 
 def signup_view(request):
     if request.method == 'POST':
@@ -38,3 +41,21 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+# --- NEW: DEALER PROFILE SETTINGS ---
+@login_required
+def profile_settings(request):
+    # 1. Get or Create the profile for the logged-in user
+    # We use get_or_create so it doesn't crash if a profile is missing
+    profile, created = DealerProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        form = DealerProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile details updated successfully!')
+            return redirect('dealer_dashboard')
+    else:
+        form = DealerProfileForm(instance=profile)
+    
+    return render(request, 'dealer/profile_settings.html', {'form': form})

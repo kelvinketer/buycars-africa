@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-cog me-2"></i>Dealer Settings</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Business Name</label>
+                            {{ form.business_name }}
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">City / Region</label>
+                                {{ form.city }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Website (Optional)</label>
+                                {{ form.website_link }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Physical Address</label>
+                            {{ form.physical_address }}
+                            <div class="form-text">e.g. Kiambu Road, next to Total Station</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Company Logo</label>
+                            {{ form.logo }}
+                            <div class="form-text">Upload a square image (PNG/JPG) for best results.</div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Quick styling to make Django form fields look like Bootstrap */
+    input[type="text"], input[type="url"], select, textarea {
+        display: block; width: 100%; padding: 0.5rem 1rem;
+        font-size: 1rem; border: 1px solid #ced4da; border-radius: 0.375rem;
+    }
+    input[type="file"] {
+        display: block; width: 100%; padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da; border-radius: 0.375rem;
+    }
+</style>
+{% endblock %}

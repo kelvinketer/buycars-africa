@@ -12,7 +12,7 @@ urlpatterns = [
     path('', car_views.public_homepage, name='home'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     
-    # --- NEW: DEALER SHOWROOM (Public Profile) ---
+    # --- DEALER SHOWROOM (Public Profile) ---
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
 
     # --- AUTHENTICATION ---
@@ -23,6 +23,9 @@ urlpatterns = [
     # --- DEALER SIDE ---
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
+    
+    # --- NEW: DEALER SETTINGS ---
+    path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
     
     # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),

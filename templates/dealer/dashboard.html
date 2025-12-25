@@ -18,7 +18,11 @@
             {% endif %}
         </div>
 
-        <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+            <a href="{% url 'profile_settings' %}" class="btn btn-outline-dark shadow-sm">
+                <i class="fas fa-cog me-1"></i> Settings
+            </a>
+            
             <a href="{% url 'add_car' %}" class="btn btn-danger shadow-sm">
                 <i class="fas fa-plus me-1"></i> Add New Car
             </a>
