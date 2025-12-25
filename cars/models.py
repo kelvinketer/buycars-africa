@@ -75,3 +75,21 @@ class CarImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.car.model}"
+
+# --- NEW: ANALYTICS MODEL (Step 1 of Lead Tracking) ---
+class CarAnalytics(models.Model):
+    ACTION_CHOICES = [
+        ('VIEW', 'Page View'),
+        ('WHATSAPP', 'WhatsApp Click'),
+        ('CALL', 'Phone Call'),
+    ]
+    
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='analytics')
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    # Track IP to eventually filter out spam/duplicate clicks
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.action} on {self.car} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"

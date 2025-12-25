@@ -139,10 +139,11 @@
                         <h2 class="text-danger fw-bold mb-3">KES {{ car.price|floatformat:0|intcomma }}</h2>
                         
                         <div class="d-grid gap-2">
-                            <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20listed%20for%20KES%20{{ car.price|intcomma }}" target="_blank" class="btn btn-success btn-lg rounded-pill fw-bold">
+                            <a href="{% url 'track_action' car.id 'WHATSAPP' %}" target="_blank" class="btn btn-success btn-lg rounded-pill fw-bold">
                                 <i class="fab fa-whatsapp me-2"></i> WhatsApp Seller
                             </a>
-                            <a href="tel:{{ car.dealer.phone_number|default:'+254700000000' }}" class="btn btn-outline-dark btn-lg rounded-pill fw-bold">
+                            
+                            <a href="{% url 'track_action' car.id 'CALL' %}" class="btn btn-outline-dark btn-lg rounded-pill fw-bold">
                                 <i class="fas fa-phone-alt me-2"></i> Call Now
                             </a>
                         </div>
