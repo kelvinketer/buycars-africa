@@ -26,6 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # --- UTILITIES ---
+    'django.contrib.humanize',  # <--- ADDED THIS TO FIX THE ERROR
 
     # Third Party Apps
     'rest_framework', 
