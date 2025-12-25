@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% block head_extra %}
-<meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} - KES {{ car.price }}">
+<meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} - KES {{ car.price|intcomma }}">
 <meta property="og:description" content="{{ car.description|truncatewords:20 }}">
 {% if car.images.first %}
     <meta property="og:image" content="{{ car.images.first.image.url }}">
@@ -128,7 +128,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="col-lg-4">
@@ -140,7 +139,7 @@
                         <h2 class="text-danger fw-bold mb-3">KES {{ car.price|floatformat:0|intcomma }}</h2>
                         
                         <div class="d-grid gap-2">
-                            <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20(ID:%20{{ car.id }})" target="_blank" class="btn btn-success btn-lg rounded-pill fw-bold">
+                            <a href="https://wa.me/{{ car.dealer.phone_number|default:'254700000000' }}?text=I%20am%20interested%20in%20the%20{{ car.year }}%20{{ car.make }}%20{{ car.model }}%20listed%20for%20KES%20{{ car.price|intcomma }}" target="_blank" class="btn btn-success btn-lg rounded-pill fw-bold">
                                 <i class="fab fa-whatsapp me-2"></i> WhatsApp Seller
                             </a>
                             <a href="tel:{{ car.dealer.phone_number|default:'+254700000000' }}" class="btn btn-outline-dark btn-lg rounded-pill fw-bold">
