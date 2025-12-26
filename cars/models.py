@@ -91,7 +91,9 @@ class CarAnalytics(models.Model):
     # Track IP to eventually filter out spam/duplicate clicks
     ip_address = models.GenericIPAddressField(null=True, blank=True)
 
-    # --- UPDATED: CHANGED TO 'Car Leads' TO FORCE MIGRATION ---
+    # --- ADDED TO FORCE NEW MIGRATION FILE ---
+    notes = models.TextField(blank=True, null=True)
+
     class Meta:
         verbose_name_plural = "Car Leads"
 
