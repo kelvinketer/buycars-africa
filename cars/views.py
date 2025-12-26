@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q 
+from django.db.models import Q, Count # Added Count here
 from django.contrib.auth import get_user_model 
 
 from users.models import DealerProfile
 
-# --- UPDATED: Import CarLead instead of CarAnalytics ---
+# Updated imports
 from .models import Car, CarImage, CarLead 
 from .forms import CarForm 
 
@@ -92,7 +92,7 @@ def car_detail(request, car_id):
     }
     return render(request, 'cars/car_detail.html', context)
 
-# --- UPDATED: LEAD TRACKING FUNCTION ---
+# --- LEAD TRACKING FUNCTION ---
 def track_action(request, car_id, action_type):
     """
     Records an action (WhatsApp/Call) and redirects to the external link.
@@ -102,7 +102,7 @@ def track_action(request, car_id, action_type):
     # 1. Record the action using the NEW CarLead model
     ip = request.META.get('REMOTE_ADDR')
     
-    CarLead.objects.create(  # <--- Changed from CarAnalytics to CarLead
+    CarLead.objects.create(
         car=car,
         action=action_type.upper(),
         ip_address=ip
@@ -110,7 +110,6 @@ def track_action(request, car_id, action_type):
     
     # 2. Determine the destination URL
     if action_type.upper() == 'WHATSAPP':
-        # Default fallback phone if dealer has none
         phone = car.dealer.phone_number if car.dealer.phone_number else '254700000000'
         message = f"Hi, I am interested in the {car.year} {car.make} {car.model} listed for KES {car.price}"
         destination = f"https://wa.me/{phone}?text={message}"
@@ -120,10 +119,8 @@ def track_action(request, car_id, action_type):
         destination = f"tel:{phone}"
         
     else:
-        # Fallback to car detail page
         destination = f"/car/{car.id}/"
 
-    # 3. Redirect to the actual destination
     return HttpResponseRedirect(destination)
 
 # --- PUBLIC DEALER SHOWROOM ---
@@ -146,11 +143,21 @@ def dealer_showroom(request, username):
 def dealer_dashboard(request):
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
     total_value = sum(car.price for car in my_cars)
+
+    # --- NEW: Get Analytics Data for Chart ---
+    # Group leads by action type for the current dealer
+    leads_summary = CarLead.objects.filter(car__dealer=request.user).values('action').annotate(total=Count('id'))
+    
+    # Format data for Chart.js
+    chart_labels = [item['action'] for item in leads_summary]
+    chart_values = [item['total'] for item in leads_summary]
     
     context = {
         'cars': my_cars, 
         'total_cars': my_cars.count(),
         'total_value': total_value,
+        'chart_labels': chart_labels,
+        'chart_values': chart_values,
     }
     return render(request, 'dealer/dashboard.html', context)
 
@@ -175,8 +182,6 @@ def add_car(request):
         form = CarForm()
     
     return render(request, 'dealer/add_car.html', {'form': form})
-
-# --- EDIT & DELETE VIEWS ---
 
 @login_required
 def edit_car(request, car_id):
