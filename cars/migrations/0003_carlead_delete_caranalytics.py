@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # 1. Create the NEW table (CarLead) - This runs normally
         migrations.CreateModel(
             name='CarLead',
             fields=[
@@ -24,7 +25,15 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Car Leads',
             },
         ),
-        migrations.DeleteModel(
-            name='CarAnalytics',
+
+        # 2. "Fake" Delete the old table
+        # This prevents the "table does not exist" crash
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.DeleteModel(
+                    name='CarAnalytics',
+                ),
+            ],
+            database_operations=[],  # <--- Empty list means "Do nothing in the DB"
         ),
     ]
