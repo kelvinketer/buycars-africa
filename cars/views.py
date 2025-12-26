@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect # <--- NEW IMPORT
+from django.http import HttpResponseRedirect 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q 
@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 
 from users.models import DealerProfile
 
-# Updated imports to include CarAnalytics
-from .models import Car, CarImage, CarAnalytics 
+# --- UPDATED: Import CarLead instead of CarAnalytics ---
+from .models import Car, CarImage, CarLead 
 from .forms import CarForm 
 
 User = get_user_model() 
@@ -92,17 +92,17 @@ def car_detail(request, car_id):
     }
     return render(request, 'cars/car_detail.html', context)
 
-# --- NEW: LEAD TRACKING FUNCTION ---
+# --- UPDATED: LEAD TRACKING FUNCTION ---
 def track_action(request, car_id, action_type):
     """
     Records an action (WhatsApp/Call) and redirects to the external link.
     """
     car = get_object_or_404(Car, pk=car_id)
     
-    # 1. Record the action
+    # 1. Record the action using the NEW CarLead model
     ip = request.META.get('REMOTE_ADDR')
     
-    CarAnalytics.objects.create(
+    CarLead.objects.create(  # <--- Changed from CarAnalytics to CarLead
         car=car,
         action=action_type.upper(),
         ip_address=ip

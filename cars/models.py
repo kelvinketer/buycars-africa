@@ -76,23 +76,21 @@ class CarImage(models.Model):
     def __str__(self):
         return f"Image for {self.car.model}"
 
-# --- NEW: ANALYTICS MODEL (Step 1 of Lead Tracking) ---
-class CarAnalytics(models.Model):
+# --- NEW: RENAMED TO CarLead (To Fix Ghost Table Error) ---
+class CarLead(models.Model):  # <--- Renamed from CarAnalytics
     ACTION_CHOICES = [
         ('VIEW', 'Page View'),
         ('WHATSAPP', 'WhatsApp Click'),
         ('CALL', 'Phone Call'),
     ]
     
-    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='analytics')
+    # Changed related_name to 'leads' for clarity
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='leads') 
     action = models.CharField(max_length=20, choices=ACTION_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
     
-    # Track IP to eventually filter out spam/duplicate clicks
+    # Track IP
     ip_address = models.GenericIPAddressField(null=True, blank=True)
-
-    # --- ADDED TO FORCE NEW MIGRATION FILE ---
-    notes = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Car Leads"
