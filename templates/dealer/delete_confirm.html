@@ -4,24 +4,46 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card border-0 shadow-lg text-center p-5">
-                <div class="text-danger mb-3">
-                    <i class="fas fa-trash-alt fa-4x"></i>
-                </div>
-                <h2 class="fw-bold mb-3">Delete Vehicle?</h2>
-                <p class="text-muted mb-4">
-                    Are you sure you want to remove the 
-                    <strong>{{ car.year }} {{ car.make }} {{ car.model }}</strong>? 
-                    <br>This action cannot be undone.
-                </p>
-                
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-danger btn-lg fw-bold">Yes, Delete It</button>
-                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-light btn-lg">Cancel</a>
+            <div class="card border-0 shadow-lg border-top border-danger border-5">
+                <div class="card-body p-5 text-center">
+                    
+                    <div class="mb-4 text-danger">
+                        <i class="fas fa-exclamation-triangle fa-4x"></i>
                     </div>
-                </form>
+
+                    <h2 class="fw-bold mb-3">Delete this Vehicle?</h2>
+                    
+                    <div class="bg-light p-3 rounded mb-4 text-start d-flex align-items-center">
+                        {% if car.images.first %}
+                            <img src="{{ car.images.first.image.url }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-white rounded border d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-car text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h5>
+                            <small class="text-muted">Price: {{ car.price }} KES</small>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-4">
+                        This action <strong>cannot</strong> be undone. The vehicle and all its data (leads, stats) will be permanently removed.
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-bold">
+                                <i class="fas fa-trash-alt me-2"></i> Yes, Delete Vehicle
+                            </button>
+                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary rounded-pill fw-bold">
+                                Cancel, Keep it
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
             </div>
         </div>
     </div>
