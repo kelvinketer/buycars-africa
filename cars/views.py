@@ -15,10 +15,13 @@ User = get_user_model()
 # --- PUBLIC VIEWS ---
 
 def public_homepage(request):
-    # 1. Start with ALL available cars
+    # 1. Get Featured Cars (Limit to 8 vip cars)
+    featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
+
+    # 2. Start with ALL available cars (For the main list)
     cars = Car.objects.filter(status='AVAILABLE').order_by('-created_at')
     
-    # 2. Capture Filter Parameters from the URL
+    # 3. Capture Filter Parameters from the URL
     q = request.GET.get('q')           # Search text
     make = request.GET.get('make')     # Selected brand
     body_type = request.GET.get('body_type') 
@@ -27,7 +30,7 @@ def public_homepage(request):
     min_year = request.GET.get('min_year')   
     max_year = request.GET.get('max_year')   
 
-    # 3. Apply Filters if they exist
+    # 4. Apply Filters if they exist
     if q:
         cars = cars.filter(
             Q(make__icontains=q) | 
@@ -65,11 +68,12 @@ def public_homepage(request):
         except ValueError:
             pass
 
-    # 4. Get lists for dropdown menus
+    # 5. Get lists for dropdown menus
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
 
     context = {
+        'featured_cars': featured_cars, # <--- Added this to context
         'cars': cars,
         'all_makes': all_makes, 
         'all_body_types': all_body_types, 
