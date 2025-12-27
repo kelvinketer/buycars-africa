@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="fw-bold mb-0">Help & Support</h2>
+                <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <div class="row g-3 mb-5">
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm bg-success text-white">
+                        <div class="card-body p-4 text-center">
+                            <i class="fab fa-whatsapp fa-3x mb-3"></i>
+                            <h5 class="fw-bold">Chat Support</h5>
+                            <p class="small opacity-75 mb-4">Get instant help from our admin team via WhatsApp.</p>
+                            <a href="https://wa.me/254727025050?text=Hi%20Admin,%20I%20need%20help%20with%20my%20dealer%20account." 
+                               target="_blank" 
+                               class="btn btn-light text-success fw-bold w-100 rounded-pill shadow-sm">
+                                Start Chat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm bg-dark text-white">
+                        <div class="card-body p-4 text-center">
+                            <i class="fas fa-phone-alt fa-3x mb-3"></i>
+                            <h5 class="fw-bold">Call Us</h5>
+                            <p class="small opacity-75 mb-4">Urgent issue? Give us a call directly.</p>
+                            <a href="tel:254727025050" 
+                               class="btn btn-light text-dark fw-bold w-100 rounded-pill shadow-sm">
+                                Call Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Frequently Asked Questions</h5>
+            
+            <div class="accordion shadow-sm border-0" id="faqAccordion">
+                
+                <div class="accordion-item border-0 border-bottom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            <i class="fas fa-question-circle text-danger me-2"></i> How do I get Verified?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted small">
+                            Verification is a manual process to ensure trust. Click the "Chat Support" button above and send us your business registration documents or ID. Once approved, you will get the <strong>Verified Badge</strong> immediately, which boosts your visibility.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-0 border-bottom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            <i class="fas fa-car text-danger me-2"></i> Why is my car not showing on the homepage?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted small">
+                            <ul class="mb-0 ps-3">
+                                <li>Check if the status is set to <strong>AVAILABLE</strong>.</li>
+                                <li>If you marked it as <strong>SOLD</strong> or <strong>RESERVED</strong>, it moves to the bottom of the list.</li>
+                                <li>Ensure you have uploaded at least one image. Cars without images may be hidden from the main feed.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            <i class="fas fa-crown text-danger me-2"></i> How do I upgrade to the PRO Plan?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted small">
+                            The Pro Plan allows you to upload unlimited cars. Currently, you can upgrade by contacting Admin via WhatsApp to make a payment. We are also rolling out automatic M-PESA payments soon.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -142,6 +142,7 @@
     </div>
 </div>
 {% endif %}
+
 <div class="container mb-5" id="listings">
     <div class="d-flex justify-content-between align-items-end mb-4">
         <div>
@@ -158,10 +159,17 @@
     <div class="row">
         {% for car in cars %}
         <div class="col-md-4 mb-4">
-            <div class="card car-card h-100">
+            <div class="card car-card h-100 {% if car.status == 'SOLD' %}opacity-75{% endif %}">
                 
                 <div class="car-image-container position-relative">
                     <span class="car-badge">{{ car.year }}</span>
+                    
+                    {% if car.status == 'SOLD' %}
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(0,0,0,0.5); z-index: 10;">
+                            <span class="badge bg-danger fs-5 px-4 py-2 text-uppercase shadow border border-white">Sold Out</span>
+                        </div>
+                    {% endif %}
+
                     {% if car.images.first %}
                         <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
                     {% else %}
@@ -194,17 +202,21 @@
                         <span class="car-price">KES {{ car.price|floatformat:0|intcomma }}</span>
                         
                         <div class="d-flex gap-2">
-                            <a href="{% url 'track_action' car.id 'WHATSAPP' %}" 
-                               class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
-                               style="width: 40px; height: 40px;"
-                               target="_blank" 
-                               title="Chat on WhatsApp">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
+                            {% if car.status == 'SOLD' %}
+                                <button class="btn btn-secondary btn-sm rounded-pill px-3" disabled>Sold</button>
+                            {% else %}
+                                <a href="{% url 'track_action' car.id 'WHATSAPP' %}" 
+                                   class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                   style="width: 40px; height: 40px;"
+                                   target="_blank" 
+                                   title="Chat on WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
 
-                            <a href="{% url 'car_detail' car.id %}" class="btn btn-dark btn-sm rounded-pill px-3 shadow-sm">
-                                Details
-                            </a>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-dark btn-sm rounded-pill px-3 shadow-sm">
+                                    Details
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
 

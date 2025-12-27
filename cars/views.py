@@ -15,11 +15,12 @@ User = get_user_model()
 # --- PUBLIC VIEWS ---
 
 def public_homepage(request):
-    # 1. Get Featured Cars (Limit to 8 vip cars)
+    # 1. Featured Cars: Keep ONLY Available cars here (Prime real estate)
     featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
 
-    # 2. Start with ALL available cars (For the main list)
-    cars = Car.objects.filter(status='AVAILABLE').order_by('-created_at')
+    # 2. Main List: Show AVAILABLE AND SOLD
+    # Sorting by 'status' puts 'AVAILABLE' (A) before 'SOLD' (S).
+    cars = Car.objects.filter(status__in=['AVAILABLE', 'SOLD']).order_by('status', '-created_at')
     
     # 3. Capture Filter Parameters from the URL
     q = request.GET.get('q')           # Search text
@@ -73,7 +74,7 @@ def public_homepage(request):
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
 
     context = {
-        'featured_cars': featured_cars, # <--- Added this to context
+        'featured_cars': featured_cars,
         'cars': cars,
         'all_makes': all_makes, 
         'all_body_types': all_body_types, 
@@ -84,6 +85,7 @@ def car_detail(request, car_id):
     car = get_object_or_404(Car, pk=car_id)
     
     # --- RECOMMENDATION ENGINE ---
+    # Only recommend AVAILABLE cars to keep the user buying
     similar_cars = Car.objects.filter(
         body_type=car.body_type, 
         status='AVAILABLE'
@@ -132,13 +134,14 @@ def track_action(request, car_id, action_type):
         return HttpResponseRedirect(destination)
 
 
-# --- PUBLIC DEALER SHOWROOM (Updated with Search) ---
+# --- PUBLIC DEALER SHOWROOM (Updated with Search & SOLD logic) ---
 def dealer_showroom(request, username):
     dealer = get_object_or_404(User, username=username)
     profile = DealerProfile.objects.filter(user=dealer).first()
     
-    # 1. Get Base Query
-    cars = Car.objects.filter(dealer=dealer, status='AVAILABLE').order_by('-created_at')
+    # 1. Get Base Query (Show AVAILABLE + SOLD)
+    # Sort: Status (A-Z) -> Created (Newest)
+    cars = Car.objects.filter(dealer=dealer, status__in=['AVAILABLE', 'SOLD']).order_by('status', '-created_at')
     
     # 2. Add Search Logic
     q = request.GET.get('q')

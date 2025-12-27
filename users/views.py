@@ -4,7 +4,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import DealerProfile
-# Added UserUpdateForm to the imports
 from .forms import CustomUserCreationForm, DealerProfileForm, UserUpdateForm
 
 def signup_view(request):
@@ -28,7 +27,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             
-            # IMPROVEMENT: If they were trying to go somewhere specific, send them there.
+            # If they were trying to go somewhere specific, send them there.
             if 'next' in request.GET:
                 return redirect(request.GET.get('next'))
             
@@ -43,7 +42,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-# --- NEW: DEALER PROFILE SETTINGS ---
+# --- DEALER PROFILE SETTINGS ---
 @login_required
 def profile_settings(request):
     # 1. Get or Create the profile so it doesn't crash
@@ -69,5 +68,9 @@ def profile_settings(request):
         'u_form': u_form, 
         'p_form': p_form
     }
-    # Make sure your template file is named 'settings.html' inside 'templates/dealer/'
     return render(request, 'dealer/settings.html', context)
+
+# --- NEW: DEALER SUPPORT CENTER ---
+@login_required
+def support_view(request):
+    return render(request, 'dealer/support.html')
