@@ -159,7 +159,7 @@
     <div class="row">
         {% for car in cars %}
         <div class="col-md-4 mb-4">
-            <div class="card car-card h-100 {% if car.status == 'SOLD' %}opacity-75{% endif %}">
+            <div class="card car-card h-100 {% if car.status != 'AVAILABLE' %}opacity-75{% endif %}">
                 
                 <div class="car-image-container position-relative">
                     <span class="car-badge">{{ car.year }}</span>
@@ -167,6 +167,10 @@
                     {% if car.status == 'SOLD' %}
                         <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(0,0,0,0.5); z-index: 10;">
                             <span class="badge bg-danger fs-5 px-4 py-2 text-uppercase shadow border border-white">Sold Out</span>
+                        </div>
+                    {% elif car.status == 'RESERVED' %}
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,193,7,0.4); z-index: 10;">
+                            <span class="badge bg-warning text-dark fs-5 px-4 py-2 text-uppercase shadow border border-dark">Reserved</span>
                         </div>
                     {% endif %}
 
@@ -204,6 +208,8 @@
                         <div class="d-flex gap-2">
                             {% if car.status == 'SOLD' %}
                                 <button class="btn btn-secondary btn-sm rounded-pill px-3" disabled>Sold</button>
+                            {% elif car.status == 'RESERVED' %}
+                                <button class="btn btn-warning btn-sm rounded-pill px-3 fw-bold" disabled>Reserved</button>
                             {% else %}
                                 <a href="{% url 'track_action' car.id 'WHATSAPP' %}" 
                                    class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
@@ -237,39 +243,13 @@
 </div>
 
 <style>
-    /* 1. Enforce specific height for ALL search inputs to match */
-    .custom-search-input {
-        height: 50px !important;
-        font-size: 1rem;
-    }
-
-    /* 2. Style the placeholders to be readable but not huge */
-    .small-placeholder::placeholder {
-        font-size: 0.9rem;
-        color: #6c757d;
-        opacity: 0.8;
-    }
-
-    /* 3. Mobile Optimizations (Stacked layout) */
+    .custom-search-input { height: 50px !important; font-size: 1rem; }
+    .small-placeholder::placeholder { font-size: 0.9rem; color: #6c757d; opacity: 0.8; }
     @media (max-width: 768px) {
-        .hero-section {
-            padding-top: 2rem !important;
-            padding-bottom: 4rem !important;
-        }
-        
-        .hero-section h1 {
-            font-size: 2.5rem;
-        }
-        
-        .search-card {
-            padding: 1rem !important;
-        }
-        
-        .search-card .col-md-6, 
-        .search-card .col-md-3, 
-        .search-card .col-md-2 {
-            margin-bottom: 0.5rem;
-        }
+        .hero-section { padding-top: 2rem !important; padding-bottom: 4rem !important; }
+        .hero-section h1 { font-size: 2.5rem; }
+        .search-card { padding: 1rem !important; }
+        .search-card .col-md-6, .search-card .col-md-3, .search-card .col-md-2 { margin-bottom: 0.5rem; }
     }
 </style>
 {% endblock %}

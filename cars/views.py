@@ -18,9 +18,9 @@ def public_homepage(request):
     # 1. Featured Cars: Keep ONLY Available cars here (Prime real estate)
     featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
 
-    # 2. Main List: Show AVAILABLE AND SOLD
-    # Sorting by 'status' puts 'AVAILABLE' (A) before 'SOLD' (S).
-    cars = Car.objects.filter(status__in=['AVAILABLE', 'SOLD']).order_by('status', '-created_at')
+    # 2. Main List: Show AVAILABLE, RESERVED, and SOLD
+    # Sorting by 'status' (A -> R -> S) ensures Available is top, Reserved middle, Sold bottom.
+    cars = Car.objects.filter(status__in=['AVAILABLE', 'RESERVED', 'SOLD']).order_by('status', '-created_at')
     
     # 3. Capture Filter Parameters from the URL
     q = request.GET.get('q')           # Search text
@@ -134,14 +134,14 @@ def track_action(request, car_id, action_type):
         return HttpResponseRedirect(destination)
 
 
-# --- PUBLIC DEALER SHOWROOM (Updated with Search & SOLD logic) ---
+# --- PUBLIC DEALER SHOWROOM (Updated with Search & Status Logic) ---
 def dealer_showroom(request, username):
     dealer = get_object_or_404(User, username=username)
     profile = DealerProfile.objects.filter(user=dealer).first()
     
-    # 1. Get Base Query (Show AVAILABLE + SOLD)
+    # 1. Get Base Query (Show AVAILABLE + RESERVED + SOLD)
     # Sort: Status (A-Z) -> Created (Newest)
-    cars = Car.objects.filter(dealer=dealer, status__in=['AVAILABLE', 'SOLD']).order_by('status', '-created_at')
+    cars = Car.objects.filter(dealer=dealer, status__in=['AVAILABLE', 'RESERVED', 'SOLD']).order_by('status', '-created_at')
     
     # 2. Add Search Logic
     q = request.GET.get('q')
