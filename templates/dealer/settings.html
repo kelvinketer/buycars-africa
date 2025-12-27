@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="fw-bold mb-0">Profile Settings</h2>
+                <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-danger"><i class="fas fa-id-card me-2"></i>Business Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Contact Information</h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                {{ u_form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                {{ u_form.last_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address</label>
+                                {{ u_form.email }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone / WhatsApp Number</label>
+                                {{ u_form.phone_number }}
+                                <div class="form-text text-success"><i class="fab fa-whatsapp"></i> This number receives leads.</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Company Profile</h6>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Business Name</label>
+                            {{ p_form.business_name }}
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">City / Region</label>
+                                {{ p_form.city }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Website (Optional)</label>
+                                {{ p_form.website_link }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Company Logo</label>
+                            {{ p_form.logo }}
+                            {% if user.dealer_profile.logo %}
+                                <div class="mt-2">
+                                    <img src="{{ user.dealer_profile.logo.url }}" alt="Current Logo" class="img-thumbnail" style="height: 60px;">
+                                    <span class="text-muted small ms-2">Current Logo</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Physical Address</label>
+                            {{ p_form.physical_address }}
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-bold">
+                                <i class="fas fa-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
