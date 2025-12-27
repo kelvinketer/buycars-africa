@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',   
     'cars.apps.CarsConfig',     
     'saas.apps.SaasConfig',
-    'payments',  # <--- ADDED PAYMENTS APP
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -136,10 +136,15 @@ LOGIN_REDIRECT_URL = 'dealer_dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-# --- EMAIL CONFIGURATION (For Password Reset) ---
-# This prints the reset link to your TERMINAL/LOGS instead of sending a real email.
-# Perfect for development/testing.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# --- EMAIL CONFIGURATION (Real Gmail Sending) ---
+# THIS IS THE PART THAT WAS UPDATED
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = 'BuyCars Africa <noreply@buycars.africa>'
 
 # --- M-PESA DARAJA API CONFIGURATION ---
 # Defaulting to Sandbox for testing
