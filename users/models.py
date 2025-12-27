@@ -55,6 +55,9 @@ class DealerProfile(models.Model):
     city = models.CharField(max_length=3, choices=CITY_CHOICES, default='NBI')
     physical_address = models.TextField(blank=True, null=True)
     
+    # Contact Override (Optional: if business phone differs from login phone)
+    phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Business contact number")
+
     logo = models.ImageField(upload_to='dealer_logos/', blank=True, null=True)
     website_link = models.URLField(blank=True, null=True)
     
@@ -84,7 +87,7 @@ class DealerProfile(models.Model):
         LITE: 15 Cars
         PRO: Unlimited
         """
-        # 1. Determine effective plan (Downgrade if expired)
+        # 1. Determine effective plan (Downgrade to FREE if expired)
         current_plan = self.plan_type
         if not self.is_plan_active():
             current_plan = 'FREE'
@@ -93,9 +96,8 @@ class DealerProfile(models.Model):
         if current_plan == 'PRO':
             return True # Unlimited
             
-        # We access the user's cars via the related_name 'cars' (set in Car model) or default 'car_set'
-        # Note: In your Car model, you set related_name='cars' on the dealer field.
-        # Use getattr to be safe if 'cars' isn't set, fallback to 'car_set'
+        # We access the user's cars via the related_name 'cars' (set in Car model)
+        # If 'cars' related_name is missing, we fallback to 'car_set'
         if hasattr(self.user, 'cars'):
             current_count = self.user.cars.count()
         else:

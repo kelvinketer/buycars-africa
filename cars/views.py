@@ -168,6 +168,22 @@ def dealer_dashboard(request):
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
     total_value = sum(car.price for car in my_cars)
 
+    # --- NEW: Limit Logic for Template Context ---
+    # We calculate this here so the template knows whether to disable the button
+    car_count = my_cars.count()
+    profile, created = DealerProfile.objects.get_or_create(user=request.user)
+    
+    limit = 3 # Default Free
+    if profile.plan_type == 'LITE':
+        limit = 15
+    elif profile.plan_type == 'PRO':
+        limit = 999999
+        
+    can_add = car_count < limit
+    if profile.plan_type == 'PRO':
+        can_add = True
+    # ---------------------------------------------
+
     # 2. Get Analytics Data for Chart (Summary)
     leads_summary = CarLead.objects.filter(car__dealer=request.user).values('action').annotate(total=Count('id'))
     
@@ -179,23 +195,42 @@ def dealer_dashboard(request):
     
     context = {
         'cars': my_cars, 
-        'total_cars': my_cars.count(),
+        'total_cars': car_count,
         'total_value': total_value,
         'chart_labels': chart_labels,
         'chart_values': chart_values,
-        'recent_activity': recent_activity, 
+        'recent_activity': recent_activity,
+        # New Context variables for Paywall
+        'limit': limit,
+        'can_add': can_add
     }
     return render(request, 'dealer/dashboard.html', context)
 
 @login_required
 def add_car(request):
-    # --- Subscription Limit Check ---
-    profile, created = DealerProfile.objects.get_or_create(user=request.user)
-    
-    if not profile.can_add_car():
-        messages.warning(request, 'You have reached the limit of the Free Plan (3 Cars). Please upgrade to Pro to list more vehicles.')
-        return redirect('dealer_dashboard')
-    # -------------------------------------
+    # --- PAYWALL LOGIC START ---
+    try:
+        profile = request.user.dealer_profile
+        car_count = Car.objects.filter(dealer=request.user).count()
+        
+        # Define Limits
+        LIMITS = {
+            'FREE': 3,
+            'LITE': 15,
+            'PRO': 999999
+        }
+        
+        user_limit = LIMITS.get(profile.plan_type, 3) 
+        
+        # Check Limit
+        if car_count >= user_limit:
+            messages.warning(request, f"You have reached your limit of {user_limit} cars. Please Upgrade to add more.")
+            return redirect('dealer_dashboard')
+            
+    except Exception as e:
+        print(f"Paywall Error: {e}")
+        pass 
+    # --- PAYWALL LOGIC END ---
 
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES)
