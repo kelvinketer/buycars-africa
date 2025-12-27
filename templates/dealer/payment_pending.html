@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="card shadow-sm mx-auto p-5" style="max-width: 500px;">
+        <div class="mb-4">
+            <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <h2 class="fw-bold text-success">Check your Phone!</h2>
+        <p class="text-muted lead mb-4">We have sent a payment request to <strong>{{ phone }}</strong>.</p>
+        <p class="mb-4">Enter your M-PESA PIN to complete the upgrade.</p>
+        
+        <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-dark rounded-pill">
+            I have paid, Refresh Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

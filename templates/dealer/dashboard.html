@@ -63,6 +63,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="card shadow-sm h-100 border-start border-primary border-4">
                 <div class="card-body">
@@ -71,6 +72,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-md-4">
             <div class="card shadow-sm h-100 border-start border-success border-4">
                 <div class="card-body">
@@ -84,31 +86,47 @@
                         <p class="small text-muted mt-2 mb-0">
                             <i class="fas fa-check-circle text-success me-1"></i> Unlimited Uploads
                         </p>
+                        {% if user.dealer_profile.subscription_expiry %}
+                        <p class="small text-muted mb-0">
+                            Expires: {{ user.dealer_profile.subscription_expiry|date:"M d, Y" }}
+                        </p>
+                        {% endif %}
                     {% else %}
                         <div class="d-flex align-items-center justify-content-between">
-                            <h2 class="fw-bold text-dark mb-0">Free Plan</h2>
-                            <span class="badge bg-secondary">Basic</span>
+                            <h2 class="fw-bold text-dark mb-0">
+                                {% if user.dealer_profile.plan_type == 'LITE' %}Lite Plan{% else %}Free Plan{% endif %}
+                            </h2>
+                            <span class="badge bg-secondary">
+                                {% if user.dealer_profile.plan_type == 'LITE' %}Biashara{% else %}Basic{% endif %}
+                            </span>
                         </div>
                         
                         <div class="mt-3">
                             <div class="d-flex justify-content-between small mb-1">
                                 <span class="text-muted">Usage Limit:</span>
-                                <span class="fw-bold {% if total_cars >= 3 %}text-danger{% endif %}">
-                                    {{ total_cars }} / 3 Cars
+                                <span class="fw-bold">
+                                    {{ total_cars }} / {% if user.dealer_profile.plan_type == 'LITE' %}15{% else %}3{% endif %} Cars
                                 </span>
                             </div>
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar {% if total_cars >= 3 %}bg-danger{% else %}bg-success{% endif %}" 
-                                     role="progressbar" 
-                                     style="width: {% widthratio total_cars 3 100 %}%;" 
-                                     aria-valuenow="{{ total_cars }}" aria-valuemin="0" aria-valuemax="3">
-                                </div>
+                                {% if user.dealer_profile.plan_type == 'LITE' %}
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: {% widthratio total_cars 15 100 %}%;"></div>
+                                {% else %}
+                                    <div class="progress-bar {% if total_cars >= 3 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {% widthratio total_cars 3 100 %}%;"></div>
+                                {% endif %}
                             </div>
-                            {% if total_cars >= 3 %}
-                                <a href="https://wa.me/254727025050?text=I%20want%20to%20upgrade%20to%20PRO%20plan" target="_blank" class="btn btn-success btn-sm w-100 mt-3 rounded-pill">
-                                    <i class="fas fa-arrow-up me-1"></i> Upgrade to Pro
+
+                            <div class="d-grid gap-2 mt-3">
+                                {% if user.dealer_profile.plan_type == 'FREE' %}
+                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                        <i class="fas fa-arrow-up me-1"></i> Get Lite (KES 1,000)
+                                    </a>
+                                {% endif %}
+                                
+                                <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-success btn-sm rounded-pill shadow-sm">
+                                    <i class="fas fa-crown me-1"></i> Get Pro (KES 2,500)
                                 </a>
-                            {% endif %}
+                            </div>
                         </div>
                     {% endif %}
                 </div>
