@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load humanize %} 
+{% load static %}
+{% load custom_filters %} {# <--- 1. LOAD THIS TO FIX PHONE NUMBERS #}
 
 {% block content %}
 
@@ -211,13 +213,22 @@
                             {% elif car.status == 'RESERVED' %}
                                 <button class="btn btn-warning btn-sm rounded-pill px-3 fw-bold" disabled>Reserved</button>
                             {% else %}
-                                <a href="{% url 'track_action' car.id 'WHATSAPP' %}" 
-                                   class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
-                                   style="width: 40px; height: 40px;"
-                                   target="_blank" 
-                                   title="Chat on WhatsApp">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
+                                
+                                {% if car.dealer.dealer_profile.phone_number %}
+                                    <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }})" 
+                                       target="_blank" 
+                                       class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                       style="width: 40px; height: 40px;"
+                                       onclick="trackLead({{ car.id }}, 'WHATSAPP')"
+                                       title="Chat on WhatsApp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                            style="width: 40px; height: 40px;" disabled title="No Phone Number">
+                                        <i class="fas fa-comment-slash"></i>
+                                    </button>
+                                {% endif %}
 
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-dark btn-sm rounded-pill px-3 shadow-sm">
                                     Details
@@ -252,4 +263,17 @@
         .search-card .col-md-6, .search-card .col-md-3, .search-card .col-md-2 { margin-bottom: 0.5rem; }
     }
 </style>
+
+<script>
+    function trackLead(carId, action) {
+        // Send background request to count the click
+        fetch(`/track/${carId}/${action}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+    }
+</script>
+
 {% endblock %}
