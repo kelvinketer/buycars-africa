@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include  # <--- CRITICAL: Added 'include' here
 from cars import views as car_views 
 from users import views as user_views 
 from django.conf import settings
@@ -29,11 +29,15 @@ urlpatterns = [
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
-    path('dashboard/support/', user_views.support_view, name='dealer_support'), # <--- Added this line
+    path('dashboard/support/', user_views.support_view, name='dealer_support'),
     
     # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
+
+    # --- PAYMENTS (M-PESA) ---
+    # This line connects the payments app so 'initiate_payment' works!
+    path('payments/', include('payments.urls')), 
 ]
 
 # Allow images to load in development
