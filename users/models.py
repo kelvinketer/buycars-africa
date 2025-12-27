@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.utils import timezone
 
 class User(AbstractUser):
     """
@@ -32,10 +33,11 @@ class DealerProfile(models.Model):
     """
     Extra profile information for Car Yards (Logos, Locations, Stats).
     """
-    # --- NEW: Subscription Plan Choices ---
+    # --- UPDATED: 3-Tier Subscription Plan ---
     PLAN_CHOICES = [
         ('FREE', 'Free Plan (3 Cars)'),
-        ('PRO', 'Pro Plan (Unlimited)'),
+        ('LITE', 'Biashara Lite (15 Cars)'), # KES 1,000
+        ('PRO', 'Showroom Pro (Unlimited)'), # KES 2,500
     ]
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dealer_profile')
@@ -59,24 +61,48 @@ class DealerProfile(models.Model):
     # Stats for the Dashboard
     total_views = models.IntegerField(default=0)
     
-    # --- NEW: Subscription Field ---
+    # --- SUBSCRIPTION FIELDS ---
     plan_type = models.CharField(max_length=10, choices=PLAN_CHOICES, default='FREE')
-    
+    subscription_expiry = models.DateTimeField(null=True, blank=True) # Tracks when Pro/Lite expires
+
     def __str__(self):
         return self.business_name
+
+    def is_plan_active(self):
+        """Check if the paid plan (LITE or PRO) is still valid"""
+        if self.plan_type == 'FREE':
+            return True
+        # If they are on a paid plan, check the date
+        if self.subscription_expiry and self.subscription_expiry > timezone.now():
+            return True
+        return False
 
     def can_add_car(self):
         """
         Returns True if the dealer can add more cars based on their plan.
+        FREE: 3 Cars
+        LITE: 15 Cars
+        PRO: Unlimited
         """
-        # 1. Pro users can always add cars
-        if self.plan_type == 'PRO':
-            return True
-        
-        # 2. Free users are limited to 3 cars
-        # We access the user's cars via the related_name 'car_set'
-        current_count = self.user.car_set.count() 
-        if current_count < 3:
-            return True
+        # 1. Determine effective plan (Downgrade if expired)
+        current_plan = self.plan_type
+        if not self.is_plan_active():
+            current_plan = 'FREE'
+
+        # 2. Check Limits
+        if current_plan == 'PRO':
+            return True # Unlimited
             
-        return False
+        # We access the user's cars via the related_name 'cars' (set in Car model) or default 'car_set'
+        # Note: In your Car model, you set related_name='cars' on the dealer field.
+        # Use getattr to be safe if 'cars' isn't set, fallback to 'car_set'
+        if hasattr(self.user, 'cars'):
+            current_count = self.user.cars.count()
+        else:
+            current_count = self.user.car_set.count()
+
+        if current_plan == 'LITE':
+            return current_count < 15
+        
+        # Default FREE Limit
+        return current_count < 3

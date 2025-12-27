@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     # Local Apps
     'users.apps.UsersConfig',   
     'cars.apps.CarsConfig',     
-    'saas.apps.SaasConfig',     
+    'saas.apps.SaasConfig',
+    'payments',  # <--- ADDED PAYMENTS APP
 ]
 
 MIDDLEWARE = [
@@ -114,14 +115,9 @@ CLOUDINARY_STORAGE = {
 }
 
 # --- STORAGE CONFIGURATION (SAFE MODE) ---
-# We switched 'staticfiles' to the standard Django storage to disable
-# the compression step that was crashing the build.
-
-# 1. Old Way (Compatibility)
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# 2. New Way (Django 5)
 STORAGES = {
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
@@ -141,3 +137,23 @@ LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# --- M-PESA DARAJA API CONFIGURATION ---
+# Defaulting to Sandbox for testing
+MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT', default='sandbox')
+MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='')
+MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
+
+# Default Sandbox Paybill & Passkey (Do not change unless moving to production)
+MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379') 
+MPESA_PASSKEY = config('MPESA_PASSKEY', default='bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919') 
+
+if MPESA_ENVIRONMENT == 'production':
+    MPESA_ACCESS_TOKEN_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+    MPESA_EXPRESS_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+else:
+    MPESA_ACCESS_TOKEN_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+    MPESA_EXPRESS_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+
+# This must be a live URL (Ngrok or Render link)
+MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://your-app-name.onrender.com/payments/callback/')
