@@ -114,11 +114,40 @@
                                 </tr>
                             </thead>
                             <tbody class="small">
+                                {% for lead in recent_activity %}
                                 <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted italic">
-                                        Live lead details will appear here shortly.
+                                    <td class="ps-3 py-3">
+                                        {% if lead.action == 'WHATSAPP' %}
+                                            <span class="badge bg-success-subtle text-success border border-success px-2 rounded-pill">
+                                                <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                                            </span>
+                                        {% elif lead.action == 'CALL' %}
+                                            <span class="badge bg-primary-subtle text-primary border border-primary px-2 rounded-pill">
+                                                <i class="fas fa-phone me-1"></i> Call
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary px-2 rounded-pill">
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3">
+                                        <strong>{{ lead.car.year }} {{ lead.car.make }} {{ lead.car.model }}</strong>
+                                        <br>
+                                        <span class="text-muted text-xs">{{ lead.car.price|intcomma }} KES</span>
+                                    </td>
+                                    <td class="py-3 text-muted">
+                                        <i class="far fa-clock me-1"></i> {{ lead.timestamp|naturaltime }}
                                     </td>
                                 </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-4 text-muted">
+                                        <i class="fas fa-chart-line fa-2x mb-2 opacity-25"></i>
+                                        <p class="small mb-0">No recent activity found.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>

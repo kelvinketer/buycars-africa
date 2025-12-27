@@ -2,12 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count # Added Count here
+from django.db.models import Q, Count 
 from django.contrib.auth import get_user_model 
 
 from users.models import DealerProfile
 
-# Updated imports
 from .models import Car, CarImage, CarLead 
 from .forms import CarForm 
 
@@ -141,16 +140,19 @@ def dealer_showroom(request, username):
 
 @login_required
 def dealer_dashboard(request):
+    # 1. Get Dealer's Inventory
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
     total_value = sum(car.price for car in my_cars)
 
-    # --- NEW: Get Analytics Data for Chart ---
-    # Group leads by action type for the current dealer
+    # 2. Get Analytics Data for Chart (Summary)
     leads_summary = CarLead.objects.filter(car__dealer=request.user).values('action').annotate(total=Count('id'))
     
-    # Format data for Chart.js
     chart_labels = [item['action'] for item in leads_summary]
     chart_values = [item['total'] for item in leads_summary]
+
+    # 3. NEW: Get Recent Activity (Specific Details)
+    # Filter by dealer -> Sort by newest -> Take top 5
+    recent_activity = CarLead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
     
     context = {
         'cars': my_cars, 
@@ -158,6 +160,7 @@ def dealer_dashboard(request):
         'total_value': total_value,
         'chart_labels': chart_labels,
         'chart_values': chart_values,
+        'recent_activity': recent_activity, # <--- Added this to context
     }
     return render(request, 'dealer/dashboard.html', context)
 
