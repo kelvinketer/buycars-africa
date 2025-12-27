@@ -32,6 +32,12 @@ class DealerProfile(models.Model):
     """
     Extra profile information for Car Yards (Logos, Locations, Stats).
     """
+    # --- NEW: Subscription Plan Choices ---
+    PLAN_CHOICES = [
+        ('FREE', 'Free Plan (3 Cars)'),
+        ('PRO', 'Pro Plan (Unlimited)'),
+    ]
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dealer_profile')
     business_name = models.CharField(max_length=100)
     
@@ -53,5 +59,24 @@ class DealerProfile(models.Model):
     # Stats for the Dashboard
     total_views = models.IntegerField(default=0)
     
+    # --- NEW: Subscription Field ---
+    plan_type = models.CharField(max_length=10, choices=PLAN_CHOICES, default='FREE')
+    
     def __str__(self):
         return self.business_name
+
+    def can_add_car(self):
+        """
+        Returns True if the dealer can add more cars based on their plan.
+        """
+        # 1. Pro users can always add cars
+        if self.plan_type == 'PRO':
+            return True
+        
+        # 2. Free users are limited to 3 cars
+        # We access the user's cars via the related_name 'car_set'
+        current_count = self.user.car_set.count() 
+        if current_count < 3:
+            return True
+            
+        return False

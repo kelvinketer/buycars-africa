@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse  # <--- Added HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count 
@@ -171,6 +171,16 @@ def dealer_dashboard(request):
 
 @login_required
 def add_car(request):
+    # --- NEW: Subscription Limit Check ---
+    # Get the dealer's profile (create one if it doesn't exist to avoid errors)
+    profile, created = DealerProfile.objects.get_or_create(user=request.user)
+    
+    # Check if they have reached their limit
+    if not profile.can_add_car():
+        messages.warning(request, 'You have reached the limit of the Free Plan (3 Cars). Please upgrade to Pro to list more vehicles.')
+        return redirect('dealer_dashboard')
+    # -------------------------------------
+
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES)
         
