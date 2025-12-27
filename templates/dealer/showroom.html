@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 {% load humanize %}
 
+{% block head_extra %}
+<meta property="og:title" content="{{ profile.business_name }} | BuyCars.Africa">
+<meta property="og:description" content="Check out the latest inventory from {{ profile.business_name }} in {{ profile.city|default:'Kenya' }}. Verified Dealer.">
+<meta property="og:image" content="{% if profile.logo %}{{ profile.logo.url }}{% else %}https://buycars-africa.onrender.com/static/images/preview_default.jpg{% endif %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+
 {% block content %}
 <div class="bg-white border-bottom shadow-sm">
     <div class="container py-5">
@@ -58,6 +65,10 @@
                             <i class="fas fa-globe"></i>
                         </a>
                     {% endif %}
+                    
+                    <button class="btn btn-light border rounded-pill" onclick="navigator.clipboard.writeText('{{ request.build_absolute_uri }}'); alert('Showroom link copied!');">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
                 </div>
             </div>
 
@@ -76,7 +87,6 @@
 
 <div class="bg-light py-5">
     <div class="container">
-        
         <div class="row mb-4 align-items-center">
             <div class="col-md-6">
                 <h4 class="fw-bold mb-0">Current Inventory</h4>
@@ -99,7 +109,6 @@
             {% for car in cars %}
             <div class="col-md-4 mb-4">
                 <div class="card car-card h-100 shadow-sm border-0 position-relative">
-                    
                     {% if car.status == 'SOLD' %}
                         <div class="position-absolute top-0 end-0 m-2 z-3">
                             <span class="badge bg-danger shadow-sm">SOLD</span>
@@ -140,11 +149,12 @@
                             <h5 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h5>
                             
                             <div class="d-flex gap-2">
-                                <a href="{% url 'track_action' car.id 'WHATSAPP' %}" 
+                                <a href="https://wa.me/{{ profile.phone_number }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }})" 
                                    class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
                                    style="width: 40px; height: 40px;"
                                    target="_blank" 
-                                   title="Chat on WhatsApp">
+                                   title="Chat on WhatsApp"
+                                   onclick="trackLead({{ car.id }}, 'WHATSAPP')">
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
 
@@ -172,4 +182,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function trackLead(carId, action) {
+        // Send background request to count the click
+        fetch(`/track/${carId}/${action}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+    }
+</script>
 {% endblock %}
