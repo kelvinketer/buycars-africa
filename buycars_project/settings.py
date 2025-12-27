@@ -157,3 +157,7 @@ else:
 
 # This must be a live URL (Ngrok or Render link)
 MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://your-app-name.onrender.com/payments/callback/')
+
+# --- AFRICA'S TALKING SMS CONFIGURATION ---
+AFRICASTALKING_USERNAME = config('AFRICASTALKING_USERNAME', default='sandbox')
+AFRICASTALKING_API_KEY = config('AFRICASTALKING_API_KEY', default='')

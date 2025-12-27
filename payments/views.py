@@ -1,6 +1,7 @@
 import requests
 import json
 import base64
+import africastalking  # <--- NEW IMPORT
 from datetime import datetime
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -13,6 +14,28 @@ from requests.auth import HTTPBasicAuth
 
 from .models import MpesaTransaction
 from users.models import DealerProfile
+
+# --- HELPER: SEND SMS (AFRICA'S TALKING) ---
+def send_sms_notification(phone_number, message):
+    username = settings.AFRICASTALKING_USERNAME
+    api_key = settings.AFRICASTALKING_API_KEY
+    
+    try:
+        # Initialize the SDK
+        africastalking.initialize(username, api_key)
+        sms = africastalking.SMS
+        
+        # Format phone number for Africa's Talking (Must start with +254)
+        if phone_number.startswith('0'):
+            phone_number = '+254' + phone_number[1:]
+        elif phone_number.startswith('254'):
+            phone_number = '+' + phone_number
+            
+        # Send the SMS
+        sms.send(message, [phone_number])
+        print(f"SMS sent to {phone_number}")
+    except Exception as e:
+        print(f"Error sending SMS: {str(e)}")
 
 # --- HELPER: GENERATE ACCESS TOKEN ---
 def get_access_token():
@@ -87,7 +110,7 @@ def stk_push_request(phone_number, amount, user):
 def initiate_payment(request, plan_type):
     # Define Prices
     PRICES = {
-        'LITE': 1000,
+        'LITE': 1,
         'PRO': 2500
     }
     
@@ -143,14 +166,21 @@ def mpesa_callback(request):
                     # --- UPGRADE USER ---
                     profile = DealerProfile.objects.get(user=transaction.user)
                     
+                    new_plan_name = "Free"
                     if transaction.amount >= 2500:
                         profile.plan_type = 'PRO'
+                        new_plan_name = "Showroom Pro"
                     elif transaction.amount >= 1000:
                         profile.plan_type = 'LITE'
+                        new_plan_name = "Biashara Lite"
                         
                     # Set Expiry (30 Days)
                     profile.subscription_expiry = timezone.now() + timedelta(days=30)
                     profile.save()
+
+                    # --- NEW: SEND CONFIRMATION SMS ---
+                    msg = f"Confirmed! We received KES {transaction.amount}. You are now on the {new_plan_name} Plan. Start selling on BuyCars Africa!"
+                    send_sms_notification(transaction.phone_number, msg)
                     
                 else:
                     # --- FAILED PAYMENT ---
