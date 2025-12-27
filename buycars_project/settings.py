@@ -136,6 +136,9 @@ LOGIN_REDIRECT_URL = 'dealer_dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
+# --- EMAIL CONFIGURATION (For Password Reset) ---
+# This prints the reset link to your TERMINAL/LOGS instead of sending a real email.
+# Perfect for development/testing.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # --- M-PESA DARAJA API CONFIGURATION ---
@@ -156,7 +159,7 @@ else:
     MPESA_EXPRESS_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
 
 # This must be a live URL (Ngrok or Render link)
-MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://your-app-name.onrender.com/payments/callback/')
+MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://buycars-africa.onrender.com/payments/callback/')
 
 # --- AFRICA'S TALKING SMS CONFIGURATION ---
 AFRICASTALKING_USERNAME = config('AFRICASTALKING_USERNAME', default='sandbox')

@@ -28,12 +28,16 @@
                             </script>
                         </div>
 
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="form-label fw-bold">Password</label>
                             {{ form.password }}
                             <script>
                                 document.getElementById('id_password').classList.add('form-control');
                             </script>
+                        </div>
+
+                        <div class="text-end mb-4">
+                            <a href="{% url 'reset_password' %}" class="small text-decoration-none text-muted">Forgot Password?</a>
                         </div>
 
                         <div class="d-grid mb-4">
