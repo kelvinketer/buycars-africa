@@ -2,13 +2,16 @@
 {% load humanize %}
 
 {% block head_extra %}
-<meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} - KES {{ car.price|intcomma }}">
-<meta property="og:description" content="{{ car.description|truncatewords:20 }}">
-{% if car.images.first %}
-    <meta property="og:image" content="{{ car.images.first.image.url }}">
-{% else %}
-    <meta property="og:image" content="https://buycars-africa.onrender.com/static/images/preview_default.jpg">
-{% endif %}
+    <meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} | KES {{ car.price|intcomma }}">
+    <meta property="og:description" content="For sale in {{ car.location|default:'Nairobi' }}. {{ car.get_transmission_display }}, {{ car.get_fuel_type_display }}. Click to view full details and contact seller.">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="product">
+    
+    {% if car.images.first %}
+        <meta property="og:image" content="{{ car.images.first.image.url }}">
+    {% else %}
+        <meta property="og:image" content="https://buycars-africa.onrender.com/static/images/preview_default.jpg">
+    {% endif %}
 {% endblock %}
 
 {% block content %}

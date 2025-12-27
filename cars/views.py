@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect 
+from django.http import HttpResponseRedirect, HttpResponse  # <--- Added HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count 
@@ -112,15 +112,21 @@ def track_action(request, car_id, action_type):
         phone = car.dealer.phone_number if car.dealer.phone_number else '254700000000'
         message = f"Hi, I am interested in the {car.year} {car.make} {car.model} listed for KES {car.price}"
         destination = f"https://wa.me/{phone}?text={message}"
+        return HttpResponseRedirect(destination)
         
     elif action_type.upper() == 'CALL':
         phone = car.dealer.phone_number if car.dealer.phone_number else '254700000000'
         destination = f"tel:{phone}"
         
+        # --- FIX: Bypass Django's safety check for 'tel:' links ---
+        response = HttpResponse(status=302)
+        response['Location'] = destination
+        return response
+        
     else:
         destination = f"/car/{car.id}/"
+        return HttpResponseRedirect(destination)
 
-    return HttpResponseRedirect(destination)
 
 # --- PUBLIC DEALER SHOWROOM ---
 def dealer_showroom(request, username):
@@ -150,8 +156,7 @@ def dealer_dashboard(request):
     chart_labels = [item['action'] for item in leads_summary]
     chart_values = [item['total'] for item in leads_summary]
 
-    # 3. NEW: Get Recent Activity (Specific Details)
-    # Filter by dealer -> Sort by newest -> Take top 5
+    # 3. Get Recent Activity (Specific Details)
     recent_activity = CarLead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
     
     context = {
@@ -160,7 +165,7 @@ def dealer_dashboard(request):
         'total_value': total_value,
         'chart_labels': chart_labels,
         'chart_values': chart_values,
-        'recent_activity': recent_activity, # <--- Added this to context
+        'recent_activity': recent_activity, 
     }
     return render(request, 'dealer/dashboard.html', context)
 
