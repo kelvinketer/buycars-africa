@@ -108,9 +108,9 @@ def stk_push_request(phone_number, amount, user):
 # --- VIEW: BUTTON CLICK HANDLER ---
 @login_required
 def initiate_payment(request, plan_type):
-    # Define Prices (LITE set to 1 for testing)
+    # Define Prices
     PRICES = {
-        'LITE': 1,    # <--- TEST MODE PRICE
+        'LITE': 1000,   # <--- REVERTED TO 1000
         'PRO': 2500
     }
     
@@ -168,11 +168,11 @@ def mpesa_callback(request):
                     
                     new_plan_name = "Free"
                     
-                    # LOGIC UPDATED FOR TESTING:
+                    # LOGIC REVERTED FOR PRODUCTION:
                     if transaction.amount >= 2500:
                         profile.plan_type = 'PRO'
                         new_plan_name = "Showroom Pro"
-                    elif transaction.amount >= 1: # <--- FIXED: Now accepts 1 Bob for Lite
+                    elif transaction.amount >= 1000: # <--- REVERTED TO 1000
                         profile.plan_type = 'LITE'
                         new_plan_name = "Biashara Lite"
                         

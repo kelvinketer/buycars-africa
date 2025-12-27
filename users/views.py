@@ -4,21 +4,25 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import DealerProfile
-from .forms import CustomUserCreationForm, DealerProfileForm, UserUpdateForm
+# --- UPDATED IMPORTS: Import the new DealerSettingsForm ---
+from .forms import CustomUserCreationForm, DealerSettingsForm 
 
 def signup_view(request):
     if request.method == 'POST':
-        # This form now expects username, email, AND phone_number
+        # Expects username, email, phone_number
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Create a Dealer Profile immediately so they have one
+            DealerProfile.objects.create(user=user, business_name=f"{user.username}'s Yard")
+            
             login(request, user)
             # Go straight to dashboard to upload their first car
             return redirect('dealer_dashboard')
     else:
         form = CustomUserCreationForm()
     
-    return render(request, 'signup.html', {'form': form})
+    return render(request, 'auth/signup.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -36,10 +40,11 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'auth/login.html', {'form': form})
 
 def logout_view(request):
     logout(request)
+    messages.info(request, "You have successfully logged out.")
     return redirect('home')
 
 # --- DEALER PROFILE SETTINGS ---
@@ -49,28 +54,21 @@ def profile_settings(request):
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Load both forms with POST data
-        u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = DealerProfileForm(request.POST, request.FILES, instance=profile)
+        # Load the new DealerSettingsForm (Business Info + M-Pesa Number)
+        form = DealerSettingsForm(request.POST, request.FILES, instance=profile)
 
-        if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            p_form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
-            # Stay on the settings page so they can see the changes
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your business settings have been saved!')
             return redirect('profile_settings') 
     else:
-        # Load forms with current database info
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = DealerProfileForm(instance=profile)
+        # Load form with current database info
+        form = DealerSettingsForm(instance=profile)
     
-    context = {
-        'u_form': u_form, 
-        'p_form': p_form
-    }
-    return render(request, 'dealer/settings.html', context)
+    # Pass 'form' to the template (matches the settings.html we created)
+    return render(request, 'dealer/settings.html', {'form': form})
 
-# --- NEW: DEALER SUPPORT CENTER ---
+# --- DEALER SUPPORT CENTER ---
 @login_required
 def support_view(request):
     return render(request, 'dealer/support.html')
