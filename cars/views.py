@@ -128,11 +128,22 @@ def track_action(request, car_id, action_type):
         return HttpResponseRedirect(destination)
 
 
-# --- PUBLIC DEALER SHOWROOM ---
+# --- PUBLIC DEALER SHOWROOM (Updated with Search) ---
 def dealer_showroom(request, username):
     dealer = get_object_or_404(User, username=username)
     profile = DealerProfile.objects.filter(user=dealer).first()
+    
+    # 1. Get Base Query
     cars = Car.objects.filter(dealer=dealer, status='AVAILABLE').order_by('-created_at')
+    
+    # 2. Add Search Logic
+    q = request.GET.get('q')
+    if q:
+        cars = cars.filter(
+            Q(make__icontains=q) | 
+            Q(model__icontains=q) | 
+            Q(description__icontains=q)
+        )
     
     context = {
         'dealer': dealer,
@@ -171,11 +182,9 @@ def dealer_dashboard(request):
 
 @login_required
 def add_car(request):
-    # --- NEW: Subscription Limit Check ---
-    # Get the dealer's profile (create one if it doesn't exist to avoid errors)
+    # --- Subscription Limit Check ---
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
-    # Check if they have reached their limit
     if not profile.can_add_car():
         messages.warning(request, 'You have reached the limit of the Free Plan (3 Cars). Please upgrade to Pro to list more vehicles.')
         return redirect('dealer_dashboard')

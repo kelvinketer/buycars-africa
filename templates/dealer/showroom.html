@@ -2,55 +2,95 @@
 {% load humanize %}
 
 {% block content %}
-<div class="bg-light py-5">
-    <div class="container">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-5 text-center">
-                <div class="mb-3">
-                    {% if profile.logo %}
-                        <img src="{{ profile.logo.url }}" 
-                             alt="{{ dealer.username }}" 
-                             class="rounded-circle shadow-sm border" 
-                             style="width: 100px; height: 100px; object-fit: cover;">
-                    {% else %}
-                        <div class="d-inline-flex align-items-center justify-content-center bg-dark text-white rounded-circle shadow-sm" style="width: 100px; height: 100px; font-size: 2.5rem; text-transform: uppercase;">
-                            {{ dealer.username|slice:":1" }}
-                        </div>
-                    {% endif %}
-                </div>
-                
-                <h1 class="fw-bold mb-1">
+<div class="bg-white border-bottom shadow-sm">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            
+            <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
+                {% if profile.logo %}
+                    <img src="{{ profile.logo.url }}" 
+                         alt="{{ profile.business_name }}" 
+                         class="rounded-circle border p-1 shadow-sm" 
+                         style="width: 140px; height: 140px; object-fit: cover;">
+                {% else %}
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light text-secondary rounded-circle border p-1 shadow-sm" 
+                         style="width: 140px; height: 140px;">
+                        <span class="fw-bold fs-1 text-uppercase">{{ dealer.username|slice:":1" }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+                <h1 class="fw-bold mb-1 display-6">
                     {% if profile.business_name %}
                         {{ profile.business_name }}
                     {% else %}
                         {{ dealer.username }}
                     {% endif %}
+                    
+                    {% if dealer.is_verified %}
+                        <i class="fas fa-check-circle text-success fs-4 ms-2 align-middle" title="Verified Dealer"></i>
+                    {% endif %}
                 </h1>
                 
-                {% if profile.city %}
-                    <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> {{ profile.city }}</p>
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 text-muted mb-3">
+                    {% if profile.city %}
+                        <span><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ profile.city }}</span>
+                    {% endif %}
+                    <span><i class="fas fa-calendar-alt text-danger me-1"></i> Joined {{ dealer.date_joined|date:"M Y" }}</span>
+                </div>
+
+                {% if profile.physical_address %}
+                    <p class="small text-muted mb-3"><i class="fas fa-building me-1"></i> {{ profile.physical_address }}</p>
                 {% endif %}
-                
-                {% if dealer.is_verified %}
-                    <span class="badge bg-success mb-3"><i class="fas fa-check-circle me-1"></i> Verified Dealer</span>
-                {% else %}
-                    <span class="badge bg-secondary mb-3">Registered Seller</span>
-                {% endif %}
-                
-                <div class="d-flex justify-content-center gap-3 mt-3">
-                    <a href="https://wa.me/{{ dealer.phone_number }}" target="_blank" class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
+
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+                    <a href="https://wa.me/{{ dealer.phone_number }}" target="_blank" class="btn btn-success rounded-pill fw-bold">
                         <i class="fab fa-whatsapp me-2"></i> WhatsApp
                     </a>
-                    <a href="tel:{{ dealer.phone_number }}" class="btn btn-outline-dark rounded-pill px-4 shadow-sm fw-bold">
+                    <a href="tel:{{ dealer.phone_number }}" class="btn btn-outline-dark rounded-pill fw-bold">
                         <i class="fas fa-phone-alt me-2"></i> Call
                     </a>
+                    {% if profile.website_link %}
+                        <a href="{{ profile.website_link }}" target="_blank" class="btn btn-light border rounded-pill" title="Visit Website">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
-        </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">Current Inventory</h4>
-            <span class="badge bg-white text-dark border px-3 py-2 rounded-pill">{{ cars.count }} Cars Available</span>
+            <div class="col-md-3">
+                <div class="card bg-light border-0">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold mb-0">{{ cars.count }}</h3>
+                        <small class="text-muted text-uppercase">Vehicles for Sale</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5">
+    <div class="container">
+        
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6">
+                <h4 class="fw-bold mb-0">Current Inventory</h4>
+            </div>
+            <div class="col-md-6">
+                <form method="GET" class="d-flex mt-3 mt-md-0">
+                    <input class="form-control rounded-pill border-0 shadow-sm ps-4" 
+                           type="search" 
+                           name="q" 
+                           value="{{ request.GET.q }}" 
+                           placeholder="Search {{ profile.business_name|default:'dealer' }}'s stock...">
+                    <button class="btn btn-danger rounded-pill px-4 ms-2 shadow-sm" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
         </div>
 
         <div class="row">
@@ -89,15 +129,19 @@
                                 </a>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>
             {% empty %}
             <div class="col-12 text-center py-5">
                 <div class="bg-white p-5 rounded shadow-sm">
-                    <i class="fas fa-box-open fa-3x text-muted mb-3 opacity-50"></i>
-                    <p class="text-muted">This dealer has no active stock right now.</p>
+                    <i class="fas fa-search fa-3x text-muted mb-3 opacity-50"></i>
+                    {% if request.GET.q %}
+                        <p class="text-muted">No cars match your search.</p>
+                        <a href="." class="btn btn-outline-danger btn-sm rounded-pill">Clear Search</a>
+                    {% else %}
+                        <p class="text-muted">This dealer has no active stock right now.</p>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
