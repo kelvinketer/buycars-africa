@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Welcome Back</h2>
+                        <p class="text-muted">Sign in to manage your car inventory</p>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger small">
+                                <i class="fas fa-exclamation-circle me-1"></i> Invalid username or password.
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Username</label>
+                            {{ form.username }}
+                            <script>
+                                document.getElementById('id_username').classList.add('form-control');
+                            </script>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Password</label>
+                            {{ form.password }}
+                            <script>
+                                document.getElementById('id_password').classList.add('form-control');
+                            </script>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-bold">
+                                Log In
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="small text-muted">
+                                Don't have an account? 
+                                <a href="{% url 'signup' %}" class="text-decoration-none fw-bold">Register as a Dealer</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
