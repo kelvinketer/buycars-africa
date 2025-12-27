@@ -5,7 +5,6 @@ from datetime import datetime
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-# --- FIXED IMPORT BELOW: Added 'render' ---
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -122,7 +121,7 @@ def mpesa_callback(request):
             
             checkout_request_id = stk_callback['CheckoutRequestID']
             result_code = stk_callback['ResultCode']
-            result_desc = stk_callback['ResultDesc']
+            result_desc = stk_callback.get('ResultDesc', 'No description')
             
             # Find the transaction
             transaction = MpesaTransaction.objects.filter(checkout_request_id=checkout_request_id).first()
@@ -166,3 +165,20 @@ def mpesa_callback(request):
             return JsonResponse({'error': str(e)}, status=400)
             
     return JsonResponse({'error': 'Only POST allowed'}, status=400)
+
+# --- NEW: PAYMENT STATUS CHECK (POLLING) ---
+@login_required
+def check_payment_status(request):
+    """
+    Polls the database to check if the latest transaction was successful.
+    """
+    # Get the most recent transaction for the logged-in user
+    transaction = MpesaTransaction.objects.filter(user=request.user).order_by('-created_at').first()
+    
+    if transaction:
+        return JsonResponse({
+            'status': transaction.status, 
+            'description': transaction.description
+        })
+    
+    return JsonResponse({'status': 'PENDING', 'description': 'No transaction found'})

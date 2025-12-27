@@ -1,19 +1,64 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="container py-5 text-center">
     <div class="card shadow-sm mx-auto p-5" style="max-width: 500px;">
+        
         <div class="mb-4">
             <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
                 <span class="visually-hidden">Loading...</span>
             </div>
+            <div class="spinner-grow text-success ms-2" role="status" style="width: 3rem; height: 3rem; animation-delay: 0.5s;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
+
         <h2 class="fw-bold text-success">Check your Phone!</h2>
         <p class="text-muted lead mb-4">We have sent a payment request to <strong>{{ phone }}</strong>.</p>
-        <p class="mb-4">Enter your M-PESA PIN to complete the upgrade.</p>
         
-        <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-dark rounded-pill">
-            I have paid, Refresh Dashboard
+        <div class="alert alert-light border border-success-subtle mb-4">
+            <i class="fas fa-mobile-alt me-2"></i> Enter your M-PESA PIN to complete the upgrade.
+        </div>
+
+        <p class="small text-muted mb-4" id="status-message">Waiting for confirmation...</p>
+        
+        <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-dark rounded-pill btn-sm">
+            I have paid, Refresh Manually
         </a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusMsg = document.getElementById('status-message');
+        
+        // Function to check payment status
+        function checkStatus() {
+            // We call the Django URL 'check_payment_status'
+            fetch("{% url 'check_payment_status' %}")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Payment Status:", data.status);
+                    
+                    if (data.status === 'SUCCESS') {
+                        // 1. Success! Change UI to green
+                        statusMsg.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-check-circle"></i> Payment Received! Redirecting...</span>';
+                        
+                        // 2. Wait 1.5 seconds then redirect to Dashboard
+                        setTimeout(() => {
+                            window.location.href = "{% url 'dealer_dashboard' %}";
+                        }, 1500);
+                        
+                    } else if (data.status === 'FAILED') {
+                        // 3. Failed! Show error
+                        statusMsg.innerHTML = '<span class="text-danger fw-bold"><i class="fas fa-times-circle"></i> Payment Failed. Please try again.</span>';
+                    }
+                })
+                .catch(error => console.error('Error polling status:', error));
+        }
+
+        // Run the check every 3 seconds (3000 milliseconds)
+        setInterval(checkStatus, 3000);
+    });
+</script>
 {% endblock %}
