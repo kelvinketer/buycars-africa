@@ -1,7 +1,7 @@
 import requests
 import json
 import base64
-import africastalking  # <--- NEW IMPORT
+import africastalking
 from datetime import datetime
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -82,7 +82,7 @@ def stk_push_request(phone_number, amount, user):
         "PartyA": phone_number,
         "PartyB": shortcode,
         "PhoneNumber": phone_number,
-        "CallBackURL": settings.MPESA_CALLBACK_URL + "/payments/callback/", # Ensure slash matches urls.py
+        "CallBackURL": settings.MPESA_CALLBACK_URL + "/payments/callback/", 
         "AccountReference": f"User_{user.id}",
         "TransactionDesc": "Plan Upgrade"
     }
@@ -108,9 +108,9 @@ def stk_push_request(phone_number, amount, user):
 # --- VIEW: BUTTON CLICK HANDLER ---
 @login_required
 def initiate_payment(request, plan_type):
-    # Define Prices
+    # Define Prices (LITE set to 1 for testing)
     PRICES = {
-        'LITE': 1,
+        'LITE': 1,    # <--- TEST MODE PRICE
         'PRO': 2500
     }
     
@@ -167,10 +167,12 @@ def mpesa_callback(request):
                     profile = DealerProfile.objects.get(user=transaction.user)
                     
                     new_plan_name = "Free"
+                    
+                    # LOGIC UPDATED FOR TESTING:
                     if transaction.amount >= 2500:
                         profile.plan_type = 'PRO'
                         new_plan_name = "Showroom Pro"
-                    elif transaction.amount >= 1000:
+                    elif transaction.amount >= 1: # <--- FIXED: Now accepts 1 Bob for Lite
                         profile.plan_type = 'LITE'
                         new_plan_name = "Biashara Lite"
                         
@@ -178,7 +180,7 @@ def mpesa_callback(request):
                     profile.subscription_expiry = timezone.now() + timedelta(days=30)
                     profile.save()
 
-                    # --- NEW: SEND CONFIRMATION SMS ---
+                    # --- SEND CONFIRMATION SMS ---
                     msg = f"Confirmed! We received KES {transaction.amount}. You are now on the {new_plan_name} Plan. Start selling on BuyCars Africa!"
                     send_sms_notification(transaction.phone_number, msg)
                     
@@ -196,7 +198,7 @@ def mpesa_callback(request):
             
     return JsonResponse({'error': 'Only POST allowed'}, status=400)
 
-# --- NEW: PAYMENT STATUS CHECK (POLLING) ---
+# --- VIEW: PAYMENT STATUS CHECK (POLLING) ---
 @login_required
 def check_payment_status(request):
     """
