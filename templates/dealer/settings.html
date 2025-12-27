@@ -1,20 +1,36 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
+    <div class="row">
+        
+        <div class="col-md-3 mb-4">
+            <div class="list-group shadow-sm">
+                <a href="{% url 'dealer_dashboard' %}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                </a>
+                <a href="{% url 'profile_settings' %}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-cog me-2"></i> Settings
+                </a>
+                <a href="{% url 'dealer_support' %}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-headset me-2"></i> Support
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
             
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h2 class="fw-bold mb-0">Business Settings</h2>
+            <div class="d-flex align-items-center justify-content-between mb-3 d-md-none">
+                <h4 class="fw-bold mb-0">Settings</h4>
                 <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    <i class="fas fa-arrow-left"></i> Back
                 </a>
             </div>
 
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold text-dark"><i class="fas fa-cog me-2"></i>Edit Profile</h5>
+                    <h5 class="fw-bold mb-0">Business Profile Settings</h5>
                 </div>
                 <div class="card-body p-4">
                     
@@ -29,66 +45,77 @@
 
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-                        
-                        <div class="text-center mb-4">
-                            <div class="mb-2">
-                                {% if form.instance.logo %}
-                                    <img src="{{ form.instance.logo.url }}" class="rounded-circle border" style="width: 100px; height: 100px; object-fit: cover;">
-                                {% else %}
-                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center border" style="width: 100px; height: 100px;">
-                                        <i class="fas fa-camera fa-2x text-muted"></i>
-                                    </div>
-                                {% endif %}
+
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3">Account Information</h6>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Username</label>
+                                {{ u_form.username }}
+                                <small class="text-muted">Username cannot be changed.</small>
                             </div>
-                            <label class="form-label small text-muted">Business Logo</label>
-                            <div class="d-flex justify-content-center">
-                                <div style="max-width: 250px;">
-                                    {{ form.logo }}
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email Address</label>
+                                {{ u_form.email }}
                             </div>
                         </div>
 
                         <hr class="my-4 text-muted opacity-25">
 
-                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Business Details</h6>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3">Showroom Details</h6>
                         
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
                                 <label class="form-label fw-bold">Business Name</label>
-                                {{ form.business_name }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">M-Pesa Phone Number</label>
-                                {{ form.phone_number }}
-                                <div class="form-text text-success small"><i class="fas fa-mobile-alt"></i> For receiving payment prompts.</div>
+                                {{ p_form.business_name }}
                             </div>
                         </div>
 
-                        <div class="row g-3 mb-3">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">WhatsApp / Business Phone</label>
+                                {{ p_form.phone_number }}
+                                <small class="text-success">
+                                    <i class="fab fa-whatsapp"></i> This number will be used by buyers to contact you.
+                                </small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Business Logo</label>
+                                {{ p_form.logo }}
+                                {% if user.dealer_profile.logo %}
+                                    <div class="mt-2">
+                                        <img src="{{ user.dealer_profile.logo.url }}" class="rounded-circle border" width="50" height="50">
+                                        <small class="text-muted ms-2">Current Logo</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">City / Town</label>
-                                {{ form.city }}
+                                {{ p_form.city }}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Website (Optional)</label>
-                                {{ form.website_link }}
+                                {{ p_form.website_link }}
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Physical Address / Location</label>
-                            {{ form.physical_address }}
+                            {{ p_form.physical_address }}
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-danger rounded-pill px-5 fw-bold">
                                 <i class="fas fa-save me-2"></i> Save Changes
                             </button>
                         </div>
+
                     </form>
+
                 </div>
             </div>
-
         </div>
     </div>
 </div>
