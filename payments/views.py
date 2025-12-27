@@ -5,10 +5,12 @@ from datetime import datetime
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import redirect, get_object_or_404
+# --- FIXED IMPORT BELOW: Added 'render' ---
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import timedelta
+from requests.auth import HTTPBasicAuth
 
 from .models import MpesaTransaction
 from users.models import DealerProfile
@@ -20,7 +22,7 @@ def get_access_token():
     api_URL = settings.MPESA_ACCESS_TOKEN_URL
 
     try:
-        r = requests.get(api_URL, auth=(consumer_key, consumer_secret))
+        r = requests.get(api_URL, auth=HTTPBasicAuth(consumer_key, consumer_secret))
         r.raise_for_status() # Raise error if failed
         return r.json()['access_token']
     except Exception as e:
@@ -58,7 +60,7 @@ def stk_push_request(phone_number, amount, user):
         "PartyA": phone_number,
         "PartyB": shortcode,
         "PhoneNumber": phone_number,
-        "CallBackURL": settings.MPESA_CALLBACK_URL,
+        "CallBackURL": settings.MPESA_CALLBACK_URL + "/payments/callback/", # Ensure slash matches urls.py
         "AccountReference": f"User_{user.id}",
         "TransactionDesc": "Plan Upgrade"
     }
@@ -107,6 +109,7 @@ def initiate_payment(request, plan_type):
         # Success logic: Redirect to a "Check your phone" page
         return render(request, 'dealer/payment_pending.html', {'phone': phone})
     else:
+        # Debugging: Show the error if Safaricom refuses
         return JsonResponse({'error': 'STK Push Failed', 'details': response})
 
 # --- VIEW: CALLBACK HANDLER (WEBHOOK) ---
@@ -117,7 +120,6 @@ def mpesa_callback(request):
             body = json.loads(request.body)
             stk_callback = body['Body']['stkCallback']
             
-            merchant_request_id = stk_callback['MerchantRequestID']
             checkout_request_id = stk_callback['CheckoutRequestID']
             result_code = stk_callback['ResultCode']
             result_desc = stk_callback['ResultDesc']
@@ -132,7 +134,7 @@ def mpesa_callback(request):
                     transaction.description = 'Payment confirmed'
                     
                     # Extract Receipt Number from Metadata
-                    items = stk_callback['CallbackMetadata']['Item']
+                    items = stk_callback.get('CallbackMetadata', {}).get('Item', [])
                     for item in items:
                         if item['Name'] == 'MpesaReceiptNumber':
                             transaction.mpesa_receipt_number = item['Value']
