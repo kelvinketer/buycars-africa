@@ -12,6 +12,13 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['*'] 
 
+# --- CRITICAL FIX FOR RENDER FORMS ---
+# This tells Django to trust requests coming from your live domain
+CSRF_TRUSTED_ORIGINS = [
+    'https://buycars-africa.onrender.com',
+]
+# -------------------------------------
+
 
 # Application definition
 
@@ -37,7 +44,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',   
     'cars.apps.CarsConfig',     
     'saas.apps.SaasConfig',
-    'payments',
+    'payments', # Payment App
 ]
 
 MIDDLEWARE = [
@@ -137,7 +144,6 @@ LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
 # --- EMAIL CONFIGURATION (Real Gmail Sending) ---
-# THIS IS THE PART THAT WAS UPDATED
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -152,7 +158,7 @@ MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT', default='sandbox')
 MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='')
 MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
 
-# Default Sandbox Paybill & Passkey (Do not change unless moving to production)
+# Default Sandbox Paybill & Passkey
 MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379') 
 MPESA_PASSKEY = config('MPESA_PASSKEY', default='bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919') 
 
