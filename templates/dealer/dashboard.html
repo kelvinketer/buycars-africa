@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -19,6 +20,10 @@
         </div>
 
         <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+            <a href="{% url 'dealer_showroom' user.username %}" class="btn btn-outline-primary shadow-sm" target="_blank">
+                <i class="fas fa-store me-1"></i> View My Showroom
+            </a>
+
             <a href="{% url 'dealer_support' %}" class="btn btn-outline-secondary shadow-sm">
                 <i class="fas fa-life-ring me-1"></i> Help
             </a>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
+{% load custom_filters %} {# <--- ADDED THIS #}
 
 {% block head_extra %}
 <meta property="og:title" content="{{ profile.business_name }} | BuyCars.Africa">
@@ -49,10 +50,10 @@
                 <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
                     {% with contact_number=profile.phone_number|default:dealer.phone_number %}
                         {% if contact_number %}
-                            <a href="https://wa.me/{{ contact_number }}?text=Hi, I am looking at your stock on BuyCars." target="_blank" class="btn btn-success rounded-pill fw-bold">
+                            <a href="https://wa.me/{{ contact_number|whatsapp_format }}?text=Hi, I am looking at your stock on BuyCars." target="_blank" class="btn btn-success rounded-pill fw-bold">
                                 <i class="fab fa-whatsapp me-2"></i> WhatsApp
                             </a>
-                            <a href="tel:{{ contact_number }}" class="btn btn-outline-dark rounded-pill fw-bold">
+                            <a href="tel:{{ contact_number|whatsapp_format }}" class="btn btn-outline-dark rounded-pill fw-bold">
                                 <i class="fas fa-phone-alt me-2"></i> Call
                             </a>
                         {% else %}
@@ -149,7 +150,7 @@
                             <h5 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h5>
                             
                             <div class="d-flex gap-2">
-                                <a href="https://wa.me/{{ profile.phone_number }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }})" 
+                                <a href="https://wa.me/{{ profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }})" 
                                    class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
                                    style="width: 40px; height: 40px;"
                                    target="_blank" 
