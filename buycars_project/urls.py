@@ -8,6 +8,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     
+    # --- SUPER ADMIN (CEO Dashboard) ---
+    path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'), # <--- NEW LINE ADDED
+
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
