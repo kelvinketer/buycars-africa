@@ -1,117 +1,228 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            
-            <div class="card border-0 shadow-lg">
-                <div class="card-header bg-primary-custom text-white p-4" style="background-color: #0f172a;">
-                    <h3 class="mb-0 fw-bold"><i class="fas fa-plus-circle me-2"></i>Upload New Vehicle</h3>
-                    <p class="mb-0 opacity-75">Fill in the details below to list your car.</p>
-                </div>
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-dark">List a New Vehicle</h2>
+            <p class="text-muted">Fill in the details below to publish your car to thousands of buyers.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
                 
-                <div class="card-body p-4 p-md-5">
-                    
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
                     {% if form.errors %}
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Please fix the errors below:</h5>
-                            <ul class="mb-0">
+                        <div class="alert alert-danger shadow-sm border-0 rounded-4 mb-4">
+                            <h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Please correct the errors below:</h6>
+                            <ul class="mb-0 small">
                                 {% for field in form %}
                                     {% for error in field.errors %}
                                         <li><strong>{{ field.label }}:</strong> {{ error }}</li>
                                     {% endfor %}
                                 {% endfor %}
-                                {% for error in form.non_field_errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
                             </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endif %}
-                    
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <h5 class="text-danger fw-bold mb-3">Basic Information</h5>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label">Make</label>
-                                {{ form.make }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Model</label>
-                                {{ form.model }}
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Year</label>
-                                {{ form.year }}
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Price (KES)</label>
-                                {{ form.price }}
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Condition</label>
-                                {{ form.condition }}
-                            </div>
-                        </div>
 
-                        <h5 class="text-danger fw-bold mb-3">Technical Specs</h5>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <label class="form-label">Transmission</label>
-                                {{ form.transmission }}
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Fuel Type</label>
-                                {{ form.fuel_type }}
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Mileage (km)</label>
-                                {{ form.mileage }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Engine Size (cc)</label>
-                                {{ form.engine_size }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Color</label>
-                                {{ form.color }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Body Type</label>
-                                {{ form.body_type }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Location</label>
-                                {{ form.location }}
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4 text-center">
+                            <h5 class="fw-bold mb-3 text-start">1. Vehicle Photo</h5>
+                            
+                            <div class="upload-box p-4 border rounded-3 bg-light position-relative" style="border: 2px dashed #cbd5e1 !important;">
+                                <div id="imagePreview" class="d-none mb-3">
+                                    <img src="#" class="rounded-3 shadow-sm object-fit-cover" style="max-height: 200px; width: 100%; max-width: 300px;">
+                                </div>
+                                
+                                <div class="file-upload-wrapper">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted small mb-3">Click to select a high-quality main photo</p>
+                                    {{ form.image }}
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <h5 class="text-danger fw-bold mb-3">Description & Media</h5>
-                        <div class="mb-3">
-                            <label class="form-label">Seller's Notes</label>
-                            {{ form.description }}
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">2. Key Details</h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.make }}
+                                        <label>Make (e.g. Toyota)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.model }}
+                                        <label>Model (e.g. Harrier)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.year }}
+                                        <label>Year of Manufacture</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.body_type }}
+                                        <label>Body Type</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.condition }}
+                                        <label>Condition</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.location }}
+                                        <label>Vehicle Location</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Main Photo</label>
-                            {{ form.image }}
-                            <div class="form-text">Upload a high-quality clear image (Max 5MB).</div>
-                        </div>
+                    </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary px-4">Cancel</a>
-                            <button type="submit" class="btn btn-primary-custom px-5 py-2 fw-bold" style="background-color: #dc2626; color: white; border-radius: 50px;">
-                                Upload Car
-                            </button>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">3. Specs & Performance</h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        {{ form.transmission }}
+                                        <label>Transmission</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        {{ form.fuel_type }}
+                                        <label>Fuel Type</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        {{ form.engine_size }}
+                                        <label>Engine (cc)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.mileage }}
+                                        <label>Mileage (km)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.color }}
+                                        <label>Exterior Color</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                    </form>
-                </div>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">4. Pricing & Description</h5>
+                            
+                            <div class="mb-4">
+                                <label class="fw-bold mb-2">Selling Price (KES)</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-white fw-bold text-muted border-end-0">KES</span>
+                                    {{ form.price }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="fw-bold mb-2">Seller's Notes</label>
+                                {{ form.description }}
+                                <div class="form-text">Mention key features like Sunroof, Leather Seats, New Tires, etc.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3 d-md-flex justify-content-md-end mb-5">
+                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold">Cancel</a>
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow-sm">
+                            <i class="fas fa-check-circle me-2"></i> Publish Listing
+                        </button>
+                    </div>
+
+                </form>
             </div>
-
         </div>
     </div>
 </div>
+
+<style>
+    /* Styling for Django Form Fields to match Bootstrap Floating Labels */
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 1px solid #dee2e6;
+        padding: 1rem 0.75rem;
+        height: calc(3.5rem + 2px);
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #dc3545; /* Red border on focus */
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.1);
+    }
+    textarea.form-control {
+        height: 150px;
+    }
+    /* Fix for file input */
+    input[type="file"] {
+        padding-top: 15px; /* Alignment fix */
+    }
+</style>
+
+<script>
+    // Image Preview Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.querySelector('input[type="file"]');
+        const previewBox = document.getElementById('imagePreview');
+        const previewImg = previewBox.querySelector('img');
+
+        if (imageInput) {
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        previewBox.classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Add bootstrap classes to django rendered fields manually if needed
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control') && !input.classList.contains('form-select')) {
+                if (input.tagName === 'SELECT') {
+                    input.classList.add('form-select');
+                } else if (input.type !== 'checkbox' && input.type !== 'file') {
+                    input.classList.add('form-control');
+                    input.placeholder = " "; // Required for floating labels
+                }
+                
+                // Specific fix for file input
+                if (input.type === 'file') {
+                    input.classList.add('form-control'); 
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
