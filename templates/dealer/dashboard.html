@@ -101,7 +101,7 @@
                 <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10">
                     <div class="card-body p-4">
                         <h6 class="fw-bold text-primary mb-2">Need Help?</h6>
-                        <p class="small text-muted mb-3">Contact our support team for assistance with your account.</p>
+                        <p class="small text-muted mb-3">Contact our support team for assistance.</p>
                         
                         <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Support,%20I%20need%20assistance%20with%20my%20dealer%20account." 
                            target="_blank"
@@ -125,7 +125,7 @@
                 
                 <div class="d-lg-none mb-4 overflow-auto pb-2">
                     <div class="d-flex gap-2" style="min-width: 100%;">
-                        <a href="#" class="btn btn-dark rounded-pill fw-bold text-nowrap"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-dark rounded-pill fw-bold text-nowrap"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
                         <a href="#inventory" class="btn btn-white border rounded-pill fw-bold text-nowrap"><i class="fas fa-car me-2"></i> Inventory</a>
                         <a href="{% url 'profile_settings' %}" class="btn btn-white border rounded-pill fw-bold text-nowrap"><i class="fas fa-cog me-2"></i> Settings</a>
                     </div>
@@ -345,7 +345,7 @@
                 </div>
 
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 

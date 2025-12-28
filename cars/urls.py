@@ -18,6 +18,7 @@ urlpatterns = [
     path('dashboard/edit/<int:car_id>/', views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', views.delete_car, name='delete_car'),
 
-    # --- Pricing Page (NEW) ---
+    # --- Pricing Page (THIS IS MISSING) ---
+    # This line connects the {% url 'pricing' %} in your dashboard to the view
     path('pricing/', views.pricing_page, name='pricing'),
 ]
