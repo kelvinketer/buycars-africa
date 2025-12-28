@@ -266,41 +266,6 @@
                         </div>
                     </div>
 
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                {% if car.dealer.dealer_profile.logo %}
-                                    <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border me-3 shadow-sm" width="60" height="60" style="object-fit: cover;">
-                                {% else %}
-                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3 border shadow-sm" style="width: 60px; height: 60px;">
-                                        <span class="fw-bold fs-4 text-muted">{{ car.dealer.username|slice:":1" }}</span>
-                                    </div>
-                                {% endif %}
-                                
-                                <div>
-                                    <h6 class="fw-bold mb-0 text-dark">
-                                        {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
-                                        {% if car.dealer.is_verified %}
-                                            <i class="fas fa-check-circle text-success small ms-1" title="Verified"></i>
-                                        {% endif %}
-                                    </h6>
-                                    <small class="text-muted">Verified Dealer</small>
-                                </div>
-                            </div>
-                            
-                            {% if car.dealer.dealer_profile.physical_address %}
-                                <div class="d-flex align-items-start text-muted small mb-3">
-                                    <i class="fas fa-map-marker-alt mt-1 me-2 text-danger"></i>
-                                    {{ car.dealer.dealer_profile.physical_address }}
-                                </div>
-                            {% endif %}
-
-                            <a href="{% url 'dealer_showroom' car.dealer.username %}" class="btn btn-light btn-sm w-100 rounded-pill fw-bold border">
-                                View All Stock <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
-                        </div>
-                    </div>
-
                     <div class="card border-0 shadow-sm bg-light rounded-4">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-secondary"></i>Loan Estimator</h5>
