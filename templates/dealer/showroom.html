@@ -74,7 +74,7 @@
             </div>
 
             <div class="col-md-3">
-                <div class="card bg-light border-0">
+                <div class="card bg-light border-0 rounded-4">
                     <div class="card-body text-center">
                         <h3 class="fw-bold mb-0">{{ cars.count }}</h3>
                         <small class="text-muted text-uppercase">Vehicles for Sale</small>
@@ -109,24 +109,20 @@
         <div class="row">
             {% for car in cars %}
             <div class="col-md-4 mb-4">
-                <div class="card car-card h-100 shadow-sm border-0 position-relative rounded-3 overflow-hidden">
+                <div class="card car-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative hover-lift">
                     
                     {% if car.status != 'AVAILABLE' %}
                         <div class="position-absolute top-0 end-0 m-2 z-3">
                             {% if car.status == 'SOLD' %}
-                                <span class="badge bg-danger fw-bold py-1 px-2 shadow-sm">
-                                    SOLD OUT
-                                </span>
+                                <span class="badge bg-danger fw-bold py-1 px-2 shadow-sm rounded-2">SOLD OUT</span>
                             {% elif car.status == 'RESERVED' %}
-                                <span class="badge bg-warning text-dark fw-bold py-1 px-2 shadow-sm">
-                                    RESERVED
-                                </span>
+                                <span class="badge bg-warning text-dark fw-bold py-1 px-2 shadow-sm rounded-2">RESERVED</span>
                             {% endif %}
                         </div>
                     {% endif %}
 
                     <div class="car-image-container position-relative">
-                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2">
+                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2 rounded-2">
                             {{ car.year }}
                         </span>
 
@@ -143,7 +139,7 @@
                         </a>
                     </div>
                     
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body d-flex flex-column p-4">
                         <div class="text-muted small mb-1 text-uppercase fw-bold">{{ car.make }}</div>
                         <h5 class="card-title fw-bold mb-3">
                             <a href="{% url 'car_detail' car.id %}" class="text-dark text-decoration-none">{{ car.model }}</a>
@@ -151,13 +147,13 @@
                         
                         <div class="row g-2 mb-3">
                             <div class="col-6">
-                                <div class="bg-light rounded p-2 text-center">
+                                <div class="bg-light rounded-3 p-2 text-center">
                                     <i class="fas fa-gas-pump text-muted me-1 small"></i>
                                     <span class="small fw-semibold">{{ car.get_fuel_type_display }}</span>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="bg-light rounded p-2 text-center">
+                                <div class="bg-light rounded-3 p-2 text-center">
                                     <i class="fas fa-cog text-muted me-1 small"></i>
                                     <span class="small fw-semibold">{{ car.get_transmission_display }}</span>
                                 </div>
@@ -165,11 +161,13 @@
                         </div>
 
                         <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
-                            <h5 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h5>
+                            <h5 class="text-danger fw-bold mb-0 text-nowrap" style="font-size: 1.1rem;">
+                                KES {{ car.price|floatformat:0|intcomma }}
+                            </h5>
                             
                             <div class="d-flex gap-2">
                                 <a href="https://wa.me/{{ profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }})" 
-                                   class="btn btn-success rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                   class="btn btn-success rounded-circle shadow-sm d-flex align-items-center justify-content-center border-0" 
                                    style="width: 40px; height: 40px;"
                                    target="_blank" 
                                    title="Chat on WhatsApp"
@@ -204,14 +202,17 @@
     </div>
 </div>
 
+<style>
+    /* Premium Hover Effect */
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+</style>
+
 <script>
     function trackLead(carId, action) {
-        // Send background request to count the click
         fetch(`/track/${carId}/${action}/`, {
             method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         });
     }
 </script>

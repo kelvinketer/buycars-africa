@@ -13,14 +13,12 @@
                 
                 <div class="search-card mx-auto bg-white p-4 rounded-4 shadow-lg" style="max-width: 900px;">
                     <form method="GET" class="row g-2">
-                        
                         <div class="col-md-6 mb-2">
                             <div class="input-group custom-search-input overflow-hidden bg-light rounded-3">
                                 <span class="input-group-text bg-light border-0 ps-3"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" name="q" class="form-control border-0 shadow-none bg-light h-100" placeholder="Keyword (e.g. Sunroof...)" value="{{ request.GET.q }}">
                             </div>
                         </div>
-
                         <div class="col-md-3 mb-2">
                             <select name="make" class="form-select custom-search-input border-0 bg-light rounded-3">
                                 <option value="">All Makes</option>
@@ -29,7 +27,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-
                         <div class="col-md-3 mb-2">
                             <select name="body_type" class="form-select custom-search-input border-0 bg-light rounded-3">
                                 <option value="">Body Type</option>
@@ -38,21 +35,18 @@
                                 {% endfor %}
                             </select>
                         </div>
-
                         <div class="col-md-2">
                             <input type="number" name="min_year" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Year" value="{{ request.GET.min_year }}">
                         </div>
                         <div class="col-md-2">
                             <input type="number" name="max_year" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Year" value="{{ request.GET.max_year }}">
                         </div>
-
                         <div class="col-md-3">
                             <input type="number" name="min_price" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Min Price" value="{{ request.GET.min_price }}">
                         </div>
                         <div class="col-md-3">
                             <input type="number" name="max_price" class="form-control custom-search-input border-0 bg-light rounded-3 small-placeholder px-3" placeholder="Max Price" value="{{ request.GET.max_price }}">
                         </div>
-
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-primary-custom w-100 shadow-sm fw-bold custom-search-input d-flex align-items-center justify-content-center">
                                 <i class="fas fa-search"></i>
@@ -69,7 +63,7 @@
 <div class="container mb-5 mt-n5 position-relative" style="z-index: 3;">
     <div class="row g-4 justify-content-center">
         <div class="col-md-4">
-            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+            <div class="card h-100 text-center p-4 border-0 shadow-sm rounded-4">
                 <div class="mb-3">
                     <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 rounded-circle text-danger" style="width: 60px; height: 60px;">
                         <i class="fas fa-shield-alt fa-2x"></i>
@@ -80,7 +74,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+            <div class="card h-100 text-center p-4 border-0 shadow-sm rounded-4">
                 <div class="mb-3">
                     <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle text-primary" style="width: 60px; height: 60px;">
                         <i class="fas fa-bolt fa-2x"></i>
@@ -91,7 +85,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card h-100 text-center p-4 border-0 shadow-sm">
+            <div class="card h-100 text-center p-4 border-0 shadow-sm rounded-4">
                 <div class="mb-3">
                     <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle text-success" style="width: 60px; height: 60px;">
                         <i class="fas fa-globe-africa fa-2x"></i>
@@ -107,36 +101,45 @@
 {% if featured_cars %}
 <div class="bg-light py-5 mb-5 border-top border-bottom">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 class="fw-bold mb-0 text-danger"><i class="fas fa-fire me-2"></i>Hot Deals</h3>
-                <p class="text-muted small mb-0">Premium vehicles selected just for you</p>
-            </div>
+        <div class="mb-4">
+            <h3 class="fw-bold mb-1 text-dark"><i class="fas fa-fire text-danger me-2"></i>Hot Deals</h3>
+            <p class="text-muted">Premium vehicles selected just for you</p>
         </div>
 
         <div class="row">
             {% for car in featured_cars %}
             <div class="col-md-3 mb-4">
-                <div class="card h-100 shadow border-0 position-relative">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-lift">
                     
-                    <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2 fw-bold shadow-sm z-2">
-                        <i class="fas fa-star me-1"></i> Featured
-                    </span>
-
-                    <div class="position-relative" style="height: 180px; overflow: hidden;">
-                        {% if car.images.first %}
-                            <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
-                        {% else %}
-                            <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-                                <i class="fas fa-car fa-2x"></i>
+                    <div class="position-relative">
+                        <span class="badge bg-dark text-warning position-absolute top-0 start-0 m-3 fw-bold shadow-sm z-2 py-2 px-3 rounded-3 border border-warning">
+                            <i class="fas fa-star me-1"></i> Featured
+                        </span>
+                        
+                        <a href="{% url 'car_detail' car.id %}">
+                            <div style="height: 220px; overflow: hidden;">
+                                {% if car.images.first %}
+                                    <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
+                                        <i class="fas fa-car fa-2x"></i>
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
+                        </a>
                     </div>
-                    <div class="card-body p-3">
-                        <h6 class="fw-bold text-truncate mb-1">{{ car.make }} {{ car.model }}</h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-danger fw-bold small">KES {{ car.price|intcomma }}</span>
-                            <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-dark rounded-pill px-3" style="font-size: 0.8rem;">View</a>
+
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h5 class="fw-bold text-dark mb-3 text-truncate">{{ car.make }} {{ car.model }}</h5>
+                        
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted text-uppercase" style="font-size: 0.7rem;">Price</small>
+                                <h5 class="text-danger fw-bold mb-0">KES {{ car.price|intcomma }}</h5>
+                            </div>
+                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-2 btn-sm fw-bold">
+                                View Details <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -163,24 +166,20 @@
     <div class="row">
         {% for car in cars %}
         <div class="col-md-4 mb-4">
-            <div class="card car-card h-100 shadow-sm border-0 rounded-3 overflow-hidden position-relative">
+            <div class="card car-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative hover-lift">
                 
                 {% if car.status != 'AVAILABLE' %}
                     <div class="position-absolute top-0 end-0 m-2 z-3">
                         {% if car.status == 'SOLD' %}
-                            <span class="badge bg-danger fw-bold py-1 px-2 shadow-sm">
-                                SOLD OUT
-                            </span>
+                            <span class="badge bg-danger fw-bold py-1 px-2 shadow-sm rounded-2">SOLD OUT</span>
                         {% elif car.status == 'RESERVED' %}
-                            <span class="badge bg-warning text-dark fw-bold py-1 px-2 shadow-sm">
-                                RESERVED
-                            </span>
+                            <span class="badge bg-warning text-dark fw-bold py-1 px-2 shadow-sm rounded-2">RESERVED</span>
                         {% endif %}
                     </div>
                 {% endif %}
 
                 <div class="car-image-container position-relative">
-                    <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2">
+                    <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2 rounded-2">
                         {{ car.year }}
                     </span>
                     
@@ -193,19 +192,19 @@
                     {% endif %}
                 </div>
                 
-                <div class="card-body d-flex flex-column">
+                <div class="card-body d-flex flex-column p-4">
                     <div class="text-muted small mb-1 text-uppercase fw-bold" style="font-size: 0.75rem;">{{ car.make }}</div>
                     <h5 class="card-title fw-bold mb-3">{{ car.model }}</h5>
                     
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <div class="bg-light rounded p-2 text-center">
+                            <div class="bg-light rounded-3 p-2 text-center">
                                 <i class="fas fa-gas-pump text-muted me-1 small"></i>
                                 <span class="small fw-semibold">{{ car.get_fuel_type_display }}</span>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="bg-light rounded p-2 text-center">
+                            <div class="bg-light rounded-3 p-2 text-center">
                                 <i class="fas fa-cog text-muted me-1 small"></i>
                                 <span class="small fw-semibold">{{ car.get_transmission_display }}</span>
                             </div>
@@ -261,6 +260,10 @@
 <style>
     .custom-search-input { height: 50px !important; font-size: 1rem; }
     .small-placeholder::placeholder { font-size: 0.9rem; color: #6c757d; opacity: 0.8; }
+    /* Premium Hover Effect */
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    
     @media (max-width: 768px) {
         .hero-section { padding-top: 2rem !important; padding-bottom: 4rem !important; }
         .hero-section h1 { font-size: 2.5rem; }
@@ -271,12 +274,9 @@
 
 <script>
     function trackLead(carId, action) {
-        // Send background request to count the click
         fetch(`/track/${carId}/${action}/`, {
             method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         });
     }
 </script>
