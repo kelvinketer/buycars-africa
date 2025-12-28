@@ -13,7 +13,6 @@
 <div class="bg-white border-bottom shadow-sm">
     <div class="container py-5">
         <div class="row align-items-center">
-            
             <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
                 {% if profile.logo %}
                     <img src="{{ profile.logo.url }}" 
@@ -126,7 +125,10 @@
                     {% endif %}
 
                     <div class="car-image-container position-relative">
-                        <span class="car-badge">{{ car.year }}</span>
+                        <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2">
+                            {{ car.year }}
+                        </span>
+
                         <a href="{% url 'car_detail' car.id %}">
                             <div style="height: 200px; overflow: hidden;">
                                 {% if car.images.first %}

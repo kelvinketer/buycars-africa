@@ -180,7 +180,9 @@
                 {% endif %}
 
                 <div class="car-image-container position-relative">
-                    <span class="car-badge">{{ car.year }}</span>
+                    <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2">
+                        {{ car.year }}
+                    </span>
                     
                     {% if car.images.first %}
                         <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
