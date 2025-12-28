@@ -2,17 +2,17 @@ import requests
 import json
 import base64
 import africastalking
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.utils import timezone
-from datetime import timedelta
 from requests.auth import HTTPBasicAuth
 
-from .models import MpesaTransaction
+from .models import MpesaTransaction  # Ensure your model is named MpesaTransaction
 from users.models import DealerProfile
 
 # --- HELPER: SEND SMS (AFRICA'S TALKING) ---
@@ -21,19 +21,16 @@ def send_sms_notification(phone_number, message):
     api_key = settings.AFRICASTALKING_API_KEY
     
     try:
-        # Initialize the SDK
         africastalking.initialize(username, api_key)
         sms = africastalking.SMS
         
-        # Format phone number for Africa's Talking (Must start with +254)
+        # Format phone for SMS
         if phone_number.startswith('0'):
             phone_number = '+254' + phone_number[1:]
         elif phone_number.startswith('254'):
             phone_number = '+' + phone_number
             
-        # Send the SMS
         sms.send(message, [phone_number])
-        print(f"SMS sent to {phone_number}")
     except Exception as e:
         print(f"Error sending SMS: {str(e)}")
 
@@ -45,23 +42,29 @@ def get_access_token():
 
     try:
         r = requests.get(api_URL, auth=HTTPBasicAuth(consumer_key, consumer_secret))
-        r.raise_for_status() # Raise error if failed
+        r.raise_for_status()
         return r.json()['access_token']
     except Exception as e:
         print(f"Error generating token: {str(e)}")
         return None
 
-# --- HELPER: TRIGGER STK PUSH ---
-def stk_push_request(phone_number, amount, user):
+# --- HELPER: TRIGGER STK PUSH (FIXED) ---
+def stk_push_request(phone_number, amount, user, plan_type):
     access_token = get_access_token()
     if not access_token:
         return {'error': 'Failed to generate access token'}
 
-    # 1. Format the phone number (Must be 254...)
-    if phone_number.startswith('0'):
-        phone_number = '254' + phone_number[1:]
-    elif phone_number.startswith('+254'):
-        phone_number = phone_number[1:]
+    # 1. ROBUST PHONE SANITIZATION (Fixes "Invalid PhoneNumber" Error)
+    # Remove spaces, dashes, plus signs
+    phone_number = str(phone_number).strip().replace(" ", "").replace("-", "").replace("+", "")
+    
+    # Ensure it starts with 254
+    if phone_number.startswith("0"):
+        phone_number = "254" + phone_number[1:]
+    
+    # Final validation
+    if not phone_number.isdigit() or len(phone_number) != 12:
+        return {'error': f'Invalid phone format: {phone_number}. Use 0712345678.'}
     
     # 2. Generate Timestamp & Password
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -71,7 +74,7 @@ def stk_push_request(phone_number, amount, user):
     password_str = shortcode + passkey + timestamp
     password_b64 = base64.b64encode(password_str.encode()).decode()
 
-    # 3. Define the Payload
+    # 3. Define Payload
     headers = {'Authorization': f'Bearer {access_token}'}
     payload = {
         "BusinessShortCode": shortcode,
@@ -82,68 +85,102 @@ def stk_push_request(phone_number, amount, user):
         "PartyA": phone_number,
         "PartyB": shortcode,
         "PhoneNumber": phone_number,
-        "CallBackURL": settings.MPESA_CALLBACK_URL + "/payments/callback/", 
-        "AccountReference": f"User_{user.id}",
-        "TransactionDesc": "Plan Upgrade"
+        "CallBackURL": settings.MPESA_CALLBACK_URL,
+        "AccountReference": f"BuyCars {plan_type}",
+        "TransactionDesc": f"Upgrade to {plan_type}"
     }
 
     try:
         response = requests.post(settings.MPESA_EXPRESS_URL, json=payload, headers=headers)
         response_data = response.json()
         
-        # 4. Save Initial Transaction to DB
-        MpesaTransaction.objects.create(
-            user=user,
-            phone_number=phone_number,
-            amount=amount,
-            checkout_request_id=response_data.get('CheckoutRequestID', 'FAILED'),
-            status='PENDING',
-            description='STK Push Initiated'
-        )
+        # 4. DATABASE SAFETY (Fixes "Duplicate Key" Error)
+        # Only save if Safaricom actually accepted the request (ResponseCode == 0)
+        if response_data.get('ResponseCode') == '0':
+            MpesaTransaction.objects.create(
+                user=user,
+                phone_number=phone_number,
+                amount=amount,
+                checkout_request_id=response_data['CheckoutRequestID'],
+                status='PENDING',
+                description=f'Subscription for {plan_type}'
+            )
         
         return response_data
     except Exception as e:
         return {'error': str(e)}
 
-# --- VIEW: BUTTON CLICK HANDLER ---
+# --- VIEW 1: SHOW CHECKOUT PAGE ---
 @login_required
 def initiate_payment(request, plan_type):
-    # Define Prices
+    """
+    Renders the checkout.html page where user enters phone number.
+    """
     PRICES = {
-        'LITE': 1000,   # <--- REVERTED TO 1000
+        'LITE': 1000,
         'PRO': 2500
     }
     
     amount = PRICES.get(plan_type.upper())
     if not amount:
-        return JsonResponse({'error': 'Invalid Plan'}, status=400)
+        messages.error(request, "Invalid Plan Selected")
+        return redirect('dealer_dashboard')
 
-    # Get User Phone
-    phone = request.user.phone_number
-    if not phone:
-        # Fallback to profile phone or dummy if missing
-        phone = request.user.dealer_profile.phone_number or '254700000000'
+    # Pre-fill phone if available
+    phone = request.user.dealer_profile.phone_number or ''
 
-    # Trigger Push
-    response = stk_push_request(phone, amount, request.user)
-    
-    if 'ResponseCode' in response and response['ResponseCode'] == '0':
-        # Success logic: Redirect to a "Check your phone" page
-        return render(request, 'dealer/payment_pending.html', {'phone': phone})
-    else:
-        # Debugging: Show the error if Safaricom refuses
-        return JsonResponse({'error': 'STK Push Failed', 'details': response})
+    context = {
+        'plan_type': plan_type,
+        'plan_name': f"{plan_type.title()} Plan",
+        'amount': amount,
+        'phone_number': phone
+    }
+    return render(request, 'payments/checkout.html', context)
 
-# --- VIEW: CALLBACK HANDLER (WEBHOOK) ---
+# --- VIEW 2: PROCESS FORM & TRIGGER STK ---
+@login_required
+def process_payment(request):
+    """
+    Receives POST from checkout.html, sanitizes phone, triggers STK.
+    """
+    if request.method == 'POST':
+        phone = request.POST.get('phone_number')
+        plan_type = request.POST.get('plan_type')
+        
+        # Define Prices again for safety
+        PRICES = {'LITE': 1000, 'PRO': 2500}
+        amount = PRICES.get(plan_type, 2500)
+
+        # Trigger STK Push
+        response = stk_push_request(phone, amount, request.user, plan_type)
+        
+        # Check Result
+        if response.get('ResponseCode') == '0':
+            # Success: Redirect to Dashboard with instruction
+            messages.success(request, f"STK Push sent to {phone}. Please enter your M-PESA PIN.")
+            return redirect('dealer_dashboard')
+        else:
+            # Failure: Show error and go back to checkout
+            error_msg = response.get('errorMessage', 'Connection failed')
+            # Handle nested error details if present
+            if 'details' in response: 
+                error_msg = response['details']
+                
+            messages.error(request, f"Payment Failed: {error_msg}")
+            return redirect('initiate_payment', plan_type=plan_type)
+
+    return redirect('dealer_dashboard')
+
+# --- VIEW 3: CALLBACK HANDLER (WEBHOOK) ---
 @csrf_exempt
 def mpesa_callback(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body)
-            stk_callback = body['Body']['stkCallback']
+            stk_callback = body.get('Body', {}).get('stkCallback', {})
             
-            checkout_request_id = stk_callback['CheckoutRequestID']
-            result_code = stk_callback['ResultCode']
+            checkout_request_id = stk_callback.get('CheckoutRequestID')
+            result_code = stk_callback.get('ResultCode')
             result_desc = stk_callback.get('ResultDesc', 'No description')
             
             # Find the transaction
@@ -155,11 +192,11 @@ def mpesa_callback(request):
                     transaction.status = 'SUCCESS'
                     transaction.description = 'Payment confirmed'
                     
-                    # Extract Receipt Number from Metadata
+                    # Extract Receipt Number
                     items = stk_callback.get('CallbackMetadata', {}).get('Item', [])
                     for item in items:
-                        if item['Name'] == 'MpesaReceiptNumber':
-                            transaction.mpesa_receipt_number = item['Value']
+                        if item.get('Name') == 'MpesaReceiptNumber':
+                            transaction.mpesa_receipt_number = item.get('Value')
                     
                     transaction.save()
                     
@@ -167,16 +204,13 @@ def mpesa_callback(request):
                     profile = DealerProfile.objects.get(user=transaction.user)
                     
                     new_plan_name = "Free"
-                    
-                    # LOGIC REVERTED FOR PRODUCTION:
                     if transaction.amount >= 2500:
                         profile.plan_type = 'PRO'
-                        new_plan_name = "Showroom Pro"
-                    elif transaction.amount >= 1000: # <--- REVERTED TO 1000
+                        new_plan_name = "Pro"
+                    elif transaction.amount >= 1000:
                         profile.plan_type = 'LITE'
-                        new_plan_name = "Biashara Lite"
+                        new_plan_name = "Lite"
                         
-                    # Set Expiry (30 Days)
                     profile.subscription_expiry = timezone.now() + timedelta(days=30)
                     profile.save()
 
@@ -189,7 +223,7 @@ def mpesa_callback(request):
                     transaction.status = 'FAILED'
                     transaction.description = result_desc
                     transaction.save()
-                    
+            
             return JsonResponse({'status': 'OK'})
             
         except Exception as e:
@@ -198,19 +232,13 @@ def mpesa_callback(request):
             
     return JsonResponse({'error': 'Only POST allowed'}, status=400)
 
-# --- VIEW: PAYMENT STATUS CHECK (POLLING) ---
+# --- VIEW 4: PAYMENT STATUS POLLING (OPTIONAL) ---
 @login_required
 def check_payment_status(request):
-    """
-    Polls the database to check if the latest transaction was successful.
-    """
-    # Get the most recent transaction for the logged-in user
     transaction = MpesaTransaction.objects.filter(user=request.user).order_by('-created_at').first()
-    
     if transaction:
         return JsonResponse({
             'status': transaction.status, 
             'description': transaction.description
         })
-    
     return JsonResponse({'status': 'PENDING', 'description': 'No transaction found'})
