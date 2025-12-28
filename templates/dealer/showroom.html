@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
-{% load custom_filters %} {# <--- ADDED THIS #}
+{% load custom_filters %} 
 
 {% block head_extra %}
 <meta property="og:title" content="{{ profile.business_name }} | BuyCars.Africa">
@@ -109,14 +109,19 @@
         <div class="row">
             {% for car in cars %}
             <div class="col-md-4 mb-4">
-                <div class="card car-card h-100 shadow-sm border-0 position-relative">
-                    {% if car.status == 'SOLD' %}
-                        <div class="position-absolute top-0 end-0 m-2 z-3">
-                            <span class="badge bg-danger shadow-sm">SOLD</span>
-                        </div>
-                    {% elif car.status == 'RESERVED' %}
-                        <div class="position-absolute top-0 end-0 m-2 z-3">
-                            <span class="badge bg-warning text-dark shadow-sm">RESERVED</span>
+                <div class="card car-card h-100 shadow-sm border-0 position-relative rounded-3 overflow-hidden">
+                    
+                    {% if car.status != 'AVAILABLE' %}
+                        <div class="position-absolute top-0 end-0 m-3 z-3">
+                            {% if car.status == 'SOLD' %}
+                                <span class="badge bg-danger fs-6 fw-bold py-2 px-3 shadow-sm border border-white border-2">
+                                    SOLD OUT
+                                </span>
+                            {% elif car.status == 'RESERVED' %}
+                                <span class="badge bg-warning text-dark fs-6 fw-bold py-2 px-3 shadow-sm border border-white border-2">
+                                    RESERVED
+                                </span>
+                            {% endif %}
                         </div>
                     {% endif %}
 
@@ -125,7 +130,7 @@
                         <a href="{% url 'car_detail' car.id %}">
                             <div style="height: 200px; overflow: hidden;">
                                 {% if car.images.first %}
-                                    <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                                    <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
                                 {% else %}
                                     <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
                                         <i class="fas fa-car fa-3x opacity-50"></i>
@@ -141,12 +146,22 @@
                             <a href="{% url 'car_detail' car.id %}" class="text-dark text-decoration-none">{{ car.model }}</a>
                         </h5>
                         
-                        <div class="mb-3">
-                            <span class="badge bg-light text-dark border me-1">{{ car.mileage|intcomma }} km</span>
-                            <span class="badge bg-light text-dark border">{{ car.get_transmission_display }}</span>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="bg-light rounded p-2 text-center">
+                                    <i class="fas fa-gas-pump text-muted me-1 small"></i>
+                                    <span class="small fw-semibold">{{ car.get_fuel_type_display }}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded p-2 text-center">
+                                    <i class="fas fa-cog text-muted me-1 small"></i>
+                                    <span class="small fw-semibold">{{ car.get_transmission_display }}</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
                             <h5 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h5>
                             
                             <div class="d-flex gap-2">
