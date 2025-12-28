@@ -4,13 +4,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count 
 from django.contrib.auth import get_user_model 
+import re # Import Regex for phone sanitization
 
 from users.models import DealerProfile
-
 from .models import Car, CarImage, CarLead 
 from .forms import CarForm 
 
 User = get_user_model() 
+
+# --- HELPER: Phone Sanitizer ---
+def sanitize_phone(phone):
+    if not phone:
+        return None
+    # Remove all non-digit characters (spaces, +, -, etc.)
+    return re.sub(r'\D', '', str(phone))
 
 # --- PUBLIC VIEWS ---
 
@@ -97,7 +104,7 @@ def car_detail(request, car_id):
     }
     return render(request, 'cars/car_detail.html', context)
 
-# --- LEAD TRACKING FUNCTION ---
+# --- LEAD TRACKING FUNCTION (FIXED) ---
 def track_action(request, car_id, action_type):
     """
     Records an action (WhatsApp/Call) and redirects to the external link.
@@ -113,16 +120,25 @@ def track_action(request, car_id, action_type):
         ip_address=ip
     )
     
-    # 2. Determine the destination URL
+    # 2. Get Safe Phone Number
+    # Try to get profile phone, fallback to user phone, fallback to dummy
+    try:
+        raw_phone = car.dealer.dealer_profile.phone_number
+    except:
+        raw_phone = '254700000000'
+
+    clean_phone = sanitize_phone(raw_phone)
+    if not clean_phone:
+        clean_phone = '254700000000'
+
+    # 3. Determine the destination URL
     if action_type.upper() == 'WHATSAPP':
-        phone = car.dealer.phone_number if car.dealer.phone_number else '254700000000'
         message = f"Hi, I am interested in the {car.year} {car.make} {car.model} listed for KES {car.price}"
-        destination = f"https://wa.me/{phone}?text={message}"
+        destination = f"https://wa.me/{clean_phone}?text={message}"
         return HttpResponseRedirect(destination)
         
     elif action_type.upper() == 'CALL':
-        phone = car.dealer.phone_number if car.dealer.phone_number else '254700000000'
-        destination = f"tel:{phone}"
+        destination = f"tel:{clean_phone}"
         
         # --- FIX: Bypass Django's safety check for 'tel:' links ---
         response = HttpResponse(status=302)

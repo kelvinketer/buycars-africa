@@ -108,7 +108,7 @@
 
         <div class="row">
             {% for car in featured_cars %}
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-lift">
                     
                     <div class="position-relative">
@@ -117,7 +117,7 @@
                         </span>
                         
                         <a href="{% url 'car_detail' car.id %}">
-                            <div style="height: 220px; overflow: hidden;">
+                            <div style="height: 200px; overflow: hidden;">
                                 {% if car.images.first %}
                                     <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
                                 {% else %}
