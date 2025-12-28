@@ -112,13 +112,13 @@
                 <div class="card car-card h-100 shadow-sm border-0 position-relative rounded-3 overflow-hidden">
                     
                     {% if car.status != 'AVAILABLE' %}
-                        <div class="position-absolute top-0 end-0 m-3 z-3">
+                        <div class="position-absolute top-0 end-0 m-2 z-3">
                             {% if car.status == 'SOLD' %}
-                                <span class="badge bg-danger fs-6 fw-bold py-2 px-3 shadow-sm border border-white border-2">
+                                <span class="badge bg-danger fw-bold py-1 px-2 shadow-sm">
                                     SOLD OUT
                                 </span>
                             {% elif car.status == 'RESERVED' %}
-                                <span class="badge bg-warning text-dark fs-6 fw-bold py-2 px-3 shadow-sm border border-white border-2">
+                                <span class="badge bg-warning text-dark fw-bold py-1 px-2 shadow-sm">
                                     RESERVED
                                 </span>
                             {% endif %}
@@ -174,7 +174,7 @@
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
 
-                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-sm">
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold shadow-sm">
                                     Details
                                 </a>
                             </div>
