@@ -8,13 +8,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-light min-vh-100 py-5">
+<div class="bg-light min-vh-100 py-4 py-lg-5">
     <div class="container">
         
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
             <div>
                 <h6 class="text-uppercase text-muted small fw-bold mb-1">Overview</h6>
-                <h2 class="fw-bold text-dark d-flex align-items-center">
+                <h2 class="fw-bold text-dark d-flex align-items-center mb-0">
                     Dealer Dashboard
                     {% if user.is_verified %}
                         <i class="fas fa-check-circle text-success fs-5 ms-2" title="Verified Dealer"></i>
@@ -23,9 +23,9 @@
                     {% endif %}
                 </h2>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
                 <a href="{% url 'dealer_showroom' user.username %}" class="btn btn-white border shadow-sm rounded-pill fw-bold" target="_blank">
-                    <i class="fas fa-store me-2 text-muted"></i> Showroom
+                    <i class="fas fa-store me-lg-2 text-muted"></i> <span class="d-none d-lg-inline">Showroom</span>
                 </a>
                 <a href="{% url 'profile_settings' %}" class="btn btn-white border shadow-sm rounded-circle" title="Settings">
                     <i class="fas fa-cog text-muted"></i>
@@ -33,7 +33,7 @@
                 
                 {% if can_add %}
                     <a href="{% url 'add_car' %}" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
-                        <i class="fas fa-plus me-2"></i> Add Car
+                        <i class="fas fa-plus me-lg-2"></i> <span class="d-none d-lg-inline">Add Car</span> <span class="d-inline d-lg-none">Add</span>
                     </a>
                 {% else %}
                     <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold shadow-sm">
@@ -154,13 +154,9 @@
                                         </td>
                                         <td>
                                             {% if lead.action == 'WHATSAPP' %}
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
-                                                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
-                                                </span>
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3"><i class="fab fa-whatsapp me-1"></i> WhatsApp</span>
                                             {% else %}
-                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3">
-                                                    <i class="fas fa-phone me-1"></i> Call
-                                                </span>
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3"><i class="fas fa-phone me-1"></i> Call</span>
                                             {% endif %}
                                         </td>
                                         <td class="text-muted small">{{ lead.timestamp|naturaltime }}</td>
@@ -204,9 +200,7 @@
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden" id="inventory">
             <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">My Inventory</h5>
-                <a href="{% url 'add_car' %}" class="btn btn-sm btn-light border fw-bold text-muted">
-                    <i class="fas fa-plus me-1"></i> Add
-                </a>
+                <a href="{% url 'add_car' %}" class="btn btn-sm btn-light border fw-bold text-muted"><i class="fas fa-plus me-1"></i> Add</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -226,18 +220,14 @@
                                 {% if car.images.first %}
                                     <img src="{{ car.images.first.image.url }}" class="rounded-3 object-fit-cover shadow-sm border" width="60" height="45">
                                 {% else %}
-                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width: 60px; height: 45px;">
-                                        <i class="fas fa-car text-muted"></i>
-                                    </div>
+                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width: 60px; height: 45px;"><i class="fas fa-car text-muted"></i></div>
                                 {% endif %}
                             </td>
                             <td>
                                 <div class="fw-bold text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</div>
                                 <div class="small text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> {{ car.created_at|date:"M d" }}</div>
                             </td>
-                            <td class="fw-bold text-dark">
-                                {{ car.price|intcomma }}
-                            </td>
+                            <td class="fw-bold text-dark">{{ car.price|intcomma }}</td>
                             <td>
                                 {% if car.status == 'AVAILABLE' %}
                                     <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">Available</span>
@@ -247,12 +237,19 @@
                                     <span class="badge bg-warning bg-opacity-10 text-warning border border-warning rounded-pill px-3">Reserved</span>
                                 {% endif %}
                             </td>
-                            <td class="pe-4 text-end">
+                            <td class="pe-4 text-end text-nowrap">
+                                <button type="button" 
+                                        class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1 text-primary" 
+                                        onclick="openShareModal('{{ car.year }}', '{{ car.make }}', '{{ car.model }}', '{{ car.price|intcomma }}', '{{ car.get_transmission_display }}', '{{ car.get_fuel_type_display }}', '{{ car.engine_size }}', '{{ request.scheme }}://{{ request.get_host }}{% url 'car_detail' car.id %}')"
+                                        title="Generate WhatsApp Post">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1" target="_blank" title="View Public Page">
                                     <i class="fas fa-external-link-alt text-muted"></i>
                                 </a>
                                 <a href="{% url 'edit_car' car.id %}" class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1" title="Edit">
-                                    <i class="fas fa-pen text-primary"></i>
+                                    <i class="fas fa-pen text-dark"></i>
                                 </a>
                                 <a href="{% url 'delete_car' car.id %}" class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1" title="Delete">
                                     <i class="fas fa-trash text-danger"></i>
@@ -262,11 +259,7 @@
                         {% empty %}
                         <tr>
                             <td colspan="5" class="text-center py-5">
-                                <div class="mb-3">
-                                    <div class="bg-light rounded-circle d-inline-flex p-4">
-                                        <i class="fas fa-car fa-2x text-muted opacity-50"></i>
-                                    </div>
-                                </div>
+                                <div class="mb-3"><div class="bg-light rounded-circle d-inline-flex p-4"><i class="fas fa-car fa-2x text-muted opacity-50"></i></div></div>
                                 <h6 class="fw-bold text-muted">No cars listed yet</h6>
                                 <p class="text-muted small mb-3">Add your first vehicle to start selling.</p>
                                 {% if can_add %}
@@ -283,7 +276,34 @@
     </div>
 </div>
 
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Share Vehicle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">Copy this text to post on WhatsApp Status, Groups, or Instagram.</p>
+                <div class="position-relative">
+                    <textarea id="shareText" class="form-control bg-light border-0 p-3 rounded-3 text-muted" rows="10" readonly></textarea>
+                    <button onclick="copyToClipboard()" class="btn btn-sm btn-dark position-absolute top-0 end-0 m-2 rounded-pill">
+                        <i class="fas fa-copy me-1"></i> Copy
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="copyToClipboard()" class="btn btn-success rounded-pill px-4 fw-bold">
+                    <i class="fab fa-whatsapp me-2"></i> Copy & Open WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    // 1. Chart Config
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('leadsChart');
         if (ctx) {
@@ -293,11 +313,7 @@
                     labels: {{ chart_labels|safe }},
                     datasets: [{
                         data: {{ chart_values|safe }},
-                        backgroundColor: [
-                            '#198754', // WhatsApp Green
-                            '#0d6efd', // Call Blue
-                            '#ffc107'  // Other Yellow
-                        ],
+                        backgroundColor: ['#198754', '#0d6efd', '#ffc107'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -305,20 +321,44 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                boxWidth: 10,
-                                padding: 20
-                            }
-                        }
-                    },
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, padding: 20 } } },
                     cutout: '75%'
                 }
             });
         }
     });
+
+    // 2. Share Generator Logic
+    function openShareModal(year, make, model, price, trans, fuel, engine, url) {
+        // Construct the marketing text
+        const text = `🔥 *FRESH STOCK ALERT!* 🔥\n\n` +
+                     `🚗 *${year} ${make} ${model}*\n` +
+                     `✅ ${trans}\n` +
+                     `✅ ${fuel}\n` +
+                     `✅ ${engine}cc\n\n` +
+                     `💰 *Price: KES ${price}*\n\n` +
+                     `📍 Verified Dealer @ BuyCars.Africa\n\n` +
+                     `📲 *View Full Details & Photos:* 👇\n` +
+                     `${url}\n\n` +
+                     `#${make.replace(/\s/g, '')} #CarsKenya #Magari #BuyCarsAfrica`;
+
+        // Set text in textarea
+        const textarea = document.getElementById('shareText');
+        textarea.value = text;
+
+        // Show Modal
+        var myModal = new bootstrap.Modal(document.getElementById('shareModal'));
+        myModal.show();
+    }
+
+    function copyToClipboard() {
+        const copyText = document.getElementById("shareText");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(copyText.value);
+        
+        // Show temp alert or visual feedback
+        alert("Copied to clipboard! Ready to paste.");
+    }
 </script>
 {% endblock %}
