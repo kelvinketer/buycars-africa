@@ -13,6 +13,7 @@
 <div class="bg-white border-bottom shadow-sm">
     <div class="container py-5">
         <div class="row align-items-center">
+            
             <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
                 {% if profile.logo %}
                     <img src="{{ profile.logo.url }}" 
@@ -168,7 +169,7 @@
                             
                             <div class="d-flex gap-2">
                                 <a href="https://wa.me/{{ profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }})" 
-                                   class="btn btn-success btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                   class="btn btn-success rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
                                    style="width: 40px; height: 40px;"
                                    target="_blank" 
                                    title="Chat on WhatsApp"
@@ -176,7 +177,9 @@
                                     <i class="fab fa-whatsapp"></i>
                                 </a>
 
-                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                                <a href="{% url 'car_detail' car.id %}" 
+                                   class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center justify-content-center"
+                                   style="height: 40px;">
                                     Details
                                 </a>
                             </div>
