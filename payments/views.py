@@ -54,7 +54,7 @@ def stk_push_request(phone_number, amount, user, plan_type):
     if not access_token:
         return {'error': 'Failed to generate access token'}
 
-    # 1. ROBUST PHONE SANITIZATION (Fixes "Invalid PhoneNumber" Error)
+    # 1. ROBUST PHONE SANITIZATION
     # Remove spaces, dashes, plus signs
     phone_number = str(phone_number).strip().replace(" ", "").replace("-", "").replace("+", "")
     
@@ -94,7 +94,7 @@ def stk_push_request(phone_number, amount, user, plan_type):
         response = requests.post(settings.MPESA_EXPRESS_URL, json=payload, headers=headers)
         response_data = response.json()
         
-        # 4. DATABASE SAFETY (Fixes "Duplicate Key" Error)
+        # 4. DATABASE SAFETY
         # Only save if Safaricom actually accepted the request (ResponseCode == 0)
         if response_data.get('ResponseCode') == '0':
             MpesaTransaction.objects.create(
@@ -137,7 +137,7 @@ def initiate_payment(request, plan_type):
     }
     return render(request, 'payments/checkout.html', context)
 
-# --- VIEW 2: PROCESS FORM & TRIGGER STK ---
+# --- VIEW 2: PROCESS FORM & TRIGGER STK (UPDATED) ---
 @login_required
 def process_payment(request):
     """
@@ -156,9 +156,10 @@ def process_payment(request):
         
         # Check Result
         if response.get('ResponseCode') == '0':
-            # Success: Redirect to Dashboard with instruction
-            messages.success(request, f"STK Push sent to {phone}. Please enter your M-PESA PIN.")
-            return redirect('dealer_dashboard')
+            # --- SUCCESS LOGIC UPDATED ---
+            # Instead of redirecting to dashboard immediately, send them to the waiting page.
+            # We pass 'phone' so the template can say "Check your phone ending in..."
+            return render(request, 'dealer/payment_pending.html', {'phone': phone})
         else:
             # Failure: Show error and go back to checkout
             error_msg = response.get('errorMessage', 'Connection failed')
