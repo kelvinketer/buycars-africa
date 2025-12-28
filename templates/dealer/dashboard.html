@@ -27,6 +27,19 @@
     .nav-pills .nav-link i {
         width: 25px; /* Align icons */
     }
+    /* Logout Button Reset */
+    .btn-logout {
+        background: none;
+        border: none;
+        padding: 0;
+        width: 100%;
+        text-align: center;
+        transition: color 0.2s;
+    }
+    .btn-logout:hover {
+        color: #dc3545 !important; /* Darker red on hover */
+        text-decoration: underline;
+    }
 </style>
 {% endblock %}
 
@@ -93,9 +106,13 @@
                             <i class="fab fa-whatsapp me-2"></i> WhatsApp Support
                         </a>
                         <hr class="border-primary opacity-25 my-3">
-                        <a href="{% url 'account_logout' %}" class="text-danger fw-bold small text-decoration-none d-block text-center">
-                            <i class="fas fa-sign-out-alt me-1"></i> Log Out
-                        </a>
+                        
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-logout text-danger fw-bold small">
+                                <i class="fas fa-sign-out-alt me-1"></i> Log Out
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -110,19 +127,26 @@
                     </div>
                 </div>
 
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                     <div>
-                        <h2 class="fw-bold text-dark mb-0">Overview</h2>
-                        <p class="text-muted small mb-0">Welcome back, {{ user.username }}!</p>
+                        <h6 class="text-uppercase text-muted small fw-bold mb-1">Overview</h6>
+                        <h2 class="fw-bold text-dark d-flex align-items-center mb-0">
+                            Dealer Dashboard
+                            {% if user.is_verified %}
+                                <i class="fas fa-check-circle text-success fs-5 ms-2" title="Verified Dealer"></i>
+                            {% else %}
+                                <i class="fas fa-clock text-warning fs-5 ms-2" title="Verification Pending"></i>
+                            {% endif %}
+                        </h2>
                     </div>
-                    <div>
+                    <div class="d-flex gap-2 align-items-center">
                         {% if can_add %}
                             <a href="{% url 'add_car' %}" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
-                                <i class="fas fa-plus me-2"></i> Add New Vehicle
+                                <i class="fas fa-plus me-lg-2"></i> <span class="d-none d-lg-inline">Add Car</span> <span class="d-inline d-lg-none">Add</span>
                             </a>
                         {% else %}
                             <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold shadow-sm">
-                                <i class="fas fa-crown me-2"></i> Upgrade Plan
+                                <i class="fas fa-crown me-2"></i> Upgrade
                             </a>
                         {% endif %}
                     </div>
@@ -135,7 +159,7 @@
                     </div>
                     <div>
                         <h6 class="fw-bold mb-1 text-dark">Verification Pending</h6>
-                        <p class="mb-0 small text-muted">Verified dealers get 3x more leads. <a href="#" class="fw-bold text-dark text-decoration-underline">Contact Admin</a> to verify.</p>
+                        <p class="mb-0 small text-muted">Verified dealers get 3x more leads. <a href="https://wa.me/254700000000" class="fw-bold text-dark text-decoration-underline">Contact Admin</a> to verify.</p>
                     </div>
                 </div>
                 {% endif %}
@@ -340,7 +364,6 @@
 </div>
 
 <script>
-    // Include Chart and Share Logic here (Same as previous)
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('leadsChart');
         if (ctx) {
@@ -358,7 +381,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }, // Hide legend for cleaner look in small card
+                    plugins: { legend: { display: false } },
                     cutout: '75%'
                 }
             });
