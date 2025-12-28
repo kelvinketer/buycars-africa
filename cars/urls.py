@@ -9,7 +9,7 @@ urlpatterns = [
     # --- Dealer Public Profile ---
     path('dealer/<str:username>/', views.dealer_showroom, name='dealer_showroom'),
 
-    # --- Analytics / Lead Tracking (NEW) ---
+    # --- Analytics / Lead Tracking ---
     path('track/<int:car_id>/<str:action_type>/', views.track_action, name='track_action'),
 
     # --- Dealer Dashboard (Protected) ---
@@ -17,4 +17,7 @@ urlpatterns = [
     path('dashboard/add/', views.add_car, name='add_car'),
     path('dashboard/edit/<int:car_id>/', views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', views.delete_car, name='delete_car'),
+
+    # --- Pricing Page (NEW) ---
+    path('pricing/', views.pricing_page, name='pricing'),
 ]

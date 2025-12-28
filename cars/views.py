@@ -301,3 +301,10 @@ def delete_car(request, car_id):
         return redirect('dealer_dashboard')
     
     return render(request, 'dealer/delete_confirm.html', {'car': car})
+
+# --- NEW: PRICING PAGE VIEW ---
+def pricing_page(request):
+    """
+    Renders the public pricing/plans page.
+    """
+    return render(request, 'saas/pricing.html')

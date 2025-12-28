@@ -91,7 +91,7 @@
                             <a href="{% url 'profile_settings' %}" class="nav-link">
                                 <i class="fas fa-cog me-2"></i> Settings
                             </a>
-                            <a href="{% url 'initiate_payment' 'PRO' %}" class="nav-link text-warning-emphasis">
+                            <a href="{% url 'pricing' %}" class="nav-link text-warning-emphasis">
                                 <i class="fas fa-crown me-2"></i> Subscription
                             </a>
                         </div>
@@ -149,7 +149,7 @@
                                 <i class="fas fa-plus me-lg-2"></i> <span class="d-none d-lg-inline">Add Car</span> <span class="d-inline d-lg-none">Add</span>
                             </a>
                         {% else %}
-                            <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold shadow-sm">
+                            <a href="{% url 'pricing' %}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold shadow-sm">
                                 <i class="fas fa-crown me-2"></i> Upgrade
                             </a>
                         {% endif %}
@@ -219,7 +219,7 @@
                                 {% if user.dealer_profile.plan_type == 'PRO' %}
                                     <span class="text-success fw-bold">Active</span>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'PRO' %}" class="text-dark fw-bold text-decoration-none">Upgrade Now &rarr;</a>
+                                    <a href="{% url 'pricing' %}" class="text-dark fw-bold text-decoration-none">Upgrade Now &rarr;</a>
                                 {% endif %}
                             </small>
                         </div>
@@ -344,7 +344,9 @@
                     </div>
                 </div>
 
-            </div> </div> </div>
+            </div>
+        </div> 
+    </div>
 </div>
 
 <div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
