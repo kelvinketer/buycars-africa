@@ -166,7 +166,7 @@
                             <a href="{% url 'car_detail' car.id %}" class="text-dark text-decoration-none">{{ car.model }}</a>
                         </h5>
                         
-                        <div class="row g-2 mb-3">
+                        <div class="row g-2 mb-2">
                             <div class="col-6">
                                 <div class="bg-light rounded-3 p-2 text-center">
                                     <i class="fas fa-gas-pump text-muted me-1 small"></i>
@@ -179,6 +179,10 @@
                                     <span class="small fw-semibold">{{ car.get_transmission_display }}</span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="text-muted small mb-3">
+                            <i class="far fa-clock me-1 text-secondary"></i> Listed {{ car.created_at|naturaltime }}
                         </div>
 
                         <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
