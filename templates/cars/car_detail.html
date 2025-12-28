@@ -199,143 +199,146 @@
 
             <div class="col-lg-4">
                 
-                <div class="card border-0 shadow-sm rounded-4 mb-4 position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 bg-danger" style="height: 4px;"></div>
+                <div class="position-sticky" style="top: 100px;">
                     
-                    <div class="card-body p-4">
-                        <div class="mb-3">
-                            <h2 class="fw-bold mb-1 text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h2>
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 position-relative overflow-hidden">
+                        <div class="position-absolute top-0 start-0 w-100 bg-danger" style="height: 4px;"></div>
+                        
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <h2 class="fw-bold mb-1 text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h2>
+                                
+                                <div class="text-muted small mb-3">
+                                    <i class="far fa-clock me-1 text-danger"></i> Listed {{ car.created_at|naturaltime }}
+                                </div>
+
+                                <h2 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
+                            </div>
+
+                            <hr class="text-muted opacity-25">
+
+                            <div class="row g-2 mb-4">
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-3 text-center border h-100">
+                                        <i class="fas fa-gas-pump text-muted mb-2"></i>
+                                        <div class="small fw-bold text-dark">{{ car.get_fuel_type_display }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-3 text-center border h-100">
+                                        <i class="fas fa-cog text-muted mb-2"></i>
+                                        <div class="small fw-bold text-dark">{{ car.get_transmission_display }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-3 text-center border h-100">
+                                        <i class="fas fa-car-side text-muted mb-2"></i>
+                                        <div class="small fw-bold text-dark">{{ car.body_type }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="bg-light rounded-3 p-3 text-center border h-100">
+                                        <i class="fas fa-tachometer-alt text-muted mb-2"></i>
+                                        <div class="small fw-bold text-dark">{{ car.engine_size }} cc</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                {% if car.dealer.dealer_profile.phone_number %}
+                                    <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} listed for KES {{ car.price|intcomma }}" 
+                                       target="_blank" 
+                                       class="btn btn-success fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center"
+                                       style="height: 45px;"
+                                       onclick="trackLead({{ car.id }}, 'WHATSAPP')">
+                                        <i class="fab fa-whatsapp fa-lg me-2"></i> Chat on WhatsApp
+                                    </a>
+                                    <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" 
+                                       class="btn btn-outline-dark fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center"
+                                       style="height: 45px;"
+                                       onclick="trackLead({{ car.id }}, 'CALL')">
+                                        <i class="fas fa-phone-alt me-2"></i> Call Seller
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-secondary py-2 rounded-pill" disabled>Contact Info Hidden</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if car.dealer.dealer_profile.logo %}
+                                    <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border me-3 shadow-sm" width="60" height="60" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3 border shadow-sm" style="width: 60px; height: 60px;">
+                                        <span class="fw-bold fs-4 text-muted">{{ car.dealer.username|slice:":1" }}</span>
+                                    </div>
+                                {% endif %}
+                                
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark">
+                                        {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
+                                        {% if car.dealer.is_verified %}
+                                            <i class="fas fa-check-circle text-success small ms-1" title="Verified"></i>
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">Verified Dealer</small>
+                                </div>
+                            </div>
                             
-                            <div class="text-muted small mb-3">
-                                <i class="far fa-clock me-1 text-danger"></i> Listed {{ car.created_at|naturaltime }}
-                            </div>
-
-                            <h2 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
-                        </div>
-
-                        <hr class="text-muted opacity-25">
-
-                        <div class="row g-2 mb-4">
-                            <div class="col-6">
-                                <div class="bg-light rounded-3 p-3 text-center border h-100">
-                                    <i class="fas fa-gas-pump text-muted mb-2"></i>
-                                    <div class="small fw-bold text-dark">{{ car.get_fuel_type_display }}</div>
+                            {% if car.dealer.dealer_profile.physical_address %}
+                                <div class="d-flex align-items-start text-muted small mb-3">
+                                    <i class="fas fa-map-marker-alt mt-1 me-2 text-danger"></i>
+                                    {{ car.dealer.dealer_profile.physical_address }}
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="bg-light rounded-3 p-3 text-center border h-100">
-                                    <i class="fas fa-cog text-muted mb-2"></i>
-                                    <div class="small fw-bold text-dark">{{ car.get_transmission_display }}</div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="bg-light rounded-3 p-3 text-center border h-100">
-                                    <i class="fas fa-car-side text-muted mb-2"></i>
-                                    <div class="small fw-bold text-dark">{{ car.body_type }}</div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="bg-light rounded-3 p-3 text-center border h-100">
-                                    <i class="fas fa-tachometer-alt text-muted mb-2"></i>
-                                    <div class="small fw-bold text-dark">{{ car.engine_size }} cc</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            {% if car.dealer.dealer_profile.phone_number %}
-                                <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} listed for KES {{ car.price|intcomma }}" 
-                                   target="_blank" 
-                                   class="btn btn-success fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center"
-                                   style="height: 45px;"
-                                   onclick="trackLead({{ car.id }}, 'WHATSAPP')">
-                                    <i class="fab fa-whatsapp fa-lg me-2"></i> Chat on WhatsApp
-                                </a>
-                                <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" 
-                                   class="btn btn-outline-dark fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center"
-                                   style="height: 45px;"
-                                   onclick="trackLead({{ car.id }}, 'CALL')">
-                                    <i class="fas fa-phone-alt me-2"></i> Call Seller
-                                </a>
-                            {% else %}
-                                <button class="btn btn-secondary py-2 rounded-pill" disabled>Contact Info Hidden</button>
                             {% endif %}
+
+                            <a href="{% url 'dealer_showroom' car.dealer.username %}" class="btn btn-light btn-sm w-100 rounded-pill fw-bold border">
+                                View All Stock <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
-                </div>
 
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            {% if car.dealer.dealer_profile.logo %}
-                                <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border me-3 shadow-sm" width="60" height="60" style="object-fit: cover;">
-                            {% else %}
-                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3 border shadow-sm" style="width: 60px; height: 60px;">
-                                    <span class="fw-bold fs-4 text-muted">{{ car.dealer.username|slice:":1" }}</span>
-                                </div>
-                            {% endif %}
+                    <div class="card border-0 shadow-sm bg-light rounded-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-secondary"></i>Loan Estimator</h5>
                             
-                            <div>
-                                <h6 class="fw-bold mb-0 text-dark">
-                                    {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
-                                    {% if car.dealer.is_verified %}
-                                        <i class="fas fa-check-circle text-success small ms-1" title="Verified"></i>
-                                    {% endif %}
-                                </h6>
-                                <small class="text-muted">Verified Dealer</small>
+                            <div class="mb-3">
+                                <label class="small text-muted fw-bold">Vehicle Price</label>
+                                <input type="text" class="form-control fw-bold border-0" value="KES {{ car.price|floatformat:0|intcomma }}" disabled>
                             </div>
-                        </div>
-                        
-                        {% if car.dealer.dealer_profile.physical_address %}
-                            <div class="d-flex align-items-start text-muted small mb-3">
-                                <i class="fas fa-map-marker-alt mt-1 me-2 text-danger"></i>
-                                {{ car.dealer.dealer_profile.physical_address }}
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="small text-muted fw-bold">Deposit (30%)</label>
+                                    <input type="text" class="form-control border-0" id="deposit" value="0" readonly>
+                                </div>
+                                <div class="col-6">
+                                    <label class="small text-muted fw-bold">Months</label>
+                                    <select class="form-select border-0" id="months" onchange="calculateLoan()">
+                                        <option value="12">12 Months</option>
+                                        <option value="24">24 Months</option>
+                                        <option value="36" selected>36 Months</option>
+                                        <option value="48">48 Months</option>
+                                        <option value="60">60 Months</option>
+                                    </select>
+                                </div>
                             </div>
-                        {% endif %}
 
-                        <a href="{% url 'dealer_showroom' car.dealer.username %}" class="btn btn-light btn-sm w-100 rounded-pill fw-bold border">
-                            View All Stock <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm bg-light rounded-4">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-secondary"></i>Loan Estimator</h5>
-                        
-                        <div class="mb-3">
-                            <label class="small text-muted fw-bold">Vehicle Price</label>
-                            <input type="text" class="form-control fw-bold border-0" value="KES {{ car.price|floatformat:0|intcomma }}" disabled>
-                        </div>
-                        
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <label class="small text-muted fw-bold">Deposit (30%)</label>
-                                <input type="text" class="form-control border-0" id="deposit" value="0" readonly>
+                            <div class="bg-white p-3 rounded-3 text-center border shadow-sm">
+                                <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Estimated Monthly Pay</small>
+                                <h3 class="text-dark fw-bold mb-0" id="monthlyPayment">...</h3>
                             </div>
-                            <div class="col-6">
-                                <label class="small text-muted fw-bold">Months</label>
-                                <select class="form-select border-0" id="months" onchange="calculateLoan()">
-                                    <option value="12">12 Months</option>
-                                    <option value="24">24 Months</option>
-                                    <option value="36" selected>36 Months</option>
-                                    <option value="48">48 Months</option>
-                                    <option value="60">60 Months</option>
-                                </select>
+                            <div class="text-center mt-2">
+                                <small class="text-muted fst-italic" style="font-size: 0.7rem;">*Est. @ 18% Interest. Subject to approval.</small>
                             </div>
-                        </div>
-
-                        <div class="bg-white p-3 rounded-3 text-center border shadow-sm">
-                            <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Estimated Monthly Pay</small>
-                            <h3 class="text-dark fw-bold mb-0" id="monthlyPayment">...</h3>
-                        </div>
-                        <div class="text-center mt-2">
-                            <small class="text-muted fst-italic" style="font-size: 0.7rem;">*Est. @ 18% Interest. Subject to approval.</small>
                         </div>
                     </div>
-                </div>
 
-            </div>
+                </div>
+                </div>
         </div>
 
         {% if similar_cars %}

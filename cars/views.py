@@ -93,10 +93,11 @@ def car_detail(request, car_id):
     
     # --- RECOMMENDATION ENGINE ---
     # Only recommend AVAILABLE cars to keep the user buying
+    # UPDATED: Changed limit from [:3] to [:4]
     similar_cars = Car.objects.filter(
         body_type=car.body_type, 
         status='AVAILABLE'
-    ).exclude(id=car.id).order_by('-created_at')[:3]
+    ).exclude(id=car.id).order_by('-created_at')[:4]
     
     context = {
         'car': car,
