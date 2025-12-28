@@ -1,306 +1,288 @@
 {% extends 'base.html' %}
 {% load humanize %}
-{% load custom_filters %}
+{% load custom_filters %} 
+{% load static %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <div>
-            <h1 class="h2 d-inline-block me-2">Dealer Dashboard</h1>
-            
-            {% if user.is_verified %}
-                <span class="badge bg-success align-middle mb-2">
-                    <i class="fas fa-check-circle me-1"></i> Verified Dealer
-                </span>
-            {% else %}
-                <span class="badge bg-warning text-dark align-middle mb-2">
-                    <i class="fas fa-clock me-1"></i> Verification Pending
-                </span>
-            {% endif %}
-        </div>
-
-        <div class="btn-toolbar mb-2 mb-md-0 gap-2">
-            <a href="{% url 'dealer_showroom' user.username %}" class="btn btn-outline-primary shadow-sm" target="_blank">
-                <i class="fas fa-store me-1"></i> View My Showroom
-            </a>
-
-            <a href="{% url 'dealer_support' %}" class="btn btn-outline-secondary shadow-sm">
-                <i class="fas fa-life-ring me-1"></i> Help
-            </a>
-
-            <a href="{% url 'profile_settings' %}" class="btn btn-outline-dark shadow-sm">
-                <i class="fas fa-cog me-1"></i> Settings
-            </a>
-            
-            {% if can_add %}
-                <a href="{% url 'add_car' %}" class="btn btn-danger shadow-sm">
-                    <i class="fas fa-plus me-1"></i> Add New Car
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h6 class="text-uppercase text-muted small fw-bold mb-1">Overview</h6>
+                <h2 class="fw-bold text-dark d-flex align-items-center">
+                    Dealer Dashboard
+                    {% if user.is_verified %}
+                        <i class="fas fa-check-circle text-success fs-5 ms-2" title="Verified Dealer"></i>
+                    {% else %}
+                        <i class="fas fa-clock text-warning fs-5 ms-2" title="Verification Pending"></i>
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'dealer_showroom' user.username %}" class="btn btn-white border shadow-sm rounded-pill fw-bold" target="_blank">
+                    <i class="fas fa-store me-2 text-muted"></i> Showroom
                 </a>
-            {% else %}
-                <button class="btn btn-secondary shadow-sm" disabled style="cursor: not-allowed;" title="Upgrade your plan to add more cars">
-                    <i class="fas fa-lock me-1"></i> Limit Reached ({{ total_cars }}/{{ limit }})
-                </button>
-            {% endif %}
+                <a href="{% url 'profile_settings' %}" class="btn btn-white border shadow-sm rounded-circle" title="Settings">
+                    <i class="fas fa-cog text-muted"></i>
+                </a>
+                
+                {% if can_add %}
+                    <a href="{% url 'add_car' %}" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-plus me-2"></i> Add Car
+                    </a>
+                {% else %}
+                    <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-warning text-dark rounded-pill px-4 fw-bold shadow-sm">
+                        <i class="fas fa-crown me-2"></i> Upgrade
+                    </a>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
-    {% if not user.is_verified %}
-    <div class="alert alert-warning shadow-sm border-start border-warning border-4 mb-4" role="alert">
-        <div class="d-flex align-items-center">
-            <div class="me-3 d-none d-md-block">
-                <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+        {% if not user.is_verified %}
+        <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-5 d-flex align-items-center" role="alert">
+            <div class="bg-warning bg-opacity-25 rounded-circle p-3 me-3 text-warning-emphasis">
+                <i class="fas fa-exclamation-triangle fa-lg"></i>
             </div>
             <div>
-                <h5 class="alert-heading fw-bold mb-1">Account Verification Required</h5>
-                <p class="mb-2 small">
-                    Your account is currently <strong>Unverified</strong>. Verified dealers get <strong>3x more calls</strong> and a trust badge.
-                    To activate your account, please contact Admin.
-                </p>
-                <a href="https://wa.me/254727025050?text=Hello%20Admin,%20my%20username%20is%20{{ user.username }}%20and%20I%20request%20verification." 
-                   class="btn btn-dark btn-sm rounded-pill" target="_blank">
-                    <i class="fab fa-whatsapp me-1"></i> Request Verification
-                </a>
+                <h6 class="fw-bold mb-1 text-dark">Verification Pending</h6>
+                <p class="mb-0 small text-muted">Verified dealers get 3x more leads. <a href="https://wa.me/254700000000" class="fw-bold text-dark text-decoration-underline">Contact Admin</a> to verify your ID.</p>
             </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <div class="row mb-4 g-3">
-        <div class="col-md-4">
-            <div class="card shadow-sm border-start border-danger border-4 h-100">
-                <div class="card-body">
-                    <h6 class="text-muted text-uppercase small mb-2">Total Inventory</h6>
-                    <h2 class="fw-bold mb-0">{{ total_cars }} <span class="fs-6 text-muted font-weight-normal">Cars</span></h2>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100 border-start border-primary border-4">
-                <div class="card-body">
-                    <h6 class="text-muted text-uppercase small mb-2">Estimated Value</h6>
-                    <h2 class="fw-bold mb-0">KES {{ total_value|intcomma }}</h2>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100 border-start border-success border-4" id="subscription">
-                <div class="card-body">
-                    <h6 class="text-muted text-uppercase small mb-2">Current Plan</h6>
-                    
-                    {% if user.dealer_profile.plan_type == 'PRO' %}
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h2 class="fw-bold text-success mb-0">Pro Plan</h2>
-                            <i class="fas fa-infinity fa-2x text-success opacity-50"></i>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 position-relative overflow-hidden">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted text-uppercase small fw-bold mb-1">Total Cars</p>
+                                <h2 class="fw-bold mb-0 text-dark">{{ total_cars }}</h2>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 text-primary">
+                                <i class="fas fa-car fa-lg"></i>
+                            </div>
                         </div>
-                        <p class="small text-muted mt-2 mb-0">
-                            <i class="fas fa-check-circle text-success me-1"></i> Unlimited Uploads
-                        </p>
-                        {% if user.dealer_profile.subscription_expiry %}
-                        <p class="small text-muted mb-0">
-                            Expires: {{ user.dealer_profile.subscription_expiry|date:"M d, Y" }}
-                        </p>
-                        {% endif %}
-                    {% else %}
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h2 class="fw-bold text-dark mb-0">
-                                {% if user.dealer_profile.plan_type == 'LITE' %}Lite Plan{% else %}Free Plan{% endif %}
-                            </h2>
-                            <span class="badge bg-secondary">
-                                {% if user.dealer_profile.plan_type == 'LITE' %}Biashara{% else %}Basic{% endif %}
-                            </span>
+                        <div class="mt-3">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {% widthratio total_cars limit 100 %}%"></div>
+                            </div>
+                            <small class="text-muted mt-2 d-block">{{ total_cars }} of {{ limit }} slots used</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted text-uppercase small fw-bold mb-1">Portfolio Value</p>
+                                <h2 class="fw-bold mb-0 text-dark">KES {{ total_value|floatformat:0|intcomma }}</h2>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 text-success">
+                                <i class="fas fa-wallet fa-lg"></i>
+                            </div>
+                        </div>
+                        <small class="text-muted mt-4 d-block"><i class="fas fa-chart-line text-success me-1"></i> Based on listing price</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted text-uppercase small fw-bold mb-1">Current Plan</p>
+                                {% if user.dealer_profile.plan_type == 'PRO' %}
+                                    <h2 class="fw-bold mb-0 text-dark">Pro <i class="fas fa-crown text-warning fs-5 ms-1"></i></h2>
+                                {% elif user.dealer_profile.plan_type == 'LITE' %}
+                                    <h2 class="fw-bold mb-0 text-dark">Lite</h2>
+                                {% else %}
+                                    <h2 class="fw-bold mb-0 text-dark">Free</h2>
+                                {% endif %}
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 text-warning">
+                                <i class="fas fa-star fa-lg"></i>
+                            </div>
                         </div>
                         
                         <div class="mt-3">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span class="text-muted">Usage Limit:</span>
-                                <span class="fw-bold">
-                                    {{ total_cars }} / {{ limit }} Cars
-                                </span>
-                            </div>
-                            
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar {% if not can_add %}bg-danger{% else %}bg-success{% endif %}" 
-                                     role="progressbar" 
-                                     style="width: {% widthratio total_cars limit 100 %}%;">
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-3">
-                                {% if user.dealer_profile.plan_type == 'FREE' %}
-                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-primary btn-sm rounded-pill">
-                                        <i class="fas fa-arrow-up me-1"></i> Get Lite (KES 1,000)
-                                    </a>
-                                {% endif %}
-                                
-                                <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-success btn-sm rounded-pill shadow-sm">
-                                    <i class="fas fa-crown me-1"></i> Get Pro (KES 2,500)
-                                </a>
-                            </div>
+                            {% if user.dealer_profile.plan_type == 'FREE' %}
+                                <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-dark btn-sm rounded-pill w-100 fw-bold">Upgrade to Lite</a>
+                            {% elif user.dealer_profile.plan_type == 'LITE' %}
+                                <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark btn-sm rounded-pill w-100 fw-bold">Go Pro (Uncapped)</a>
+                            {% else %}
+                                <small class="text-success fw-bold"><i class="fas fa-check me-1"></i> Unlimited Access</small>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-5 g-4">
-        <div class="col-lg-4">
-            <div class="card shadow-sm h-100 border-0">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-chart-pie me-2 text-danger"></i>Lead Performance</h5>
-                </div>
-                <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                    {% if chart_values %}
-                        <div style="width: 100%; max-width: 250px;">
-                            <canvas id="leadsChart"></canvas>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-chart-bar fa-3x text-light mb-3"></i>
-                            <p class="text-muted small">No lead data yet. <br>Once customers click your WhatsApp or Call buttons, statistics will appear here.</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-8">
-            <div class="card shadow-sm h-100 border-0">
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-history me-2 text-danger"></i>Recent Activity</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0">
-                            <thead class="small text-muted bg-light">
-                                <tr>
-                                    <th class="ps-3 py-2">Action</th>
-                                    <th class="py-2">Vehicle</th>
-                                    <th class="py-2">Date/Time</th>
-                                </tr>
-                            </thead>
-                            <tbody class="small">
-                                {% for lead in recent_activity %}
-                                <tr>
-                                    <td class="ps-3 py-3">
-                                        {% if lead.action == 'WHATSAPP' %}
-                                            <span class="badge bg-success-subtle text-success border border-success px-2 rounded-pill">
-                                                <i class="fab fa-whatsapp me-1"></i> WhatsApp
-                                            </span>
-                                        {% elif lead.action == 'CALL' %}
-                                            <span class="badge bg-primary-subtle text-primary border border-primary px-2 rounded-pill">
-                                                <i class="fas fa-phone me-1"></i> Call
-                                            </span>
-                                        {% else %}
-                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary px-2 rounded-pill">
-                                                <i class="fas fa-eye me-1"></i> View
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="py-3">
-                                        <strong>{{ lead.car.year }} {{ lead.car.make }} {{ lead.car.model }}</strong>
-                                        <br>
-                                        <span class="text-muted text-xs">{{ lead.car.price|intcomma }} KES</span>
-                                    </td>
-                                    <td class="py-3 text-muted">
-                                        <i class="far fa-clock me-1"></i> {{ lead.timestamp|naturaltime }}
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted">
-                                        <i class="fas fa-chart-line fa-2x mb-2 opacity-25"></i>
-                                        <p class="small mb-0">No recent activity found.</p>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <h4 class="mb-3 fw-bold" id="inventory">My Active Inventory</h4>
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th scope="col" class="ps-4">Car Details</th>
-                        <th scope="col">Price (KES)</th>
-                        <th scope="col">Status</th>
-                        <th scope="col" class="text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for car in cars %}
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center">
-                                <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                    {% if car.images.first %}
-                                        <img src="{{ car.images.first.image.url }}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
-                                    {% else %}
-                                        <i class="fas fa-car text-muted"></i>
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <strong class="d-block text-dark">{{ car.make }} {{ car.model }}</strong>
-                                    <small class="text-muted">{{ car.year }} | {{ car.get_transmission_display }}</small>
-                                </div>
+        <div class="row g-4 mb-5">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Recent Leads</h5>
+                        <span class="badge bg-light text-dark border">{{ recent_activity.count|default:"0" }} Actions</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4 py-3 text-muted small text-uppercase">Vehicle</th>
+                                        <th class="py-3 text-muted small text-uppercase">Type</th>
+                                        <th class="py-3 text-muted small text-uppercase">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lead in recent_activity %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark">{{ lead.car.make }} {{ lead.car.model }}</div>
+                                            <small class="text-muted">{{ lead.car.year }}</small>
+                                        </td>
+                                        <td>
+                                            {% if lead.action == 'WHATSAPP' %}
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
+                                                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3">
+                                                    <i class="fas fa-phone me-1"></i> Call
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-muted small">{{ lead.timestamp|naturaltime }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center py-5 text-muted">
+                                            <i class="fas fa-ghost fa-2x mb-3 opacity-50"></i>
+                                            <p class="mb-0">No leads yet. Share your showroom link!</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-0 py-3 px-4">
+                        <h5 class="fw-bold mb-0">Lead Sources</h5>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        {% if chart_values %}
+                            <div style="width: 250px; height: 250px;">
+                                <canvas id="leadsChart"></canvas>
                             </div>
-                        </td>
-                        <td class="fw-bold">{{ car.price|intcomma }}</td>
-                        
-                        <td>
-                            {% if car.status == 'AVAILABLE' %}
-                                <span class="badge bg-success-subtle text-success border border-success px-3 rounded-pill">Available</span>
-                            {% elif car.status == 'SOLD' %}
-                                <span class="badge bg-danger-subtle text-danger border border-danger px-3 rounded-pill">Sold</span>
-                            {% else %}
-                                <span class="badge bg-warning-subtle text-warning border border-warning px-3 rounded-pill">{{ car.status }}</span>
-                            {% endif %}
-                        </td>
-                        
-                        <td class="text-end pe-4">
-                            <a href="{% url 'edit_car' car.id %}" class="btn btn-sm btn-outline-secondary me-1" title="Edit Car">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            
-                            <a href="{% url 'delete_car' car.id %}" class="btn btn-sm btn-outline-danger me-1" title="Delete Car">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
-                        
-                            <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-outline-primary" title="View Live" target="_blank">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center py-5">
-                            <div class="text-muted">
-                                <i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i>
-                                <p class="mb-2">No cars in your showroom yet.</p>
-                                
-                                {% if can_add %}
-                                    <a href="{% url 'add_car' %}" class="btn btn-sm btn-danger">Add your first car</a>
-                                {% endif %}
+                        {% else %}
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-chart-pie fa-3x mb-3 opacity-25"></i>
+                                <p class="small">No data available yet.</p>
                             </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden" id="inventory">
+            <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">My Inventory</h5>
+                <a href="{% url 'add_car' %}" class="btn btn-sm btn-light border fw-bold text-muted">
+                    <i class="fas fa-plus me-1"></i> Add
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted small text-uppercase" style="width: 100px;">Image</th>
+                            <th class="py-3 text-muted small text-uppercase">Vehicle Details</th>
+                            <th class="py-3 text-muted small text-uppercase">Price</th>
+                            <th class="py-3 text-muted small text-uppercase">Status</th>
+                            <th class="pe-4 py-3 text-muted small text-uppercase text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars %}
+                        <tr>
+                            <td class="ps-4">
+                                {% if car.images.first %}
+                                    <img src="{{ car.images.first.image.url }}" class="rounded-3 object-fit-cover shadow-sm border" width="60" height="45">
+                                {% else %}
+                                    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center border" style="width: 60px; height: 45px;">
+                                        <i class="fas fa-car text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</div>
+                                <div class="small text-muted" style="font-size: 0.75rem;"><i class="far fa-clock me-1"></i> {{ car.created_at|date:"M d" }}</div>
+                            </td>
+                            <td class="fw-bold text-dark">
+                                {{ car.price|intcomma }}
+                            </td>
+                            <td>
+                                {% if car.status == 'AVAILABLE' %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">Available</span>
+                                {% elif car.status == 'SOLD' %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3">Sold</span>
+                                {% else %}
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning rounded-pill px-3">Reserved</span>
+                                {% endif %}
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1" target="_blank" title="View Public Page">
+                                    <i class="fas fa-external-link-alt text-muted"></i>
+                                </a>
+                                <a href="{% url 'edit_car' car.id %}" class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1" title="Edit">
+                                    <i class="fas fa-pen text-primary"></i>
+                                </a>
+                                <a href="{% url 'delete_car' car.id %}" class="btn btn-light btn-sm rounded-circle shadow-sm border mx-1" title="Delete">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="mb-3">
+                                    <div class="bg-light rounded-circle d-inline-flex p-4">
+                                        <i class="fas fa-car fa-2x text-muted opacity-50"></i>
+                                    </div>
+                                </div>
+                                <h6 class="fw-bold text-muted">No cars listed yet</h6>
+                                <p class="text-muted small mb-3">Add your first vehicle to start selling.</p>
+                                {% if can_add %}
+                                    <a href="{% url 'add_car' %}" class="btn btn-outline-danger btn-sm rounded-pill px-4">Add Car</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('leadsChart');
@@ -311,25 +293,29 @@
                     labels: {{ chart_labels|safe }},
                     datasets: [{
                         data: {{ chart_values|safe }},
-                        backgroundColor: ['#28a745', '#007bff', '#ffc107', '#dc3545'],
-                        hoverOffset: 4,
-                        borderWidth: 0
+                        backgroundColor: [
+                            '#198754', // WhatsApp Green
+                            '#0d6efd', // Call Blue
+                            '#ffc107'  // Other Yellow
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'bottom',
                             labels: {
-                                boxWidth: 12,
-                                padding: 20,
-                                font: { size: 11 }
+                                usePointStyle: true,
+                                boxWidth: 10,
+                                padding: 20
                             }
                         }
                     },
-                    cutout: '70%'
+                    cutout: '75%'
                 }
             });
         }
