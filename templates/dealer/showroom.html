@@ -10,82 +10,103 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-white border-bottom shadow-sm">
-    <div class="container py-5">
-        <div class="row align-items-center">
-            
-            <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
-                {% if profile.logo %}
-                    <img src="{{ profile.logo.url }}" 
-                         alt="{{ profile.business_name }}" 
-                         class="rounded-circle border p-1 shadow-sm" 
-                         style="width: 140px; height: 140px; object-fit: cover;">
-                {% else %}
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light text-secondary rounded-circle border p-1 shadow-sm" 
-                         style="width: 140px; height: 140px;">
-                        <span class="fw-bold fs-1 text-uppercase">{{ dealer.username|slice:":1" }}</span>
-                    </div>
-                {% endif %}
-            </div>
 
-            <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
-                <h1 class="fw-bold mb-1 display-6">
-                    {{ profile.business_name|default:dealer.username }}
-                    {% if dealer.is_verified %}
-                        <i class="fas fa-check-circle text-success fs-4 ms-2 align-middle" title="Verified Dealer"></i>
-                    {% endif %}
-                </h1>
-                
-                <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 text-muted mb-3">
-                    {% if profile.city %}
-                        <span><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ profile.get_city_display }}</span>
-                    {% endif %}
-                    <span><i class="fas fa-calendar-alt text-danger me-1"></i> Joined {{ dealer.date_joined|date:"M Y" }}</span>
-                </div>
+<div class="position-relative mb-5">
+    <div class="w-100 position-absolute" style="height: 220px; background: linear-gradient(135deg, #212529 0%, #343a40 100%); top: 0; left: 0; z-index: 1;"></div>
 
-                {% if profile.physical_address %}
-                    <p class="small text-muted mb-3"><i class="fas fa-building me-1"></i> {{ profile.physical_address }}</p>
-                {% endif %}
-
-                <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
-                    {% with contact_number=profile.phone_number|default:dealer.phone_number %}
-                        {% if contact_number %}
-                            <a href="https://wa.me/{{ contact_number|whatsapp_format }}?text=Hi, I am looking at your stock on BuyCars." target="_blank" class="btn btn-success rounded-pill fw-bold">
-                                <i class="fab fa-whatsapp me-2"></i> WhatsApp
-                            </a>
-                            <a href="tel:{{ contact_number|whatsapp_format }}" class="btn btn-outline-dark rounded-pill fw-bold">
-                                <i class="fas fa-phone-alt me-2"></i> Call
-                            </a>
-                        {% else %}
-                            <button class="btn btn-secondary rounded-pill" disabled>Contact Info Hidden</button>
-                        {% endif %}
-                    {% endwith %}
-
-                    {% if profile.website_link %}
-                        <a href="{{ profile.website_link }}" target="_blank" class="btn btn-light border rounded-pill" title="Visit Website">
-                            <i class="fas fa-globe"></i>
-                        </a>
-                    {% endif %}
+    <div class="container position-relative" style="z-index: 2; padding-top: 80px;">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+            <div class="card-body p-4 p-lg-5">
+                <div class="row align-items-center">
                     
-                    <button class="btn btn-light border rounded-pill" onclick="navigator.clipboard.writeText('{{ request.build_absolute_uri }}'); alert('Showroom link copied!');">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card bg-light border-0 rounded-4">
-                    <div class="card-body text-center">
-                        <h3 class="fw-bold mb-0">{{ cars.count }}</h3>
-                        <small class="text-muted text-uppercase">Vehicles for Sale</small>
+                    <div class="col-md-auto text-center text-md-start mb-4 mb-md-0 position-relative">
+                        <div class="d-inline-block position-relative">
+                            {% if profile.logo %}
+                                <img src="{{ profile.logo.url }}" 
+                                     alt="{{ profile.business_name }}" 
+                                     class="rounded-circle border border-4 border-white shadow-sm bg-white" 
+                                     style="width: 150px; height: 150px; object-fit: cover; margin-top: -60px;">
+                            {% else %}
+                                <div class="d-inline-flex align-items-center justify-content-center bg-light text-secondary rounded-circle border border-4 border-white shadow-sm" 
+                                     style="width: 150px; height: 150px; margin-top: -60px;">
+                                    <span class="fw-bold display-4 text-uppercase">{{ dealer.username|slice:":1" }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if dealer.is_verified %}
+                                <span class="position-absolute bottom-0 end-0 bg-white rounded-circle p-1" title="Verified Dealer">
+                                    <i class="fas fa-check-circle text-success fa-2x"></i>
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
+
+                    <div class="col-md text-center text-md-start">
+                        <h1 class="fw-bold mb-1 text-dark">{{ profile.business_name|default:dealer.username }}</h1>
+                        
+                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mb-3 text-muted">
+                            {% if profile.city %}
+                                <span class="badge bg-light text-dark border fw-normal py-2 px-3 rounded-pill">
+                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ profile.get_city_display }}
+                                </span>
+                            {% endif %}
+                            <span class="badge bg-light text-dark border fw-normal py-2 px-3 rounded-pill">
+                                <i class="far fa-calendar-alt text-danger me-2"></i>Since {{ dealer.date_joined|date:"Y" }}
+                            </span>
+                        </div>
+
+                        {% if profile.physical_address %}
+                            <p class="text-muted small mb-4"><i class="fas fa-building me-2"></i>{{ profile.physical_address }}</p>
+                        {% endif %}
+
+                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+                            {% with contact_number=profile.phone_number|default:dealer.phone_number %}
+                                {% if contact_number %}
+                                    <a href="https://wa.me/{{ contact_number|whatsapp_format }}?text=Hi, I am looking at your stock on BuyCars." target="_blank" 
+                                       class="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center">
+                                        <i class="fab fa-whatsapp me-2 fa-lg"></i> Chat
+                                    </a>
+                                    <a href="tel:{{ contact_number|whatsapp_format }}" 
+                                       class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center">
+                                        <i class="fas fa-phone-alt me-2"></i> Call
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-secondary rounded-pill px-4" disabled>Contact Info Hidden</button>
+                                {% endif %}
+                            {% endwith %}
+
+                            <button class="btn btn-light border rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                    style="width: 42px; height: 42px;"
+                                    onclick="navigator.clipboard.writeText('{{ request.build_absolute_uri }}'); alert('Showroom link copied!');"
+                                    title="Copy Link">
+                                <i class="fas fa-share-alt text-muted"></i>
+                            </button>
+                            
+                            {% if profile.website_link %}
+                                <a href="{{ profile.website_link }}" target="_blank" 
+                                   class="btn btn-light border rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                                   style="width: 42px; height: 42px;" title="Visit Website">
+                                    <i class="fas fa-globe text-muted"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-auto mt-4 mt-md-0">
+                        <div class="bg-light rounded-4 p-4 text-center border shadow-sm" style="min-width: 160px;">
+                            <h2 class="fw-bold mb-0 text-danger display-6">{{ cars.count }}</h2>
+                            <small class="text-uppercase fw-bold text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Vehicles</small>
+                            <div class="mt-2 text-success small">
+                                <i class="fas fa-circle fa-xs me-1"></i> Available
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-
 <div class="bg-light py-5">
     <div class="container">
         <div class="row mb-4 align-items-center">
@@ -141,7 +162,7 @@
                     
                     <div class="card-body d-flex flex-column p-4">
                         <div class="text-muted small mb-1 text-uppercase fw-bold">{{ car.make }}</div>
-                        <h5 class="card-title fw-bold mb-3">
+                        <h5 class="card-title fw-bold mb-3" style="font-size: 1.1rem;">
                             <a href="{% url 'car_detail' car.id %}" class="text-dark text-decoration-none">{{ car.model }}</a>
                         </h5>
                         
@@ -172,7 +193,7 @@
                                    target="_blank" 
                                    title="Chat on WhatsApp"
                                    onclick="trackLead({{ car.id }}, 'WHATSAPP')">
-                                    <i class="fab fa-whatsapp"></i>
+                                    <i class="fab fa-whatsapp fa-lg"></i>
                                 </a>
 
                                 <a href="{% url 'car_detail' car.id %}" 
