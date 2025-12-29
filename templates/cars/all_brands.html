@@ -1,94 +1,47 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load humanize %}
-
-{% block head_extra %}
-<style>
-    .brand-directory-header {
-        background: #0f172a;
-        color: white;
-        padding: 80px 0;
-        text-align: center;
-    }
-    
-    .brand-item {
-        transition: all 0.3s ease;
-        border: 1px solid #eee;
-        background: white;
-    }
-    
-    .brand-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        border-color: #dc3545;
-    }
-
-    .brand-icon-placeholder {
-        width: 50px;
-        height: 50px;
-        background: #f8f9fa;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #adb5bd;
-        margin: 0 auto 10px;
-    }
-    
-    .brand-logo-img {
-        height: 50px;
-        width: auto;
-        max-width: 100%;
-        object-fit: contain;
-        margin-bottom: 10px;
-        filter: grayscale(100%);
-        opacity: 0.7;
-        transition: all 0.3s;
-    }
-    
-    .brand-item:hover .brand-logo-img {
-        filter: none;
-        opacity: 1;
-    }
-</style>
-{% endblock %}
 
 {% block content %}
-
-<div class="brand-directory-header">
+<section class="bg-light py-5">
     <div class="container">
-        <h1 class="fw-bold display-5">Browse by Brand</h1>
-        <p class="lead text-white-50 mb-0">Select a manufacturer to view available inventory</p>
-    </div>
-</div>
+        <div class="text-center mb-5">
+            <h6 class="text-danger fw-bold text-uppercase small mb-2">Inventory</h6>
+            <h1 class="fw-bold text-dark">Browse by Make</h1>
+            <p class="text-muted">Explore our extensive collection of premium vehicles sorted by brand.</p>
+        </div>
 
-<div class="container py-5">
-    <div class="row g-4">
-        {% for brand in brands %}
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
-            <a href="{% url 'home' %}?make={{ brand.make }}" class="card brand-item h-100 text-center p-4 text-decoration-none rounded-4">
-                
-                <img src="{% static 'images/brands/'|add:brand.make|lower|add:'.png' %}" 
-                     class="brand-logo-img" 
-                     alt="{{ brand.make }}"
-                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                
-                <div class="brand-icon-placeholder" style="display: none;">
-                    <i class="fas fa-car fa-lg"></i>
-                </div>
-
-                <h6 class="fw-bold text-dark mb-1">{{ brand.make }}</h6>
-                <small class="text-danger fw-bold bg-danger bg-opacity-10 px-2 py-1 rounded-pill" style="font-size: 0.7rem;">
-                    {{ brand.total }} Cars
-                </small>
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+            {% for brand in brands %}
+            <div class="col">
+                <a href="{% url 'home' %}?make={{ brand.make }}" class="card h-100 border-0 shadow-sm text-decoration-none hover-lift text-center py-4">
+                    <div class="card-body">
+                        <img src="{% static 'images/brands/'|add:brand.make|lower|add:'.png' %}" 
+                             class="mb-3" 
+                             style="height: 50px; width: auto; object-fit: contain; opacity: 0.8;"
+                             onerror="this.style.display='none'">
+                        
+                        <h6 class="fw-bold text-dark mb-1">{{ brand.make }}</h6>
+                        <span class="badge bg-light text-muted border rounded-pill small">{{ brand.total }} Cars</span>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No brands found in the inventory yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i> Back to Home
             </a>
         </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <p class="text-muted">No brands found in the inventory.</p>
-        </div>
-        {% endfor %}
     </div>
-</div>
+</section>
 
+<style>
+    .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
+</style>
 {% endblock %}
