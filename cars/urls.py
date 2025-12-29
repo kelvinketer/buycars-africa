@@ -6,9 +6,8 @@ urlpatterns = [
     path('', views.public_homepage, name='home'),
     path('car/<int:car_id>/', views.car_detail, name='car_detail'),
     
-    # --- RENAME THIS LINE ---
-    # We change name='all_brands' to name='browse_brands' to fix the error
-    path('brands/', views.all_brands, name='browse_brands'), 
+    # --- RENAME THIS TO 'brands_list' ---
+    path('brands/', views.all_brands, name='brands_list'), 
     
     # --- Dealer Public Profile ---
     path('dealer/<str:username>/', views.dealer_showroom, name='dealer_showroom'),
