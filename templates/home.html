@@ -39,7 +39,6 @@
         background-color: #f8f9fa;
         font-size: 1rem;
         padding-left: 20px;
-        /* Ensure placeholders are lighter, but user text is bold */
     }
     .custom-search-input:focus {
         background-color: white;
@@ -49,7 +48,7 @@
     
     /* Placeholder styling fix for bold inputs */
     .custom-search-input::placeholder {
-        font-weight: 400; /* Keep placeholder normal weight */
+        font-weight: 400;
         color: #6c757d;
     }
 
@@ -124,7 +123,7 @@
             <div class="row g-3 align-items-end">
 
                 <div class="col-lg-3">
-                    <label class="small fw-bold text-muted mb-2 ms-1">Keywords</label>
+                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-tags me-1"></i> Keywords</label>
                     <div class="position-relative">
                         <i class="fas fa-search text-muted position-absolute" style="left: 15px; top: 18px;"></i>
                         <input type="text" name="q" class="form-control custom-search-input fw-bold text-dark" style="padding-left: 40px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
@@ -142,7 +141,7 @@
                 </div>
 
                 <div class="col-lg-2 col-md-6">
-                    <label class="small fw-bold text-muted mb-2 ms-1">Make</label>
+                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-car me-1"></i> Make</label>
                     <select name="make" class="form-select custom-search-input fw-bold text-dark">
                         <option value="">All Makes</option>
                         {% for make in all_makes %}
@@ -152,7 +151,7 @@
                 </div>
 
                 <div class="col-lg-2 col-md-6">
-                    <label class="small fw-bold text-muted mb-2 ms-1">Body Type</label>
+                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-shapes me-1"></i> Body Type</label>
                     <select name="body_type" class="form-select custom-search-input fw-bold text-dark">
                         <option value="">Any Type</option>
                         {% for bt in all_body_types %}
