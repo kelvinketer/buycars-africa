@@ -176,7 +176,13 @@ def delete_car(request, car_id):
 def pricing_page(request):
     return render(request, 'saas/pricing.html')
 
-# --- VIEW FOR ALL BRANDS ---
+# --- THIS IS THE FIX: Safer Syntax ---
 def all_brands(request):
-    brands = Car.objects.values('make').annotate(total=Count('id')).filter(total__gt=0).order_by('make')
+    # Use parentheses to avoid indentation errors with backslashes
+    brands = (
+        Car.objects.values('make')
+        .annotate(total=Count('id'))
+        .filter(total__gt=0)
+        .order_by('make')
+    )
     return render(request, 'cars/all_brands.html', {'brands': brands})
