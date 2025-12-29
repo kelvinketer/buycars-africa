@@ -33,6 +33,10 @@ urlpatterns = [
     path('', car_views.public_homepage, name='home'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     
+    # --- THIS WAS THE MISSING LINK ---
+    path('brands/', car_views.all_brands, name='brands_list'),
+    # -------------------------------
+    
     # --- DEALER SHOWROOM (Public Profile) ---
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
 
@@ -48,7 +52,7 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # --- PRICING PAGE (This was missing!) ---
+    # --- PRICING PAGE ---
     path('pricing/', car_views.pricing_page, name='pricing'),
     
     # --- DEALER SETTINGS & SUPPORT ---
