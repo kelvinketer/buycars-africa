@@ -48,6 +48,9 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
+    # --- PRICING PAGE (This was missing!) ---
+    path('pricing/', car_views.pricing_page, name='pricing'),
+    
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
     path('dashboard/support/', user_views.support_view, name='dealer_support'),
@@ -57,7 +60,6 @@ urlpatterns = [
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
 
     # --- PAYMENTS (M-PESA) ---
-    # This connects the payment views we created
     path('payments/', include('payments.urls')), 
 ]
 
