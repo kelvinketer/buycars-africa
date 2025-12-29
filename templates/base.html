@@ -39,11 +39,13 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link fw-medium" href="{% url 'home' %}">Browse Cars</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif; font-size: 0.95rem;">Browse Cars</a>
+                    </li>
                     
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown ms-lg-3">
-                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif;">
                                 <i class="fas fa-user-circle me-1"></i> {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
@@ -73,10 +75,10 @@
                         </li>
                     {% else %}
                         <li class="nav-item ms-lg-3">
-                            <a class="nav-link fw-medium" href="{% url 'login' %}">Dealer Login</a>
+                            <a class="nav-link fw-semibold" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif; font-size: 0.95rem;">Dealer Login</a>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'signup' %}">Start Selling</a>
+                            <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'signup' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">Start Selling</a>
                         </li>
                     {% endif %}
                 </ul>
