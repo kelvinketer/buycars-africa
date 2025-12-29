@@ -39,11 +39,18 @@
         background-color: #f8f9fa;
         font-size: 1rem;
         padding-left: 20px;
+        /* Ensure placeholders are lighter, but user text is bold */
     }
     .custom-search-input:focus {
         background-color: white;
         border-color: #dc3545;
         box-shadow: none;
+    }
+    
+    /* Placeholder styling fix for bold inputs */
+    .custom-search-input::placeholder {
+        font-weight: 400; /* Keep placeholder normal weight */
+        color: #6c757d;
     }
 
     .btn-primary-custom {
@@ -120,7 +127,7 @@
                     <label class="small fw-bold text-muted mb-2 ms-1">Keywords</label>
                     <div class="position-relative">
                         <i class="fas fa-search text-muted position-absolute" style="left: 15px; top: 18px;"></i>
-                        <input type="text" name="q" class="form-control custom-search-input" style="padding-left: 40px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
+                        <input type="text" name="q" class="form-control custom-search-input fw-bold text-dark" style="padding-left: 40px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
                     </div>
                 </div>
 
@@ -136,7 +143,7 @@
 
                 <div class="col-lg-2 col-md-6">
                     <label class="small fw-bold text-muted mb-2 ms-1">Make</label>
-                    <select name="make" class="form-select custom-search-input">
+                    <select name="make" class="form-select custom-search-input fw-bold text-dark">
                         <option value="">All Makes</option>
                         {% for make in all_makes %}
                             <option value="{{ make }}" {% if request.GET.make == make %}selected{% endif %}>{{ make|title }}</option>
@@ -146,7 +153,7 @@
 
                 <div class="col-lg-2 col-md-6">
                     <label class="small fw-bold text-muted mb-2 ms-1">Body Type</label>
-                    <select name="body_type" class="form-select custom-search-input">
+                    <select name="body_type" class="form-select custom-search-input fw-bold text-dark">
                         <option value="">Any Type</option>
                         {% for bt in all_body_types %}
                             <option value="{{ bt }}" {% if request.GET.body_type == bt %}selected{% endif %}>{{ bt|title }}</option>
@@ -163,13 +170,13 @@
 
             <div class="row g-3 mt-1">
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="min_price" class="form-control custom-search-input" style="height: 45px !important; font-size: 0.9rem;" placeholder="Min Price (KES)" value="{{ request.GET.min_price }}">
+                    <input type="number" name="min_price" class="form-control custom-search-input fw-bold text-dark" style="height: 45px !important; font-size: 0.9rem;" placeholder="Min Price (KES)" value="{{ request.GET.min_price }}">
                 </div>
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="max_price" class="form-control custom-search-input" style="height: 45px !important; font-size: 0.9rem;" placeholder="Max Price (KES)" value="{{ request.GET.max_price }}">
+                    <input type="number" name="max_price" class="form-control custom-search-input fw-bold text-dark" style="height: 45px !important; font-size: 0.9rem;" placeholder="Max Price (KES)" value="{{ request.GET.max_price }}">
                 </div>
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="min_year" class="form-control custom-search-input" style="height: 45px !important; font-size: 0.9rem;" placeholder="Min Year" value="{{ request.GET.min_year }}">
+                    <input type="number" name="min_year" class="form-control custom-search-input fw-bold text-dark" style="height: 45px !important; font-size: 0.9rem;" placeholder="Min Year" value="{{ request.GET.min_year }}">
                 </div>
                 <div class="col-lg-3 col-6 d-flex align-items-center justify-content-end">
                     <a href="{% url 'home' %}" class="text-danger small fw-bold text-decoration-none"><i class="fas fa-undo-alt me-1"></i> Reset Filters</a>
