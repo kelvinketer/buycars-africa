@@ -316,3 +316,19 @@ def pricing_page(request):
     Renders the public pricing/plans page.
     """
     return render(request, 'saas/pricing.html')
+
+# --- NEW: ALL BRANDS DIRECTORY VIEW (FIXED) ---
+def all_brands(request):
+    """
+    Displays a list of all distinct car makes with their inventory count.
+    """
+    # Get all makes that have at least one car, count them, and order alphabetically
+    brands = Car.objects.values('make')\
+                .annotate(total=Count('id'))\
+                .filter(total__gt=0)\
+                .order_by('make')
+    
+    context = {
+        'brands': brands,
+    }
+    return render(request, 'cars/all_brands.html', context)
