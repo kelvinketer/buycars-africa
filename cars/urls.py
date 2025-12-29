@@ -6,6 +6,9 @@ urlpatterns = [
     path('', views.public_homepage, name='home'),
     path('car/<int:car_id>/', views.car_detail, name='car_detail'),
     
+    # --- NEW: All Brands Directory ---
+    path('brands/', views.all_brands, name='all_brands'), # <--- Added this line
+    
     # --- Dealer Public Profile ---
     path('dealer/<str:username>/', views.dealer_showroom, name='dealer_showroom'),
 
@@ -18,7 +21,6 @@ urlpatterns = [
     path('dashboard/edit/<int:car_id>/', views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', views.delete_car, name='delete_car'),
 
-    # --- Pricing Page (THIS IS MISSING) ---
-    # This line connects the {% url 'pricing' %} in your dashboard to the view
+    # --- Pricing Page ---
     path('pricing/', views.pricing_page, name='pricing'),
 ]
