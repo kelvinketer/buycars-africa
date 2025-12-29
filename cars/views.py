@@ -32,6 +32,7 @@ def public_homepage(request):
     # 3. Capture Filter Parameters from the URL
     q = request.GET.get('q')           # Search text
     make = request.GET.get('make')     # Selected brand
+    region = request.GET.get('region') # <--- NEW: Selected Region
     body_type = request.GET.get('body_type') 
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
@@ -49,6 +50,11 @@ def public_homepage(request):
     if make:
         cars = cars.filter(make__iexact=make)
         
+    if region: # <--- NEW: Apply Region Filter
+        # We filter based on the dealer's profile city
+        # Note: This looks up Car -> Dealer (User) -> DealerProfile -> City
+        cars = cars.filter(dealer__dealer_profile__city=region)
+
     if body_type: 
         cars = cars.filter(body_type__iexact=body_type)
         
@@ -79,12 +85,14 @@ def public_homepage(request):
     # 5. Get lists for dropdown menus
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
+    regions = DealerProfile.CITY_CHOICES # <--- NEW: Get list of cities for the dropdown
 
     context = {
         'featured_cars': featured_cars,
         'cars': cars,
         'all_makes': all_makes, 
         'all_body_types': all_body_types, 
+        'regions': regions, # <--- NEW: Pass regions to template
     }
     return render(request, 'home.html', context)
 

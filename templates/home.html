@@ -116,16 +116,26 @@
         <form method="GET" action="{% url 'home' %}">
             <div class="row g-3 align-items-end">
 
-                <div class="col-lg-4">
-                    <label class="small fw-bold text-muted mb-2 ms-1">Search Keywords</label>
+                <div class="col-lg-3">
+                    <label class="small fw-bold text-muted mb-2 ms-1">Keywords</label>
                     <div class="position-relative">
-                        <i class="fas fa-search text-muted position-absolute" style="left: 20px; top: 20px;"></i>
-                        <input type="text" name="q" class="form-control custom-search-input" style="padding-left: 50px;" placeholder="e.g. Sunroof, Turbo, 4WD" value="{{ request.GET.q|default:'' }}">
+                        <i class="fas fa-search text-muted position-absolute" style="left: 15px; top: 18px;"></i>
+                        <input type="text" name="q" class="form-control custom-search-input" style="padding-left: 40px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <label class="small fw-bold text-muted mb-2 ms-1">Select Make</label>
+                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-map-marker-alt me-1"></i> Location</label>
+                    <select name="region" class="form-select custom-search-input fw-bold text-dark">
+                        <option value="">All Regions</option>
+                        {% for code, name in regions %}
+                            <option value="{{ code }}" {% if request.GET.region == code %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="small fw-bold text-muted mb-2 ms-1">Make</label>
                     <select name="make" class="form-select custom-search-input">
                         <option value="">All Makes</option>
                         {% for make in all_makes %}
@@ -134,7 +144,7 @@
                     </select>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-2 col-md-6">
                     <label class="small fw-bold text-muted mb-2 ms-1">Body Type</label>
                     <select name="body_type" class="form-select custom-search-input">
                         <option value="">Any Type</option>
@@ -146,7 +156,7 @@
 
                 <div class="col-lg-2">
                     <button type="submit" class="btn btn-primary-custom w-100 shadow-sm">
-                        Search
+                        Find Car
                     </button>
                 </div>
             </div>
