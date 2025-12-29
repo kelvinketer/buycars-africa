@@ -248,12 +248,6 @@
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden position-relative hover-lift">
                     
-                    <div class="position-absolute top-0 end-0 m-3 z-2">
-                        <span class="badge bg-dark text-warning fw-bold py-2 px-3 rounded-1 text-uppercase small shadow-sm" style="letter-spacing: 1px; font-size: 0.7rem; border: 1px solid #ffc107;">
-                            Featured
-                        </span>
-                    </div>
-
                     <a href="{% url 'car_detail' car.id %}" class="d-block">
                         <div style="height: 220px; overflow: hidden;">
                             {% if car.images.first %}
