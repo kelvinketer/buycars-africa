@@ -4,7 +4,7 @@
 
 {% block head_extra %}
     <meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} | KES {{ car.price|floatformat:0|intcomma }}">
-    <meta property="og:description" content="For sale in {{ car.location|default:'Nairobi' }}. {{ car.get_transmission_display }}, {{ car.get_fuel_type_display }}. Click to view full details and contact seller.">
+    <meta property="og:description" content="For sale in {{ car.dealer.dealer_profile.get_city_display|default:'Nairobi' }}. {{ car.get_transmission_display }}, {{ car.get_fuel_type_display }}. Click to view full details.">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="product">
     
@@ -90,39 +90,83 @@
 
                 <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2">Why Buy From This Seller?</h5>
-                        <div class="row align-items-center">
-                            <div class="col-md-5 text-center text-md-start mb-3 mb-md-0 border-end-md">
-                                <div class="d-flex align-items-center justify-content-center justify-content-md-start">
-                                    {% if car.dealer.dealer_profile.logo %}
-                                        <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border p-1 shadow-sm me-3" width="70" height="70" style="object-fit: cover;">
-                                    {% else %}
-                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center border me-3" style="width: 70px; height: 70px;">
-                                            <span class="fw-bold fs-3 text-muted">{{ car.dealer.username|slice:":1" }}</span>
-                                        </div>
-                                    {% endif %}
+                        <h5 class="fw-bold mb-4">Why Buy From This Seller?</h5>
+                        
+                        <div class="d-flex align-items-center mb-4">
+                            <a href="{% url 'dealer_showroom' car.dealer.username %}" class="text-decoration-none">
+                                {% if car.dealer.dealer_profile.logo %}
+                                    <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border p-1 shadow-sm me-3" width="70" height="70" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center border me-3" style="width: 70px; height: 70px;">
+                                        <span class="fw-bold fs-3 text-muted">{{ car.dealer.username|slice:":1" }}</span>
+                                    </div>
+                                {% endif %}
+                            </a>
+                            
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">
+                                    <a href="{% url 'dealer_showroom' car.dealer.username %}" class="text-dark text-decoration-none">
+                                        {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
+                                    </a>
+                                </h5>
+                                {% if car.dealer.is_verified %}
+                                    <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2 py-1 small">
+                                        <i class="fas fa-check-circle me-1"></i> Verified Dealer
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-muted border rounded-pill px-2">Registered Seller</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr class="opacity-10 my-4">
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-6 col-md-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle p-2 me-2 text-danger d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
                                     <div>
-                                        <h6 class="fw-bold mb-1 text-dark">{{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}</h6>
-                                        {% if car.dealer.is_verified %}
-                                            <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2"><i class="fas fa-check-circle me-1"></i> Verified</span>
-                                        {% else %}
-                                            <span class="badge bg-light text-muted border rounded-pill px-2">Registered</span>
-                                        {% endif %}
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Location</small>
+                                        <span class="fw-bold text-dark small">
+                                            {{ car.dealer.dealer_profile.get_city_display|default:car.dealer.dealer_profile.city|default:"Kenya" }}
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="mt-3 text-muted small"><i class="fas fa-map-marker-alt text-danger me-2"></i> {{ car.dealer.dealer_profile.city|default:"Kenya" }}</div>
                             </div>
-                            <div class="col-md-7 ps-md-4">
-                                <div class="row g-3">
-                                    <div class="col-6">
-                                        <div class="d-flex align-items-start"><div class="bg-light rounded-circle p-2 me-2 text-primary"><i class="fas fa-calendar-check fa-lg"></i></div><div><small class="text-muted d-block" style="font-size: 0.75rem;">Member Since</small><span class="fw-bold text-dark">{{ car.dealer.date_joined|date:"Y" }}</span></div></div>
+                            
+                            <div class="col-6 col-md-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle p-2 me-2 text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-calendar-check"></i>
                                     </div>
-                                    <div class="col-6">
-                                        <div class="d-flex align-items-start"><div class="bg-light rounded-circle p-2 me-2 text-success"><i class="fas fa-stopwatch fa-lg"></i></div><div><small class="text-muted d-block" style="font-size: 0.75rem;">Response Time</small><span class="fw-bold text-dark">Usually &lt; 2 hrs</span></div></div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Member Since</small>
+                                        <span class="fw-bold text-dark small">{{ car.dealer.date_joined|date:"Y" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-md-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle p-2 me-2 text-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-stopwatch"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Response Time</small>
+                                        <span class="fw-bold text-dark small">Usually < 2 hrs</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="d-grid">
+                            <a href="{% url 'dealer_showroom' car.dealer.username %}" class="btn btn-outline-dark rounded-pill fw-bold py-2">
+                                View More Cars from this Dealer
+                            </a>
+                        </div>
+
                     </div>
                 </div>
 
@@ -132,7 +176,7 @@
                             <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 text-primary"><i class="fas fa-shield-alt fa-lg"></i></div>
                             <h5 class="fw-bold mb-0 text-dark">Buyer Safety Tips</h5>
                         </div>
-                        <ul class="list-unstyled text-muted small mb-3" style="line-height: 1.8;">
+                        <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.8;">
                             <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> <strong>Meet in a safe public place.</strong> Avoid secluded areas.</li>
                             <li class="mb-2"><i class="fas fa-check-circle text-primary me-2"></i> <strong>Inspect before you pay.</strong> Never send money upfront.</li>
                         </ul>
@@ -253,11 +297,11 @@
                 {% if car.dealer.dealer_profile.phone_number %}
                     <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} listed for KES {{ car.price|intcomma }}" 
                        target="_blank" class="btn btn-success flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'WHATSAPP')">
-                       <i class="fab fa-whatsapp"></i> Chat
+                        <i class="fab fa-whatsapp"></i> Chat
                     </a>
                     <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" 
                        class="btn btn-dark flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'CALL')">
-                       <i class="fas fa-phone"></i> Call
+                        <i class="fas fa-phone"></i> Call
                     </a>
                 {% else %}
                     <button class="btn btn-secondary w-100 rounded-pill" disabled>No Contact</button>
@@ -270,7 +314,6 @@
 <style>
     .hover-lift { transition: transform 0.3s ease; }
     .hover-lift:hover { transform: translateY(-5px); }
-    /* Padding for mobile bottom bar so it doesn't cover content */
     @media (max-width: 991px) {
         body { padding-bottom: 80px; }
     }
