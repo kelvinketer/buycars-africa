@@ -6,11 +6,14 @@ urlpatterns = [
     path('', views.public_homepage, name='home'),
     path('car/<int:car_id>/', views.car_detail, name='car_detail'),
     
-    # --- THIS IS THE MISSING PATH ---
-    path('brands/', views.all_brands, name='brands_list'), 
+    # --- THIS IS THE MISSING LINK ---
+    path('brands/', views.all_brands, name='brands_list'),
     # -------------------------------
 
+    # --- Dealer Public Profile ---
     path('dealer/<str:username>/', views.dealer_showroom, name='dealer_showroom'),
+
+    # --- Analytics ---
     path('track/<int:car_id>/<str:action_type>/', views.track_action, name='track_action'),
 
     # --- Dealer Dashboard ---

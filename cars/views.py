@@ -176,9 +176,11 @@ def delete_car(request, car_id):
 def pricing_page(request):
     return render(request, 'saas/pricing.html')
 
-# --- THIS IS THE FIX: Safer Syntax ---
+# --- REQUIRED FOR '/brands/' LINK TO WORK ---
 def all_brands(request):
-    # Use parentheses to avoid indentation errors with backslashes
+    """
+    Displays a list of all distinct car makes with their inventory count.
+    """
     brands = (
         Car.objects.values('make')
         .annotate(total=Count('id'))
