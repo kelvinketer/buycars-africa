@@ -7,7 +7,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 
 from .models import DealerProfile
-from .forms import CustomUserCreationForm, DealerSettingsForm 
+# IMPORT THE NEW FORMS HERE
+from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
 
 User = get_user_model()
@@ -52,26 +53,33 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect('home')
 
-# --- DEALER PROFILE SETTINGS ---
+# --- DEALER PROFILE SETTINGS (UPDATED) ---
 @login_required
 def profile_settings(request):
-    # 1. Get or Create the profile so it doesn't crash
+    # Ensure profile exists to avoid crashes
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Load the new DealerSettingsForm (Business Info + M-Pesa Number)
-        form = DealerSettingsForm(request.POST, request.FILES, instance=profile)
+        # Load both forms with POST data
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
 
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your business settings have been saved!')
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, 'Your business profile has been updated!')
             return redirect('profile_settings') 
     else:
-        # Load form with current database info
-        form = DealerSettingsForm(instance=profile)
+        # Load existing data into forms
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=profile)
     
-    # Pass 'form' to the template (matches the settings.html we created)
-    return render(request, 'dealer/settings.html', {'form': form})
+    # Pass both forms to the template
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    return render(request, 'dealer/settings.html', context)
 
 # --- DEALER SUPPORT CENTER ---
 @login_required
