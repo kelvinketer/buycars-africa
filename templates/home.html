@@ -239,21 +239,25 @@
 <section class="py-5 bg-white">
     <div class="container">
         <div class="mb-4">
-            <h6 class="text-danger fw-bold text-uppercase small mb-1">Exclusive</h6>
-            <h2 class="fw-bold mb-0 text-dark"><i class="fas fa-fire text-danger me-2"></i>Hot Deals</h2>
+            <h6 class="text-danger fw-bold text-uppercase small mb-1">Exclusive Inventory</h6>
+            <h2 class="fw-bold mb-0 text-dark">Featured Listings</h2>
         </div>
 
         <div class="row g-4">
             {% for car in featured_cars %}
             <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-lift">
-                    <span class="badge bg-dark text-warning position-absolute top-0 start-0 m-3 fw-bold shadow-sm z-2 py-2 px-3 rounded-pill border border-warning">
-                        <i class="fas fa-star me-1"></i> Featured
-                    </span>
-                    <a href="{% url 'car_detail' car.id %}">
-                        <div style="height: 200px; overflow: hidden;">
+                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden position-relative hover-lift">
+                    
+                    <div class="position-absolute top-0 end-0 m-3 z-2">
+                        <span class="badge bg-dark text-warning fw-bold py-2 px-3 rounded-1 text-uppercase small shadow-sm" style="letter-spacing: 1px; font-size: 0.7rem; border: 1px solid #ffc107;">
+                            Featured
+                        </span>
+                    </div>
+
+                    <a href="{% url 'car_detail' car.id %}" class="d-block">
+                        <div style="height: 220px; overflow: hidden;">
                             {% if car.images.first %}
-                                <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
+                                <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
                             {% else %}
                                 <div class="d-flex align-items-center justify-content-center h-100 bg-secondary bg-opacity-10 text-muted">
                                     <i class="fas fa-car fa-3x opacity-25"></i>
@@ -261,16 +265,25 @@
                             {% endif %}
                         </div>
                     </a>
+
                     <div class="card-body p-3 d-flex flex-column">
-                        <h6 class="fw-bold text-dark mb-1 text-truncate">{{ car.make }} {{ car.model }}</h6>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-danger fw-bold">KES {{ car.price|floatformat:0|intcomma }}</span>
-                            <span class="badge bg-light text-dark border rounded-pill">{{ car.year }}</span>
+                        <h6 class="fw-bold text-dark mb-1 text-truncate fs-5">{{ car.make }} {{ car.model }}</h6>
+                        
+                        <div class="mb-3">
+                            <span class="text-danger fw-bold fs-5">KES {{ car.price|floatformat:0|intcomma }}</span>
                         </div>
-                        <div class="d-flex justify-content-between text-muted small border-top pt-2 mt-2">
+
+                        <div class="d-flex justify-content-between text-muted small mb-3 border-bottom pb-3">
+                            <span><i class="far fa-calendar me-1"></i> {{ car.year }}</span>
+                            <span class="border-end mx-2"></span>
                             <span><i class="fas fa-tachometer-alt me-1"></i> {{ car.mileage|intcomma }} km</span>
-                            <span><i class="fas fa-cog me-1"></i> {{ car.transmission|slice:":4" }}</span>
+                            <span class="border-end mx-2"></span>
+                            <span class="text-uppercase">{{ car.transmission|slice:":4" }}</span>
                         </div>
+
+                        <a href="{% url 'car_detail' car.id %}" class="btn btn-dark w-100 rounded-1 fw-bold py-2 mt-auto text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">
+                            View Details <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>
