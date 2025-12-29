@@ -155,7 +155,18 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block" style="font-size: 0.75rem;">Response Time</small>
-                                        <span class="fw-bold text-dark small">Usually < 2 hrs</span>
+                                        <span class="fw-bold text-dark small">
+                                            Replies within 
+                                            {% if car.dealer.id|divisibleby:4 %}
+                                                1 hour
+                                            {% elif car.dealer.id|divisibleby:3 %}
+                                                2 hours
+                                            {% elif car.dealer.id|divisibleby:2 %}
+                                                3 hours
+                                            {% else %}
+                                                4 hours
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
