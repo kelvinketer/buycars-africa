@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% load humanize %} 
+{% load humanize %}
 {% load static %}
-{% load custom_filters %} 
+{% load custom_filters %}
 
 {% block head_extra %}
 <style>
     /* 1. HERO SECTION - Deeper overlay for text pop */
     .hero-section {
-        background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), 
+        background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)),
                     url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
@@ -16,14 +16,14 @@
         color: white;
         position: relative;
     }
-    
+
     /* 2. FLOATING SEARCH CARD */
     .search-card-container {
         margin-top: -100px; /* Pulls the card up into the hero */
         position: relative;
         z-index: 20;
     }
-    
+
     .search-card {
         background: white;
         border: none;
@@ -32,8 +32,8 @@
     }
 
     /* 3. INPUT STYLING */
-    .custom-search-input { 
-        height: 55px !important; 
+    .custom-search-input {
+        height: 55px !important;
         border-radius: 12px !important;
         border: 1px solid #f0f0f0;
         background-color: #f8f9fa;
@@ -45,7 +45,7 @@
         border-color: #dc3545;
         box-shadow: none;
     }
-    
+
     .btn-primary-custom {
         background-color: #dc3545;
         color: white;
@@ -94,7 +94,7 @@
 <section class="hero-section text-center">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-9"> 
+            <div class="col-lg-9">
                 <h1 class="display-3 fw-bold mb-3">Find Your <span class="text-danger">Dream Car.</span></h1>
                 <p class="lead text-white-50 fs-5 mb-0">Browse thousands of verified vehicles from Kenya's top trusted dealers.</p>
             </div>
@@ -106,7 +106,7 @@
     <div class="search-card p-4 p-lg-5 mx-auto shadow-lg" style="max-width: 1100px;">
         <form method="GET" action="{% url 'home' %}">
             <div class="row g-3 align-items-end">
-                
+
                 <div class="col-lg-4">
                     <label class="small fw-bold text-muted mb-2 ms-1">Search Keywords</label>
                     <div class="position-relative">
@@ -114,7 +114,7 @@
                         <input type="text" name="q" class="form-control custom-search-input" style="padding-left: 50px;" placeholder="e.g. Subaru Forester, Sunroof" value="{{ request.GET.q|default:'' }}">
                     </div>
                 </div>
-                
+
                 <div class="col-lg-3 col-md-6">
                     <label class="small fw-bold text-muted mb-2 ms-1">Select Make</label>
                     <select name="make" class="form-select custom-search-input">
@@ -173,37 +173,37 @@
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
             <div class="col">
                 <a href="{% url 'home' %}?make=Toyota" class="card brand-card h-100 text-center py-4 text-decoration-none">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg" class="brand-logo mx-auto mb-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/Toyota_carlogo.svg" class="brand-logo mx-auto mb-2" alt="Toyota">
                     <div class="small fw-bold text-dark">Toyota</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Subaru" class="card brand-card h-100 text-center py-4 text-decoration-none">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Subaru_logo.svg" class="brand-logo mx-auto mb-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Subaru_logo.svg" class="brand-logo mx-auto mb-2" alt="Subaru">
                     <div class="small fw-bold text-dark">Subaru</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Mazda" class="card brand-card h-100 text-center py-4 text-decoration-none">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Mazda_logo_with_emblem.svg" class="brand-logo mx-auto mb-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Mazda_logo_with_emblem.svg" class="brand-logo mx-auto mb-2" alt="Mazda">
                     <div class="small fw-bold text-dark">Mazda</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Nissan" class="card brand-card h-100 text-center py-4 text-decoration-none">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Nissan_logo.png" class="brand-logo mx-auto mb-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Nissan_logo.png" class="brand-logo mx-auto mb-2" alt="Nissan">
                     <div class="small fw-bold text-dark">Nissan</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Mercedes-Benz" class="card brand-card h-100 text-center py-4 text-decoration-none">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Benz_logo.svg" class="brand-logo mx-auto mb-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Benz_logo.svg" class="brand-logo mx-auto mb-2" alt="Mercedes-Benz">
                     <div class="small fw-bold text-dark">Mercedes</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Volkswagen" class="card brand-card h-100 text-center py-4 text-decoration-none">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg" class="brand-logo mx-auto mb-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Volkswagen_logo_2019.svg" class="brand-logo mx-auto mb-2" alt="Volkswagen">
                     <div class="small fw-bold text-dark">Volkswagen</div>
                 </a>
             </div>
@@ -293,11 +293,11 @@
                             </div>
                         </a>
                     </div>
-                    
+
                     <div class="card-body p-3">
                         <div class="text-muted small mb-1 text-uppercase fw-bold">{{ car.make }}</div>
                         <h6 class="fw-bold mb-3 text-truncate">{{ car.model }}</h6>
-                        
+
                         <div class="row g-2 mb-3">
                             <div class="col-6">
                                 <div class="bg-light rounded-2 p-1 text-center small text-muted">
@@ -320,17 +320,19 @@
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <div class="bg-white rounded-4 p-5 shadow-sm">
-                    <i class="fas fa-search fa-3x mb-3 text-muted opacity-50"></i>
-                    <h4>No cars found matching your criteria</h4>
-                    <p class="text-muted">Try adjusting your filters or price range.</p>
-                    <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-pill mt-2">Clear All Filters</a>
-                </div>
-            </div>
             {% endfor %}
         </div>
+
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-white rounded-4 p-5 shadow-sm">
+                <i class="fas fa-search fa-3x mb-3 text-muted opacity-50"></i>
+                <h4>No cars found matching your criteria</h4>
+                <p class="text-muted">Try adjusting your filters or price range.</p>
+                <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-pill mt-2">Clear All Filters</a>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </section>
 
