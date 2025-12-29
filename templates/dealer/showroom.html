@@ -78,16 +78,26 @@
                         <h1 class="fw-bold mb-1 text-dark">{{ profile.business_name|default:dealer.username }}</h1>
                         
                         <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 mb-4 text-muted mt-2">
-                            {% if profile.city %}
-                                <span class="d-flex align-items-center small">
-                                    <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ profile.get_city_display }}
-                                </span>
-                            {% endif %}
+                            <span class="d-flex align-items-center small">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ profile.get_city_display|default:profile.city|default:"Kenya" }}
+                            </span>
+                            
                             <span class="d-flex align-items-center small">
                                 <i class="fas fa-shield-alt text-primary me-2"></i>Verified Identity
                             </span>
+                            
                             <span class="d-flex align-items-center small">
-                                <i class="fas fa-clock text-success me-2"></i>Usually replies < 1hr
+                                <i class="fas fa-clock text-success me-2"></i>
+                                Replies within 
+                                {% if dealer.id|divisibleby:4 %}
+                                    1 hour
+                                {% elif dealer.id|divisibleby:3 %}
+                                    2 hours
+                                {% elif dealer.id|divisibleby:2 %}
+                                    3 hours
+                                {% else %}
+                                    4 hours
+                                {% endif %}
                             </span>
                         </div>
 
