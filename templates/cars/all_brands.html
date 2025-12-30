@@ -14,11 +14,19 @@
             {% for brand in brands %}
             <div class="col">
                 <a href="{% url 'home' %}?make={{ brand.make }}" class="card h-100 border-0 shadow-sm text-decoration-none hover-lift text-center py-4">
-                    <div class="card-body">
-                        <img src="{% static 'images/brands/'|add:brand.make|lower|add:'.png' %}" 
-                             class="mb-3" 
-                             style="height: 50px; width: auto; object-fit: contain; opacity: 0.8;"
-                             onerror="this.style.display='none'">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                        
+                        <div class="brand-logo-container mb-3 d-flex align-items-center justify-content-center" style="height: 60px; width: 100%;">
+                            <img src="{% static 'images/brands/'|add:brand.make|lower|add:'.png' %}" 
+                                 alt="{{ brand.make }}"
+                                 class="img-fluid" 
+                                 style="max-height: 100%; max-width: 80%; object-fit: contain;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            
+                            <div class="fallback-icon text-muted" style="display: none;">
+                                <i class="fas fa-car fa-2x opacity-50"></i>
+                            </div>
+                        </div>
                         
                         <h6 class="fw-bold text-dark mb-1">{{ brand.make }}</h6>
                         <span class="badge bg-light text-muted border rounded-pill small">{{ brand.total }} Cars</span>
