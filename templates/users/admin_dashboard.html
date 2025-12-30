@@ -84,7 +84,7 @@
                     </thead>
                     <tbody>
                         {% for user in recent_users %}
-                            {% if not user.dealer_profile.is_verified and not user.is_superuser %}
+                            {% if not user.is_verified and not user.is_superuser %}
                             <tr>
                                 <td class="ps-4">
                                     <div class="fw-bold">{{ user.username }}</div>
