@@ -24,11 +24,10 @@
                 <div class="card border-0 shadow-sm rounded-3 h-100 text-white" style="background-color: #0d6efd;">
                     <div class="card-body p-4">
                         <h6 class="text-uppercase opacity-75 fw-bold mb-2" style="font-size: 0.8rem;">Total Revenue</h6>
-                        <h2 class="fw-bold mb-0">KES {{ total_revenue|default:"0.00" }}</h2> 
+                        <h2 class="fw-bold mb-0">KES {{ total_revenue|default:"0.00"|intcomma }}</h2> 
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 h-100 bg-dark text-white">
                     <div class="card-body p-4">
@@ -37,7 +36,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 h-100 bg-danger text-white">
                     <div class="card-body p-4">
@@ -51,7 +49,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 h-100 bg-warning text-dark">
                     <div class="card-body p-4">
@@ -64,6 +61,56 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-3 mb-5">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-success"><i class="fas fa-money-bill-wave me-2"></i>Financial Audit Trail</h5>
+                <span class="badge bg-light text-dark border">Last 10 Transactions</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Receipt No.</th>
+                            <th>Phone Number</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in recent_transactions %}
+                        <tr>
+                            <td class="ps-4 font-monospace small text-primary fw-bold">
+                                {{ transaction.mpesa_receipt_number|default:"PENDING..." }}
+                            </td>
+                            <td>{{ transaction.phone_number }}</td>
+                            <td class="fw-bold text-dark">KES {{ transaction.amount|intcomma }}</td>
+                            <td>
+                                {% if transaction.status == 'SUCCESS' %}
+                                    <span class="badge bg-success-subtle text-success border border-success rounded-pill px-3">Paid</span>
+                                {% elif transaction.status == 'PENDING' %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning rounded-pill px-3">Processing</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger rounded-pill px-3">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4 small text-muted">
+                                {{ transaction.created_at|date:"M d, H:i" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                <i class="fas fa-receipt fa-2x mb-2 d-block opacity-25"></i>
+                                No transactions recorded yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 

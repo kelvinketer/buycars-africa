@@ -87,13 +87,16 @@ def admin_dashboard(request):
     # 3. INVENTORY HEALTH
     total_cars = Car.objects.count()
     
-    # 4. PENDING ACTIONS (FIXED)
-    # We now filter by 'is_verified' on the User model directly
+    # 4. PENDING ACTIONS
     pending_dealers = User.objects.filter(role='DEALER', is_verified=False).count()
 
     # 5. RECENT ACTIVITY
-    recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:10]
+    recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
+
+    # 6. TRANSACTION HISTORY (NEW FEATURE)
+    # We fetch the last 10 transactions, ordered by newest first (using 'id' as a proxy for time if created_at is missing)
+    recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
 
     context = {
         'total_revenue': total_revenue,
@@ -102,20 +105,17 @@ def admin_dashboard(request):
         'pending_dealers': pending_dealers,
         'recent_users': recent_users,
         'recent_cars': recent_cars,
+        'recent_transactions': recent_transactions, # Passing the new data
     }
     return render(request, 'users/admin_dashboard.html', context)
 
-# --- ACTION: VERIFY DEALER (FIXED) ---
+# --- ACTION: VERIFY DEALER ---
 @login_required
 @user_passes_test(is_superuser)
 def verify_dealer(request, user_id):
     if request.method == 'POST':
         user = get_object_or_404(User, id=user_id)
-        
-        # Update the User model directly
         user.is_verified = True
         user.save()
-        
         messages.success(request, f"Dealer {user.username} has been verified successfully.")
-            
     return redirect('admin_dashboard')
