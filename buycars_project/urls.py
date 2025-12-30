@@ -11,6 +11,10 @@ urlpatterns = [
     
     # --- SUPER ADMIN (CEO Dashboard) ---
     path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'),
+    
+    # --- NEW: Dealer Verification Action ---
+    path('super-admin/verify/<int:user_id>/', user_views.verify_dealer, name='verify_dealer'),
+    # ---------------------------------------
 
     # --- PASSWORD RESET ROUTES ---
     path('reset_password/', 
@@ -33,9 +37,8 @@ urlpatterns = [
     path('', car_views.public_homepage, name='home'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     
-    # --- THIS WAS THE MISSING LINK ---
+    # --- BRANDS LIST ---
     path('brands/', car_views.all_brands, name='brands_list'),
-    # -------------------------------
     
     # --- DEALER SHOWROOM (Public Profile) ---
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),

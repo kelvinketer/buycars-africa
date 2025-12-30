@@ -1,33 +1,28 @@
-# Updated: Force reload
 from django.shortcuts import render, redirect, get_object_or_404
-...
-
-from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 
 from .models import DealerProfile
-# IMPORT THE NEW FORMS HERE
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
+from cars.models import Car  # CRITICAL: Import Car model for inventory stats
 
 User = get_user_model()
 
+# --- AUTHENTICATION VIEWS ---
+
 def signup_view(request):
     if request.method == 'POST':
-        # Expects username, email, phone_number
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Create a Dealer Profile immediately so they have one
+            # Create a Dealer Profile immediately
             DealerProfile.objects.create(user=user, business_name=f"{user.username}'s Yard")
             
             login(request, user)
-            # Go straight to dashboard to upload their first car
             return redirect('dealer_dashboard')
     else:
         form = CustomUserCreationForm()
@@ -41,11 +36,12 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             
-            # If they were trying to go somewhere specific, send them there.
             if 'next' in request.GET:
                 return redirect(request.GET.get('next'))
             
-            # Otherwise, go to dashboard
+            # Redirect Superuser to CEO Dashboard, others to Dealer Dashboard
+            if user.is_superuser:
+                return redirect('admin_dashboard')
             return redirect('dealer_dashboard')
     else:
         form = AuthenticationForm()
@@ -57,14 +53,12 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect('home')
 
-# --- DEALER PROFILE SETTINGS (UPDATED) ---
+# --- DEALER PROFILE SETTINGS ---
 @login_required
 def profile_settings(request):
-    # Ensure profile exists to avoid crashes
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Load both forms with POST data
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
 
@@ -74,55 +68,73 @@ def profile_settings(request):
             messages.success(request, 'Your business profile has been updated!')
             return redirect('profile_settings') 
     else:
-        # Load existing data into forms
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=profile)
     
-    # Pass both forms to the template
     context = {
         'u_form': u_form,
         'p_form': p_form
     }
     return render(request, 'dealer/settings.html', context)
 
-# --- DEALER SUPPORT CENTER ---
+# --- DEALER SUPPORT ---
 @login_required
 def support_view(request):
     return render(request, 'dealer/support.html')
 
-# --- SUPER ADMIN DASHBOARD ---
-@staff_member_required
+
+# ==========================================
+#      SUPER ADMIN / CEO DASHBOARD
+# ==========================================
+
+def is_superuser(user):
+    return user.is_superuser
+
+@login_required
+@user_passes_test(is_superuser)
 def admin_dashboard(request):
-    # 1. Get Stats
-    total_dealers = User.objects.filter(role='DEALER').count()
+    # 1. FINANCIALS (Your Revenue Logic)
     total_revenue = MpesaTransaction.objects.filter(status='SUCCESS').aggregate(Sum('amount'))['amount__sum'] or 0
+
+    # 2. USERS & DEALERS
+    # Count total users (excluding the superuser themselves usually, but total is fine)
+    total_users = User.objects.count()
     
-    # 2. Get Dealers List (Pending Verification at top)
-    dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('is_verified', '-date_joined')
+    # 3. INVENTORY HEALTH
+    total_cars = Car.objects.count()
     
-    # 3. Handle Verification Toggle
-    if request.method == 'POST':
-        user_id = request.POST.get('user_id')
-        action = request.POST.get('action')
-        
-        try:
-            dealer_to_update = User.objects.get(id=user_id)
-            if action == 'verify':
-                dealer_to_update.is_verified = True
-                messages.success(request, f"Verified {dealer_to_update.username}!")
-            elif action == 'unverify':
-                dealer_to_update.is_verified = False
-                messages.warning(request, f"Unverified {dealer_to_update.username}.")
-                
-            dealer_to_update.save()
-        except User.DoesNotExist:
-            messages.error(request, "User not found.")
-            
-        return redirect('admin_dashboard')
+    # 4. PENDING ACTIONS
+    # Find users who have a profile but are NOT verified yet
+    pending_dealers = User.objects.filter(dealer_profile__is_verified=False).exclude(is_superuser=True).count()
+
+    # 5. RECENT ACTIVITY (For the tables)
+    # Get recent signups
+    recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:10]
+    
+    # Get recent car uploads
+    recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
     context = {
-        'total_dealers': total_dealers,
         'total_revenue': total_revenue,
-        'dealers': dealers
+        'total_users': total_users,
+        'total_cars': total_cars,
+        'pending_dealers': pending_dealers,
+        'recent_users': recent_users,
+        'recent_cars': recent_cars,
     }
-    return render(request, 'dealer/admin_dashboard.html', context)
+    # Note: Pointing to the NEW template location
+    return render(request, 'users/admin_dashboard.html', context)
+
+# --- ACTION: VERIFY DEALER ---
+@login_required
+@user_passes_test(is_superuser)
+def verify_dealer(request, user_id):
+    if request.method == 'POST':
+        user = get_object_or_404(User, id=user_id)
+        if hasattr(user, 'dealer_profile'):
+            user.dealer_profile.is_verified = True
+            user.dealer_profile.save()
+            messages.success(request, f"Dealer {user.username} has been verified successfully.")
+        else:
+            messages.error(request, "This user does not have a dealer profile to verify.")
+    return redirect('admin_dashboard')
