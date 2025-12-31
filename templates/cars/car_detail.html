@@ -55,14 +55,16 @@
                         {% endif %}
 
                         {% if car.images.count > 1 %}
-                            <button class="btn btn-dark bg-opacity-50 border-0 rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center arrow-btn" 
-                                    onclick="prevImage()" style="width: 40px; height: 40px; z-index: 10;">
-                                <i class="fas fa-chevron-left text-white"></i>
+                            <button class="btn btn-dark border-0 rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center arrow-btn" 
+                                    onclick="prevImage()" 
+                                    style="width: 45px; height: 45px; z-index: 10; background-color: rgba(0,0,0,0.5); cursor: pointer;">
+                                <i class="fas fa-chevron-left text-white fs-5"></i>
                             </button>
                             
-                            <button class="btn btn-dark bg-opacity-50 border-0 rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center arrow-btn" 
-                                    onclick="nextImage()" style="width: 40px; height: 40px; z-index: 10;">
-                                <i class="fas fa-chevron-right text-white"></i>
+                            <button class="btn btn-dark border-0 rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center arrow-btn" 
+                                    onclick="nextImage()" 
+                                    style="width: 45px; height: 45px; z-index: 10; background-color: rgba(0,0,0,0.5); cursor: pointer;">
+                                <i class="fas fa-chevron-right text-white fs-5"></i>
                             </button>
                         {% endif %}
 
@@ -303,7 +305,7 @@
     .thumbnail-wrapper:hover { opacity: 0.8; }
     
     /* Arrow Hover Effect */
-    .arrow-btn:hover { background-color: rgba(0,0,0,0.8) !important; }
+    .arrow-btn:hover { background-color: rgba(0,0,0,0.8) !important; transform: translateY(-50%) scale(1.1); transition: all 0.2s; }
 </style>
 
 <script>

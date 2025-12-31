@@ -1,11 +1,11 @@
 from django import forms
 from .models import Car
 
-# 1. Custom Widget to allow 'multiple' attribute without crashing
+# --- CUSTOM WIDGET TO ALLOW MULTIPLE SELECTIONS ---
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
-# 2. Custom Field to handle a list of files without validation errors
+# --- CUSTOM FIELD TO VALIDATE A LIST OF FILES ---
 class MultipleFileField(forms.FileField):
     def to_python(self, data):
         if not data:
@@ -20,20 +20,15 @@ class CarForm(forms.ModelForm):
         required=False, 
         widget=MultipleFileInput(attrs={
             'class': 'form-control', 
-            'multiple': True,  # Now allowed!
-            'accept': 'image/*' # Hints browser to show only images
+            'multiple': True,  # HTML5 attribute
+            'accept': 'image/*' 
         })
     )
 
     class Meta:
         model = Car
-        # 'image' is REMOVED from this list
-        fields = [
-            'make', 'model', 'year', 'price', 
-            'condition', 'transmission', 'fuel_type', 
-            'mileage', 'engine_size', 'color', 
-            'body_type', 'location', 'description'
-        ]
+        # Remove 'image' from fields list to avoid conflicts
+        exclude = ['dealer', 'status', 'is_featured', 'created_at']
         
         widgets = {
             'make': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Toyota'}),

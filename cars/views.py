@@ -2,13 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# UPDATED IMPORTS: Added F for efficiency and Q, Count for queries
 from django.db.models import Q, Count, F
-# NEW IMPORTS FOR CHART & DATE LOGIC
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from datetime import timedelta
-
 from django.contrib.auth import get_user_model 
 import re 
 
@@ -38,13 +35,11 @@ def public_homepage(request):
     max_year = request.GET.get('max_year')   
 
     if q:
-        # --- SEARCH TRACKING LOGIC ---
         clean_q = q.strip().lower()
         if len(clean_q) > 2: 
             obj, created = SearchTerm.objects.get_or_create(term=clean_q)
             if not created:
                 SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
-        # -----------------------------
 
         cars = cars.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
     
@@ -126,15 +121,13 @@ def dealer_showroom(request, username):
 
 @login_required
 def dealer_dashboard(request):
-    # 1. Base Query
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
     total_value = sum(car.price for car in my_cars)
     car_count = my_cars.count()
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
-    # 2. Plan Limits & ROI Cost Setup
     limit = 3
-    plan_cost = 0  # Default to Free
+    plan_cost = 0 
     
     if profile.plan_type == 'LITE': 
         limit = 15
@@ -147,7 +140,6 @@ def dealer_dashboard(request):
         
     can_add = car_count < limit or profile.plan_type == 'PRO'
 
-    # 3. Chart Logic (30 Days Lead Performance)
     thirty_days_ago = timezone.now() - timedelta(days=30)
     daily_leads = Lead.objects.filter(
         car__dealer=request.user, 
@@ -161,7 +153,7 @@ def dealer_dashboard(request):
     
     chart_labels = []
     chart_values = []
-    total_leads_30 = 0 # For ROI Calculation
+    total_leads_30 = 0 
     
     for i in range(30):
         d = (timezone.now() - timedelta(days=29-i)).date()
@@ -170,31 +162,22 @@ def dealer_dashboard(request):
         
         chart_labels.append(d.strftime('%b %d'))
         chart_values.append(count)
-        total_leads_30 += count # Aggregate total leads for ROI
+        total_leads_30 += count 
 
-    # 4. ROI Calculator (Cost Per Lead)
     cpl = 0
     if total_leads_30 > 0 and plan_cost > 0:
         cpl = int(plan_cost / total_leads_30)
 
-    # 5. Stock Intelligence (Hot vs Stale)
-    # FIX: Changed 'carview' to 'views' to match your model definition
     inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('views'))
     
-    # Hot Car: Highest views
     hot_car = inventory_stats.order_by('-view_count').first()
     
-    # Stale Car: Lowest views
-    # Logic: exclude cars created in the last 3 days (give them a chance to get views)
     three_days_ago_date = timezone.now() - timedelta(days=3)
-    
-    # First look for cars older than 3 days
     stale_candidates = inventory_stats.filter(created_at__lte=three_days_ago_date)
     
     if stale_candidates.exists():
         stale_car = stale_candidates.order_by('view_count').first()
     else:
-        # If all cars are new, just take the lowest viewed one overall
         stale_car = inventory_stats.order_by('view_count').first()
 
     recent = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
@@ -210,7 +193,6 @@ def dealer_dashboard(request):
         'can_add': can_add,
         'hot_car': hot_car,
         'stale_car': stale_car,
-        # ROI Data
         'plan_cost': plan_cost,
         'leads_30': total_leads_30,
         'cpl': cpl,
@@ -236,18 +218,19 @@ def add_car(request):
             car.status = 'AVAILABLE'
             car.save()
             
-            # --- UPDATED: HANDLE MULTIPLE IMAGES ---
-            # Use getlist to retrieve all files selected
+            # --- HANDLE MULTIPLE IMAGES ---
             images = request.FILES.getlist('image') 
             
             for index, img in enumerate(images):
-                # The first image selected becomes the "Main" image
                 is_main = (index == 0)
                 CarImage.objects.create(car=car, image=img, is_main=is_main)
-            # ---------------------------------------
+            # ------------------------------
 
             messages.success(request, 'Vehicle uploaded successfully!')
             return redirect('dealer_dashboard')
+        else:
+            # Add this for debugging!
+            print("Form Errors:", form.errors)
     else:
         form = CarForm()
     return render(request, 'dealer/add_car.html', {'form': form})
@@ -259,10 +242,21 @@ def edit_car(request, car_id):
         form = CarForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
             form.save()
-            if request.FILES.get('image'):
-                CarImage.objects.create(car=car, image=request.FILES.get('image'), is_main=True)
+            
+            # --- APPEND EXTRA PHOTOS ---
+            new_images = request.FILES.getlist('image')
+            
+            if new_images:
+                for img in new_images:
+                    # Append new images without removing old ones
+                    CarImage.objects.create(car=car, image=img, is_main=False)
+            # ---------------------------
+
             messages.success(request, 'Vehicle updated!')
             return redirect('dealer_dashboard')
+        else:
+            # Add this for debugging!
+            print("Form Errors:", form.errors)
     else:
         form = CarForm(instance=car)
     return render(request, 'dealer/edit_car.html', {'form': form, 'car': car})
