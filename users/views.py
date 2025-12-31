@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Sum, Q  # Added Q for complex queries
+from django.db.models import Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 
@@ -98,16 +98,12 @@ def admin_dashboard(request):
 
     # 6. ENHANCED TRANSACTION HISTORY
     recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
-    
-    # Logic: Match Phone Numbers to actual Users
     for trans in recent_transactions:
         phone = trans.phone_number
-        # Search for a user with this phone number (checking both User model and Profile)
         related_user = User.objects.filter(
             Q(phone_number=phone) | 
             Q(dealer_profile__phone_number=phone)
         ).first()
-        # Attach the found user to the transaction object temporarily
         trans.related_user = related_user
 
     # 7. GROWTH ANALYTICS (Last 30 Days)
@@ -124,6 +120,20 @@ def admin_dashboard(request):
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
+    # 8. MASTER DEALER LIST (SEARCH & MANAGE) - NEW FEATURE
+    # Fetch all dealers initially
+    all_dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('-date_joined')
+    
+    # Handle Search
+    search_query = request.GET.get('q')
+    if search_query:
+        all_dealers = all_dealers.filter(
+            Q(username__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(dealer_profile__business_name__icontains=search_query) |
+            Q(dealer_profile__phone_number__icontains=search_query)
+        )
+
     context = {
         'total_revenue': total_revenue,
         'total_users': total_users,
@@ -135,6 +145,8 @@ def admin_dashboard(request):
         'analytics_dates': dates,
         'analytics_users': user_counts,
         'analytics_cars': car_counts,
+        'all_dealers': all_dealers, # Passed to template
+        'search_query': search_query,
     }
     return render(request, 'users/admin_dashboard.html', context)
 
@@ -144,7 +156,13 @@ def admin_dashboard(request):
 def verify_dealer(request, user_id):
     if request.method == 'POST':
         user = get_object_or_404(User, id=user_id)
-        user.is_verified = True
+        # Toggle Logic: If verified, unverify. If not, verify.
+        if user.is_verified:
+            user.is_verified = False
+            messages.warning(request, f"Dealer {user.username} has been UNVERIFIED.")
+        else:
+            user.is_verified = True
+            messages.success(request, f"Dealer {user.username} has been VERIFIED successfully.")
+        
         user.save()
-        messages.success(request, f"Dealer {user.username} has been verified successfully.")
     return redirect('admin_dashboard')
