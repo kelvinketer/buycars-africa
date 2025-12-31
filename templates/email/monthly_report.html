@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .header { background-color: #0f172a; padding: 30px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
+        .header span { color: #dc3545; }
+        .content { padding: 30px; }
+        .greeting { font-size: 18px; color: #333; margin-bottom: 20px; font-weight: bold; }
+        .intro { color: #666; line-height: 1.6; margin-bottom: 30px; }
+        
+        /* Stats Grid */
+        .stats-grid { display: table; width: 100%; border-spacing: 10px; margin-bottom: 30px; }
+        .stat-box { display: table-cell; width: 33%; background-color: #f8f9fa; padding: 15px; text-align: center; border-radius: 8px; border: 1px solid #e9ecef; }
+        .stat-number { font-size: 28px; font-weight: bold; color: #0f172a; display: block; margin-bottom: 5px; }
+        .stat-label { font-size: 12px; text-transform: uppercase; color: #666; letter-spacing: 1px; }
+
+        .highlight-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 30px; }
+        .highlight-text { color: #065f46; font-size: 16px; font-weight: 500; }
+        .roi-badge { background-color: #10b981; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+
+        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; }
+        .btn { display: inline-block; background-color: #dc3545; color: white; text-decoration: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>BuyCars<span>.Africa</span></h1>
+        </div>
+        <div class="content">
+            <div class="greeting">Hello {{ dealer_name }},</div>
+            <p class="intro">Here is your performance report for <strong>{{ month_name }}</strong>. Your inventory is working hard for you!</p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-number">{{ total_leads }}</span>
+                    <span class="stat-label">Total Leads</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">{{ total_views }}</span>
+                    <span class="stat-label">Car Views</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">{{ active_cars }}</span>
+                    <span class="stat-label">Active Cars</span>
+                </div>
+            </div>
+
+            {% if hot_car %}
+            <div style="border-left: 4px solid #0d6efd; background-color: #f0f7ff; padding: 15px; margin-bottom: 20px;">
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; font-weight: bold;">🔥 Most Popular Vehicle</p>
+                <p style="margin: 5px 0 0 0; color: #0f172a; font-weight: bold; font-size: 16px;">
+                    {{ hot_car }} ({{ hot_car_views }} Views)
+                </p>
+            </div>
+            {% endif %}
+
+            {% if cpl > 0 %}
+            <div class="highlight-box">
+                <div class="highlight-text">
+                    Your Cost Per Lead was just <span style="font-weight: bold; color: #047857;">KES {{ cpl }}</span>.
+                </div>
+                <p style="margin: 10px 0 0 0; font-size: 13px; color: #064e3b;">
+                    That's {{ roi_multiplier }}x cheaper than Facebook Ads!
+                </p>
+            </div>
+            {% endif %}
+
+            <div style="text-align: center;">
+                <a href="https://buycars-africa.onrender.com/dashboard/" class="btn">Go to Dashboard</a>
+            </div>
+        </div>
+        <div class="footer">
+            &copy; {% now "Y" %} BuyCars.Africa. All rights reserved.<br>
+            You are receiving this because you are a registered dealer.
+        </div>
+    </div>
+</body>
+</html>
