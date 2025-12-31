@@ -10,7 +10,6 @@ from datetime import timedelta
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
-# UPDATED IMPORTS: Includes 'SearchTerm' for Feature #4
 from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
@@ -118,11 +117,23 @@ def admin_dashboard(request):
     # 8. SEARCH ANALYTICS (DEMAND CLOUD)
     top_searches = SearchTerm.objects.order_by('-count')[:10]
 
-    # 9. RECENT ACTIVITY
+    # --- 9. CHURN FORECAST (EXPIRING SOON) - NEW FEATURE ---
+    # Find paid dealers (LITE/PRO) whose subscription expires in the next 7 days
+    seven_days_from_now = timezone.now() + timedelta(days=7)
+    
+    expiring_dealers = User.objects.filter(
+        role='DEALER',
+        dealer_profile__plan_type__in=['LITE', 'PRO'],
+        dealer_profile__subscription_expiry__lte=seven_days_from_now,
+        dealer_profile__subscription_expiry__gte=timezone.now()
+    ).select_related('dealer_profile').order_by('dealer_profile__subscription_expiry')[:5]
+    # -------------------------------------------------------
+
+    # 10. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
-    # 10. ENHANCED TRANSACTION HISTORY
+    # 11. ENHANCED TRANSACTION HISTORY
     recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
@@ -132,7 +143,7 @@ def admin_dashboard(request):
         ).first()
         trans.related_user = related_user
 
-    # 11. GROWTH ANALYTICS (Last 30 Days)
+    # 12. GROWTH ANALYTICS (Last 30 Days)
     today = timezone.now().date()
     dates = []
     user_counts = []
@@ -146,7 +157,7 @@ def admin_dashboard(request):
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
-    # 12. MASTER DEALER LIST (SEARCH & MANAGE)
+    # 13. MASTER DEALER LIST (SEARCH & MANAGE)
     all_dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('-date_joined')
     search_query = request.GET.get('q')
     if search_query:
@@ -168,6 +179,7 @@ def admin_dashboard(request):
         'brand_counts': brand_counts,
         'top_dealers': top_dealers,
         'top_searches': top_searches,
+        'expiring_dealers': expiring_dealers, # <--- NEW
         'recent_users': recent_users,
         'recent_cars': recent_cars,
         'recent_transactions': recent_transactions,

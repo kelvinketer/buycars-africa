@@ -124,11 +124,10 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light">
                                 <tr>
-                                    <th class="ps-4" style="width: 50px;">Rank</th>
+                                    <th class="ps-4">Rank</th>
                                     <th>Dealer</th>
                                     <th>Inventory</th>
                                     <th>Leads Generated</th>
-                                    <th>Activity Level</th>
                                     <th class="text-end pe-4">Status</th>
                                 </tr>
                             </thead>
@@ -145,30 +144,13 @@
                                                     <span class="fw-bold small">{{ dealer.username|slice:":1"|upper }}</span>
                                                 </div>
                                             {% endif %}
-                                            <div>
-                                                <a href="{% url 'dealer_showroom' dealer.username %}" target="_blank" class="text-dark fw-bold text-decoration-none small">
-                                                    {{ dealer.dealer_profile.business_name|default:dealer.username }}
-                                                </a>
-                                                <div class="small text-muted">{{ dealer.email }}</div>
-                                            </div>
+                                            <a href="{% url 'dealer_showroom' dealer.username %}" target="_blank" class="text-dark fw-bold text-decoration-none small">
+                                                {{ dealer.dealer_profile.business_name|default:dealer.username }}
+                                            </a>
                                         </div>
                                     </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark border">{{ dealer.inventory_count }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="fw-bold text-success">{{ dealer.leads_generated }}</span>
-                                    </td>
-                                    <td>
-                                        {% if dealer.inventory_count > 0 %}
-                                            <div class="progress" style="height: 6px; width: 100px;">
-                                                <div class="progress-bar bg-info" role="progressbar" style="width: 75%"></div>
-                                            </div>
-                                            <small class="text-muted" style="font-size: 0.7rem;">High Activity</small>
-                                        {% else %}
-                                            <small class="text-muted">-</small>
-                                        {% endif %}
-                                    </td>
+                                    <td><span class="badge bg-light text-dark border">{{ dealer.inventory_count }}</span></td>
+                                    <td><span class="fw-bold text-success">{{ dealer.leads_generated }}</span></td>
                                     <td class="text-end pe-4">
                                         {% if dealer.dealer_profile.plan_type == 'PRO' %}
                                             <span class="badge bg-primary rounded-pill" style="font-size: 0.7rem;">PRO</span>
@@ -180,9 +162,7 @@
                                     </td>
                                 </tr>
                                 {% empty %}
-                                <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">No dealer activity recorded yet.</td>
-                                </tr>
+                                <tr><td colspan="5" class="text-center py-4 text-muted">No activity yet.</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -191,12 +171,43 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-3 h-100">
+                
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-clock me-2 text-danger"></i>Expiring Soon</h5>
+                        <span class="badge bg-light text-dark border">Next 7 Days</span>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for dealer in expiring_dealers %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-hourglass-half"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ dealer.dealer_profile.business_name }}</h6>
+                                        <small class="text-muted">{{ dealer.dealer_profile.plan_type }} • {{ dealer.dealer_profile.subscription_expiry|timeuntil }} left</small>
+                                    </div>
+                                </div>
+                                <a href="tel:{{ dealer.dealer_profile.phone_number }}" class="btn btn-sm btn-outline-dark rounded-pill">
+                                    <i class="fas fa-phone-alt"></i>
+                                </a>
+                            </div>
+                        {% empty %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2 opacity-50"></i>
+                                <p class="mb-0 small">No immediate churn risks.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-header bg-white py-3">
                         <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-search me-2 text-info"></i>What Buyers Want</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted small mb-3">Most frequent search terms by potential buyers.</p>
+                        <p class="text-muted small mb-3">Most frequent search terms.</p>
                         <div class="d-flex flex-wrap gap-2">
                             {% for term in top_searches %}
                                 <span class="badge bg-light text-dark border p-2 fw-normal d-flex align-items-center">
@@ -206,14 +217,14 @@
                             {% empty %}
                                 <div class="text-center text-muted w-100 py-4">
                                     <i class="fas fa-wind fa-2x mb-2 opacity-50"></i>
-                                    <p class="small">No search data recorded yet.</p>
+                                    <p class="small">No search data yet.</p>
                                 </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
 
         <div class="card border-0 shadow-sm rounded-3 mb-5">
@@ -428,14 +439,7 @@
             labels: {{ brand_labels|safe }},
             datasets: [{
                 data: {{ brand_counts|safe }},
-                backgroundColor: [
-                    '#0d6efd', // Primary Blue
-                    '#dc3545', // Danger Red
-                    '#ffc107', // Warning Yellow
-                    '#198754', // Success Green
-                    '#6610f2', // Indigo
-                    '#adb5bd'  // Grey (Other)
-                ],
+                backgroundColor: ['#0d6efd', '#dc3545', '#ffc107', '#198754', '#6610f2', '#adb5bd'],
                 borderWidth: 0,
                 hoverOffset: 4
             }]
@@ -444,16 +448,7 @@
             responsive: true,
             maintainAspectRatio: false,
             cutout: '75%', 
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        boxWidth: 10,
-                        padding: 20
-                    }
-                }
-            }
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10, padding: 20 } } }
         }
     });
 </script>

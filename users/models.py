@@ -71,6 +71,7 @@ class DealerProfile(models.Model):
     def __str__(self):
         return self.business_name
 
+    @property
     def is_plan_active(self):
         """Check if the paid plan (LITE or PRO) is still valid"""
         if self.plan_type == 'FREE':
@@ -89,7 +90,7 @@ class DealerProfile(models.Model):
         """
         # 1. Determine effective plan (Downgrade to FREE if expired)
         current_plan = self.plan_type
-        if not self.is_plan_active():
+        if not self.is_plan_active:
             current_plan = 'FREE'
 
         # 2. Check Limits
