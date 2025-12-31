@@ -31,7 +31,7 @@
             <div class="col-lg-8">
                 
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-lg-4">
-                    <div class="position-relative">
+                    <div class="position-relative bg-dark" style="height: 500px; min-height: 300px;">
                         {% if car.status != 'AVAILABLE' %}
                             <div class="position-absolute top-0 end-0 m-3 z-3">
                                 {% if car.status == 'SOLD' %}
@@ -43,24 +43,27 @@
                         {% endif %}
 
                         {% if car.images.first %}
-                            <img src="{{ car.images.first.image.url }}" class="w-100 object-fit-cover main-car-image" style="max-height: 500px; object-fit: cover;" alt="{{ car.make }} {{ car.model }}">
+                            <img id="mainImage" src="{{ car.images.first.image.url }}" class="w-100 h-100 object-fit-cover transition-opacity" alt="{{ car.make }} {{ car.model }}">
                         {% else %}
-                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
-                                <i class="fas fa-car fa-5x text-muted opacity-25"></i>
+                            <div class="d-flex align-items-center justify-content-center h-100 text-white-50">
+                                <div class="text-center">
+                                    <i class="fas fa-car fa-5x mb-3 opacity-25"></i>
+                                    <p>No images available</p>
+                                </div>
                             </div>
                         {% endif %}
                     </div>
                 </div>
 
                 {% if car.images.count > 1 %}
-                <div class="d-flex gap-2 mb-4 overflow-auto pb-2" style="scrollbar-width: thin;">
+                <div class="d-flex gap-2 mb-4 overflow-auto pb-2 px-1" style="scrollbar-width: thin;">
                     {% for img in car.images.all %}
-                        <img src="{{ img.image.url }}" 
-                             class="rounded-3 border shadow-sm" 
-                             style="width: 80px; height: 60px; object-fit: cover; cursor: pointer; opacity: 0.8; transition: opacity 0.2s;" 
-                             onmouseover="this.style.opacity=1" 
-                             onmouseout="this.style.opacity=0.8"
-                             onclick="document.querySelector('.main-car-image').src=this.src">
+                        <div onclick="swapImage(this)" 
+                             data-src="{{ img.image.url }}"
+                             class="thumbnail-wrapper rounded-3 border overflow-hidden position-relative {% if forloop.first %}active-thumb{% endif %}" 
+                             style="min-width: 80px; width: 80px; height: 60px; cursor: pointer;">
+                            <img src="{{ img.image.url }}" class="w-100 h-100 object-fit-cover">
+                        </div>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -71,113 +74,27 @@
                     <h2 class="text-danger fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card border-0 shadow-sm rounded-4 mb-4 d-block d-lg-none">
                     <div class="card-body p-4">
-                        <h4 class="fw-bold mb-3">Vehicle Specs & Details</h4>
-                        
-                        <div class="row g-2 mb-4 d-flex d-lg-none">
+                        <h4 class="fw-bold mb-3">Vehicle Specs</h4>
+                        <div class="row g-2 mb-4">
                             <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border"><i class="fas fa-gas-pump text-muted mb-1"></i><div class="small fw-bold">{{ car.get_fuel_type_display }}</div></div></div>
                             <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border"><i class="fas fa-cog text-muted mb-1"></i><div class="small fw-bold">{{ car.get_transmission_display }}</div></div></div>
                             <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border"><i class="fas fa-car-side text-muted mb-1"></i><div class="small fw-bold">{{ car.body_type }}</div></div></div>
                             <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border"><i class="fas fa-tachometer-alt text-muted mb-1"></i><div class="small fw-bold">{{ car.engine_size }} cc</div></div></div>
                         </div>
-
                         <div class="text-muted" style="white-space: pre-line; line-height: 1.7;">
                             {{ car.description|default:"No description provided by the dealer." }}
                         </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+                <div class="card border-0 shadow-sm rounded-4 mb-4 d-none d-lg-block">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4">Why Buy From This Seller?</h5>
-                        
-                        <div class="d-flex align-items-center mb-4">
-                            <a href="{% url 'dealer_showroom' car.dealer.username %}" class="text-decoration-none">
-                                {% if car.dealer.dealer_profile.logo %}
-                                    <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border p-1 shadow-sm me-3" width="70" height="70" style="object-fit: cover;">
-                                {% else %}
-                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center border me-3" style="width: 70px; height: 70px;">
-                                        <span class="fw-bold fs-3 text-muted">{{ car.dealer.username|slice:":1" }}</span>
-                                    </div>
-                                {% endif %}
-                            </a>
-                            
-                            <div>
-                                <h5 class="fw-bold mb-1 text-dark">
-                                    <a href="{% url 'dealer_showroom' car.dealer.username %}" class="text-dark text-decoration-none">
-                                        {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
-                                    </a>
-                                </h5>
-                                {% if car.dealer.is_verified %}
-                                    <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2 py-1 small">
-                                        <i class="fas fa-check-circle me-1"></i> Verified Dealer
-                                    </span>
-                                {% else %}
-                                    <span class="badge bg-light text-muted border rounded-pill px-2">Registered Seller</span>
-                                {% endif %}
-                            </div>
+                        <h4 class="fw-bold mb-3">Vehicle Description</h4>
+                        <div class="text-muted" style="white-space: pre-line; line-height: 1.7;">
+                            {{ car.description|default:"No description provided by the dealer." }}
                         </div>
-
-                        <hr class="opacity-10 my-4">
-
-                        <div class="row g-4 mb-4">
-                            <div class="col-6 col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-circle p-2 me-2 text-danger d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Location</small>
-                                        <span class="fw-bold text-dark small">
-                                            {{ car.dealer.dealer_profile.get_city_display|default:car.dealer.dealer_profile.city|default:"Kenya" }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-6 col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-circle p-2 me-2 text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Member Since</small>
-                                        <span class="fw-bold text-dark small">{{ car.dealer.date_joined|date:"Y" }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 col-md-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-circle p-2 me-2 text-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                        <i class="fas fa-stopwatch"></i>
-                                    </div>
-                                    <div>
-                                        <small class="text-muted d-block" style="font-size: 0.75rem;">Response Time</small>
-                                        <span class="fw-bold text-dark small">
-                                            Replies within 
-                                            {% if car.dealer.id|divisibleby:4 %}
-                                                1 hour
-                                            {% elif car.dealer.id|divisibleby:3 %}
-                                                2 hours
-                                            {% elif car.dealer.id|divisibleby:2 %}
-                                                3 hours
-                                            {% else %}
-                                                4 hours
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-grid">
-                            <a href="{% url 'dealer_showroom' car.dealer.username %}" class="btn btn-outline-dark rounded-pill fw-bold py-2">
-                                View More Cars from this Dealer
-                            </a>
-                        </div>
-
                     </div>
                 </div>
 
@@ -222,6 +139,42 @@
                                 {% else %}
                                     <button class="btn btn-secondary py-2 rounded-pill" disabled>Contact Info Hidden</button>
                                 {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">Sold By</h5>
+                            <div class="d-flex align-items-center mb-4">
+                                <a href="{% url 'dealer_showroom' car.dealer.username %}" class="text-decoration-none">
+                                    {% if car.dealer.dealer_profile.logo %}
+                                        <img src="{{ car.dealer.dealer_profile.logo.url }}" class="rounded-circle border p-1 shadow-sm me-3" width="70" height="70" style="object-fit: cover;">
+                                    {% else %}
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center border me-3" style="width: 70px; height: 70px;">
+                                            <span class="fw-bold fs-3 text-muted">{{ car.dealer.username|slice:":1" }}</span>
+                                        </div>
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <h5 class="fw-bold mb-1 text-dark">
+                                        <a href="{% url 'dealer_showroom' car.dealer.username %}" class="text-dark text-decoration-none">
+                                            {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
+                                        </a>
+                                    </h5>
+                                    {% if car.dealer.is_verified %}
+                                        <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2 py-1 small">
+                                            <i class="fas fa-check-circle me-1"></i> Verified Dealer
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-muted border rounded-pill px-2">Registered Seller</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <a href="{% url 'dealer_showroom' car.dealer.username %}" class="btn btn-outline-dark rounded-pill fw-bold py-2">
+                                    View More Cars from this Dealer
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -328,17 +281,43 @@
     @media (max-width: 991px) {
         body { padding-bottom: 80px; }
     }
+    
+    /* Gallery Styles */
+    .transition-opacity { transition: opacity 0.2s ease-in-out; }
+    .active-thumb { border: 2px solid #dc3545 !important; opacity: 1; }
+    .thumbnail-wrapper:hover { opacity: 0.8; }
 </style>
 
 <script>
+    // 1. Image Gallery Logic
+    function swapImage(element) {
+        const newSrc = element.getAttribute('data-src');
+        const mainImage = document.getElementById('mainImage');
+        
+        // Simple fade effect
+        mainImage.style.opacity = '0.7';
+        setTimeout(() => {
+            mainImage.src = newSrc;
+            mainImage.style.opacity = '1';
+        }, 150);
+
+        // Highlight active thumbnail
+        document.querySelectorAll('.thumbnail-wrapper').forEach(el => el.classList.remove('active-thumb'));
+        element.classList.add('active-thumb');
+    }
+
+    // 2. Lead Tracking
     function trackLead(carId, action) {
-        // Send async request to track the click
-        fetch(`/track/${carId}/${action}/`, { 
-            method: 'GET', 
-            headers: { 'X-Requested-With': 'XMLHttpRequest' } 
+        fetch(`/cars/track-action/${carId}/${action}/`, { 
+            method: 'POST', 
+            headers: { 
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json' 
+            } 
         }).catch(err => console.log('Tracking error:', err));
     }
 
+    // 3. Loan Calculator
     function calculateLoan() {
         const price = {{ car.price }};
         const deposit = price * 0.30;
