@@ -27,7 +27,7 @@
 
                             {% if form.errors %}
                                 <div class="alert alert-danger rounded-3 mb-4">
-                                    <h6 class="fw-bold mb-1"><i class="fas fa-exclamation-circle me-2"></i>Please correct the following errors:</h6>
+                                    <h6 class="fw-bold mb-1"><i class="fas fa-exclamation-circle me-2"></i>Please correct the errors below:</h6>
                                     <ul class="mb-0 small">
                                         {% for field in form %}
                                             {% for error in field.errors %}
@@ -54,7 +54,6 @@
                                                     <span class="position-absolute top-0 start-0 badge bg-danger m-1">MAIN</span>
                                                 {% endif %}
                                             </div>
-                                            
                                             {% if not img.is_main %}
                                                 <button type="submit" formaction="{% url 'set_main_image' car.id img.id %}" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.7rem;">
                                                     Set Main
@@ -70,9 +69,7 @@
 
                                 <label class="fw-bold small text-muted text-uppercase mb-2">Add New Photos</label>
                                 <div class="bg-light border border-2 border-dashed rounded-4 p-4 text-center position-relative hover-scale" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
-                                    
                                     <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mb-3 d-none"></div>
-
                                     <div id="uploadPrompt">
                                         <div class="mb-3">
                                             <span class="bg-white p-3 rounded-circle shadow-sm d-inline-block">
@@ -82,7 +79,6 @@
                                         <h6 class="fw-bold text-dark">Add More Photos</h6>
                                         <p class="text-muted small mb-3">New photos will be added to the gallery.</p>
                                     </div>
-                                    
                                     <div class="d-inline-block position-relative" style="max-width: 300px; margin: 0 auto; z-index: 10;">
                                         {{ form.image }}
                                     </div>
@@ -94,8 +90,7 @@
                             </div>
 
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">2. Update Details</h5>
-                                
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">2. Basic Information</h5>
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
                                         <label class="form-label fw-bold small text-uppercase text-muted">Make</label>
@@ -105,20 +100,16 @@
                                         <label class="form-label fw-bold small text-uppercase text-muted">Model</label>
                                         {{ form.model }}
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label class="form-label fw-bold small text-uppercase text-muted">Year</label>
                                         {{ form.year }}
                                     </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-bold small text-uppercase text-muted">Mileage</label>
-                                        {{ form.mileage }}
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-bold small text-uppercase text-muted">Engine (cc)</label>
-                                        {{ form.engine_size }}
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Condition</label>
+                                        {{ form.condition }}
                                     </div>
                                 </div>
-
+                                
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-uppercase text-muted">Selling Price (KES)</label>
                                     <div class="input-group">
@@ -126,7 +117,7 @@
                                         {{ form.price }}
                                     </div>
                                 </div>
-
+                                
                                 <div class="mb-3">
                                     <label class="form-label fw-bold small text-uppercase text-muted">Status / Availability</label>
                                     <select name="status" class="form-select bg-light">
@@ -135,11 +126,46 @@
                                         <option value="SOLD" {% if car.status == 'SOLD' %}selected{% endif %}>🔴 Sold (Hidden from Search)</option>
                                     </select>
                                 </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-uppercase text-muted">Seller's Notes</label>
-                                    {{ form.description }}
+                            </div>
+
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">3. Technical Specs & Location</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Transmission</label>
+                                        {{ form.transmission }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Fuel Type</label>
+                                        {{ form.fuel_type }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Body Type</label>
+                                        {{ form.body_type }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Color</label>
+                                        {{ form.color }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Engine (cc)</label>
+                                        {{ form.engine_size }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Mileage (km)</label>
+                                        {{ form.mileage }}
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Location</label>
+                                        {{ form.location }}
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">4. Description</h5>
+                                <label class="form-label fw-bold small text-uppercase text-muted">Seller's Notes</label>
+                                {{ form.description }}
                             </div>
 
                             <hr class="my-4">
@@ -161,6 +187,7 @@
 </div>
 
 <script>
+    // Image Preview Logic
     document.addEventListener('DOMContentLoaded', function() {
         const imageInput = document.querySelector('input[type="file"]');
         const previewContainer = document.getElementById('imagePreviewContainer');
