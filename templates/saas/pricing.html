@@ -35,7 +35,7 @@
 
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
-                                {% if user.dealer_profile.plan_type == 'STARTER' and user.dealer_profile.is_plan_active %}
+                                {% if user.dealer_profile.plan_type == 'STARTER' %}
                                     <button class="btn btn-secondary rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
@@ -71,7 +71,7 @@
 
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
-                                {% if user.dealer_profile.plan_type == 'LITE' and user.dealer_profile.is_plan_active %}
+                                {% if user.dealer_profile.plan_type == 'LITE' %}
                                     <button class="btn btn-primary fw-bold rounded-pill py-3 disabled" style="opacity: 1; border: 1px solid #0d6efd;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
@@ -90,7 +90,6 @@
 
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-0 shadow-sm rounded-4 bg-light position-relative overflow-hidden">
-                    
                     <div class="position-absolute top-0 end-0 bg-warning text-dark fw-bold px-3 py-1 small rounded-bottom-start">
                         BEST VALUE
                     </div>
@@ -112,22 +111,21 @@
 
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
-                                {% if user.dealer_profile.plan_type == 'PRO' and user.dealer_profile.is_plan_active %}
+                                {% if user.dealer_profile.plan_type == 'PRO' %}
                                     <button class="btn btn-success rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                     
                                     <div class="text-center mt-3">
-                                        <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">Need more than 50 cars?</small>
+                                        <small class="text-muted d-block mb-1" style="font-size: 0.85rem;">Need more than 50 cars?</small>
                                         <a href="https://wa.me/254727025050?text=Hi,%20I%20am%20a%20PRO%20dealer%20and%20I%20need%20a%20custom%20plan%20for%20more%20than%2050%20cars." 
                                            target="_blank" 
                                            class="fw-bold text-dark small text-decoration-underline">
                                             Contact for Enterprise
                                         </a>
                                     </div>
-
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale">
+                                    <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark rounded-pill py-2 fw-bold hover-scale">
                                         Upgrade to Pro
                                     </a>
                                 {% endif %}
