@@ -3,10 +3,13 @@ from .models import Car
 
 class CarForm(forms.ModelForm):
     # We define 'image' here manually because it is NOT part of the Car model directly.
-    # This allows the form to still show the file upload button.
+    # UPDATED: Added 'multiple': True to allow selecting many photos
     image = forms.ImageField(
         required=False, 
-        widget=forms.FileInput(attrs={'class': 'form-control'})
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control', 
+            'multiple': True 
+        })
     )
 
     class Meta:

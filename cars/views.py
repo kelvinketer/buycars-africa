@@ -235,8 +235,17 @@ def add_car(request):
             car.dealer = request.user 
             car.status = 'AVAILABLE'
             car.save()
-            if request.FILES.get('image'):
-                CarImage.objects.create(car=car, image=request.FILES.get('image'), is_main=True)
+            
+            # --- UPDATED: HANDLE MULTIPLE IMAGES ---
+            # Use getlist to retrieve all files selected
+            images = request.FILES.getlist('image') 
+            
+            for index, img in enumerate(images):
+                # The first image selected becomes the "Main" image
+                is_main = (index == 0)
+                CarImage.objects.create(car=car, image=img, is_main=is_main)
+            # ---------------------------------------
+
             messages.success(request, 'Vehicle uploaded successfully!')
             return redirect('dealer_dashboard')
     else:

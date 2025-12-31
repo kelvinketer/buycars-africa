@@ -26,16 +26,17 @@
                             {% csrf_token %}
                             
                             <div class="mb-5">
-                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">1. Vehicle Photo</h5>
-                                <div class="bg-light border border-2 border-dashed rounded-4 p-5 text-center position-relative hover-scale" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">1. Vehicle Photos</h5>
+                                <div class="bg-light border border-2 border-dashed rounded-4 p-4 text-center position-relative hover-scale" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
                                     
-                                    <div id="imagePreview" class="d-none mb-3">
-                                        <img src="#" class="rounded-3 shadow-sm object-fit-cover" style="max-height: 200px; max-width: 100%;">
-                                    </div>
+                                    <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mb-3 d-none">
+                                        </div>
 
-                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                    <h6 class="fw-bold text-dark">Upload Main Image</h6>
-                                    <p class="text-muted small mb-3">Supported formats: JPG, PNG, WEBP</p>
+                                    <div id="uploadPrompt">
+                                        <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                        <h6 class="fw-bold text-dark">Upload Photos</h6>
+                                        <p class="text-muted small mb-3">Select multiple images (Max 10)</p>
+                                    </div>
                                     
                                     <div class="d-inline-block" style="max-width: 300px; margin: 0 auto;">
                                         {{ form.image }}
@@ -103,7 +104,7 @@
                                 <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">4. Pricing & Description</h5>
                                 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold small text-uppercase text-muted">Selling Price (KES)</label>
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Selling Price</label>
                                     <div class="input-group">
                                         <span class="input-group-text fw-bold bg-light border-end-0 text-muted">KES</span>
                                         {{ form.price }}
@@ -135,22 +136,39 @@
 </div>
 
 <script>
-    // Image Preview Logic
+    // Multiple Image Preview Logic
     document.addEventListener('DOMContentLoaded', function() {
         const imageInput = document.querySelector('input[type="file"]');
-        const previewBox = document.getElementById('imagePreview');
-        const previewImg = previewBox.querySelector('img');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const uploadPrompt = document.getElementById('uploadPrompt');
 
         if (imageInput) {
             imageInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImg.src = e.target.result;
-                        previewBox.classList.remove('d-none');
-                    }
-                    reader.readAsDataURL(file);
+                const files = e.target.files;
+                
+                // Clear previous previews
+                previewContainer.innerHTML = '';
+                
+                if (files.length > 0) {
+                    previewContainer.classList.remove('d-none');
+                    // Optional: Hide the big prompt icon to save space
+                    // uploadPrompt.classList.add('d-none'); 
+                    
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'rounded-3 shadow-sm object-fit-cover border';
+                            img.style.width = '100px';
+                            img.style.height = '100px';
+                            previewContainer.appendChild(img);
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    previewContainer.classList.add('d-none');
+                    uploadPrompt.classList.remove('d-none');
                 }
             });
         }
@@ -158,39 +176,30 @@
 </script>
 
 <style>
-    /* 1. Label Styling: Sits cleanly above input */
     .form-label {
         margin-bottom: 0.5rem;
         display: block;
         letter-spacing: 0.5px;
         font-size: 0.75rem;
     }
-    
-    /* 2. Input Styling: Light grey background to distinguish from white card */
     .form-control, .form-select {
         background-color: #f8fafc !important; 
         border: 1px solid #e2e8f0;
         padding: 0.75rem 1rem;
         border-radius: 8px;
         font-weight: 500;
-        color: #1e293b !important; /* Dark Text */
+        color: #1e293b !important;
     }
-
-    /* 3. Focus State: Brand Red border */
     .form-control:focus, .form-select:focus {
         background-color: #ffffff !important;
         border-color: #dc3545; 
         box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
     }
-
-    /* 4. Input Group Fix (For Price) */
     .input-group-text {
         background-color: #f1f5f9;
         border-color: #e2e8f0;
         color: #64748b;
     }
-    
-    /* 5. Hover Effect for Upload Box */
     .hover-scale { transition: transform 0.2s; }
     .hover-scale:hover { transform: scale(1.01); border-color: #0f172a !important; }
 </style>
