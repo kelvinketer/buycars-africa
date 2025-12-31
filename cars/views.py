@@ -4,6 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 # UPDATED IMPORTS: Added F to increment counts efficiently
 from django.db.models import Q, Count, F
+# NEW IMPORTS FOR CHART
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model 
 import re 
 
@@ -134,10 +139,34 @@ def dealer_dashboard(request):
     elif profile.plan_type == 'PRO': limit = 999999
     can_add = car_count < limit or profile.plan_type == 'PRO'
 
-    leads = Lead.objects.filter(car__dealer=request.user).values('action_type').annotate(total=Count('id'))
-    chart_labels = [i['action_type'] for i in leads]
-    chart_values = [i['total'] for i in leads]
+    # --- NEW: 30-Day Lead Performance Logic ---
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+
+    # Group leads by Date (Truncate timestamp to Day)
+    daily_leads = Lead.objects.filter(
+        car__dealer=request.user, 
+        timestamp__gte=thirty_days_ago
+    ).annotate(date=TruncDate('timestamp'))\
+     .values('date')\
+     .annotate(count=Count('id'))\
+     .order_by('date')
+
+    # Convert QuerySet to Dictionary for easy lookup { '2025-01-01': 5, ... }
+    leads_dict = {item['date'].strftime('%Y-%m-%d'): item['count'] for item in daily_leads}
     
+    # Generate full list of last 30 days (fill zeros for empty days)
+    chart_labels = []
+    chart_values = []
+    
+    for i in range(30):
+        d = (timezone.now() - timedelta(days=29-i)).date() # Start from 30 days ago
+        d_str = d.strftime('%Y-%m-%d')
+        label = d.strftime('%b %d') # e.g., "Jan 01"
+        
+        chart_labels.append(label)
+        chart_values.append(leads_dict.get(d_str, 0)) # Default to 0 if no leads
+    # ------------------------------------------
+
     recent = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
     
     context = {
