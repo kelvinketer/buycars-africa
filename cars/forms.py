@@ -1,33 +1,25 @@
 from django import forms
 from .models import Car
 
-# --- CUSTOM WIDGET TO ALLOW MULTIPLE SELECTIONS ---
+# Custom Widget to allow 'multiple' attribute without Django throwing a ValueError
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
-# --- CUSTOM FIELD TO VALIDATE A LIST OF FILES ---
-class MultipleFileField(forms.FileField):
-    def to_python(self, data):
-        if not data:
-            return None
-        if not isinstance(data, list):
-            data = [data]
-        return data
-
 class CarForm(forms.ModelForm):
-    # UPDATED: Use the custom field and widget
-    image = MultipleFileField(
+    # UPDATED: Use standard FileField for validation safety, but MultipleWidget for UI
+    image = forms.FileField(
         required=False, 
         widget=MultipleFileInput(attrs={
             'class': 'form-control', 
-            'multiple': True,  # HTML5 attribute
-            'accept': 'image/*' 
+            'multiple': True, 
+            'accept': 'image/*'
         })
     )
 
     class Meta:
         model = Car
-        # Remove 'image' from fields list to avoid conflicts
+        # We exclude 'status' here so we don't conflict with model logic, 
+        # but we will handle it manually in the view.
         exclude = ['dealer', 'status', 'is_featured', 'created_at']
         
         widgets = {

@@ -237,34 +237,38 @@ def add_car(request):
 @login_required
 def edit_car(request, car_id):
     car = get_object_or_404(Car, pk=car_id, dealer=request.user)
+    
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
-            form.save()
+            # 1. Save Basic Data
+            car = form.save(commit=False)
             
-            # --- APPEND EXTRA PHOTOS ---
+            # 2. Manually Update Status (since it's excluded from form but in HTML)
+            new_status = request.POST.get('status')
+            if new_status in ['AVAILABLE', 'RESERVED', 'SOLD']:
+                car.status = new_status
+            
+            car.save()
+            
+            # 3. Handle Multiple Images
             new_images = request.FILES.getlist('image')
-            
             if new_images:
                 for img in new_images:
-                    # Append new images without removing old ones
+                    # Create new image, set is_main=False to avoid overriding existing main
                     CarImage.objects.create(car=car, image=img, is_main=False)
             
-            # --- FEEDBACK: Count new photos & Redirect to Detail Page ---
-            count = len(new_images)
-            if count > 0:
-                messages.success(request, f'Changes saved! {count} new photo(s) added successfully.')
-            else:
-                messages.success(request, 'Vehicle details updated successfully!')
-            
-            # Redirect to the public detail page so user can verify changes visually
+            # 4. Success Message & Redirect to Detail Page
+            msg = f'Vehicle updated! {len(new_images)} new photo(s) added.'
+            messages.success(request, msg)
             return redirect('car_detail', car_id=car.id)
-            # ------------------------------------------------------------
-
+            
         else:
             print("Form Errors:", form.errors)
+            messages.error(request, "Please correct the errors below.")
     else:
         form = CarForm(instance=car)
+    
     return render(request, 'dealer/edit_car.html', {'form': form, 'car': car})
 
 @login_required
