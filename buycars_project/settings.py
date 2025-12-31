@@ -13,15 +13,11 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = ['*'] 
 
 # --- CRITICAL FIX FOR RENDER FORMS ---
-# This tells Django to trust requests coming from your live domain
 CSRF_TRUSTED_ORIGINS = [
     'https://buycars-africa.onrender.com',
 ]
-# -------------------------------------
-
 
 # Application definition
-
 INSTALLED_APPS = [
     # --- CLOUDINARY APPS (Must be at the top) ---
     'cloudinary_storage',
@@ -78,16 +74,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'buycars_project.wsgi.application'
 
-
 # --- DATABASE CONFIGURATION ---
-# Falls back to SQLite if DATABASE_URL is missing
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
         conn_max_age=600
     )
 }
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -97,13 +90,11 @@ AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
-
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Africa/Nairobi' 
 USE_I18N = True
 USE_TZ = True
-
 
 # --- STATIC FILES (CSS/JS - Managed by WhiteNoise) ---
 STATIC_URL = '/static/'
@@ -121,7 +112,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# --- STORAGE CONFIGURATION (SAFE MODE) ---
+# --- STORAGE CONFIGURATION ---
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -134,7 +125,6 @@ STORAGES = {
     },
 }
 
-
 # --- AUTH SETTINGS ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
@@ -143,7 +133,7 @@ LOGIN_REDIRECT_URL = 'dealer_dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-# --- EMAIL CONFIGURATION (Real Gmail Sending) ---
+# --- EMAIL CONFIGURATION ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -152,16 +142,23 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = 'BuyCars Africa <noreply@buycars.africa>'
 
-# --- M-PESA DARAJA API CONFIGURATION ---
-# Defaulting to Sandbox for testing
+# ========================================================
+#             M-PESA DARAJA API CONFIGURATION
+# ========================================================
 MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT', default='sandbox')
-MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='')
-MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
 
-# Default Sandbox Paybill & Passkey
+# 1. CREDENTIALS (PASTE YOUR SANDBOX KEYS HERE IF NOT USING .ENV)
+MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='PASTE_YOUR_CONSUMER_KEY_HERE')
+MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='PASTE_YOUR_CONSUMER_SECRET_HERE')
+
+# 2. PAYBILL / TILL NUMBER CONFIGURATION
+# Sandbox Default: 174379 (Paybill)
+# If using a Till Number later, set TYPE to 'CustomerBuyGoodsOnline'
 MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379') 
 MPESA_PASSKEY = config('MPESA_PASSKEY', default='bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919') 
+MPESA_TRANSACTION_TYPE = config('MPESA_TRANSACTION_TYPE', default='CustomerPayBillOnline')
 
+# 3. URLS
 if MPESA_ENVIRONMENT == 'production':
     MPESA_ACCESS_TOKEN_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     MPESA_EXPRESS_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
@@ -169,8 +166,9 @@ else:
     MPESA_ACCESS_TOKEN_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     MPESA_EXPRESS_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
 
-# This must be a live URL (Ngrok or Render link)
+# 4. CALLBACK URL (Must be live/public)
 MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://buycars-africa.onrender.com/payments/callback/')
+
 
 # --- AFRICA'S TALKING SMS CONFIGURATION ---
 AFRICASTALKING_USERNAME = config('AFRICASTALKING_USERNAME', default='sandbox')
