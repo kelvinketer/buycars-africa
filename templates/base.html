@@ -78,7 +78,7 @@
                             <a class="nav-link fw-semibold" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif; font-size: 0.95rem;">Dealer Login</a>
                         </li>
                         <li class="nav-item ms-2">
-                            <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'signup' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">Start Selling</a>
+                            <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'sell_page' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">Start Selling</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -130,7 +130,7 @@
                     <ul class="list-unstyled small text-white-50 gap-2 d-flex flex-column">
                         <li><a href="#" class="footer-link">About Us</a></li>
                         <li><a href="#" class="footer-link">How it Works</a></li>
-                        <li><a href="#" class="footer-link">Sell Your Car</a></li>
+                        <li><a href="{% url 'sell_page' %}" class="footer-link">Sell Your Car</a></li>
                         <li><a href="#" class="footer-link">Terms of Service</a></li>
                         <li><a href="#" class="footer-link">Privacy Policy</a></li>
                         <li><a href="#" class="footer-link">Safety Tips</a></li>

@@ -36,6 +36,10 @@ urlpatterns = [
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
+    
+    # --- DEALER LANDING PAGE (NEW) ---
+    # This page is specifically for marketing to new yards (buycars.africa/sell)
+    path('sell/', TemplateView.as_view(template_name='saas/sell.html'), name='sell_page'),
 
     # --- LEAD TRACKING ---
     path('track/<int:car_id>/<str:action_type>/', car_views.track_action, name='track_action'),
@@ -49,8 +53,7 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # --- PRICING PAGE (FIXED) ---
-    # Renamed from 'pricing_page' to 'pricing' to match the dashboard template
+    # --- PRICING PAGE ---
     path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing'),
     
     # --- DEALER SETTINGS & SUPPORT ---
