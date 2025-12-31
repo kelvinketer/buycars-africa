@@ -31,7 +31,9 @@
             <div class="col-lg-8">
                 
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-lg-4">
-                    <div class="position-relative bg-light" style="height: 500px; min-height: 350px;">
+                    
+                    <div class="position-relative d-flex align-items-center justify-content-center" 
+                         style="height: 500px; min-height: 350px; background-color: #f1f5f9;">
                         
                         {% if car.status != 'AVAILABLE' %}
                             <div class="position-absolute top-0 end-0 m-3 z-3">
@@ -44,37 +46,26 @@
                         {% endif %}
 
                         {% if car.images.first %}
-                            <div class="position-absolute top-0 start-0 w-100 h-100 overflow-hidden">
-                                <img id="blurBg" src="{{ car.images.first.image.url }}?v={% now "U" %}" 
-                                     class="w-100 h-100 object-fit-cover" 
-                                     style="filter: blur(20px) brightness(0.7); transform: scale(1.1);">
-                            </div>
-
-                            <div class="position-relative h-100 w-100 d-flex align-items-center justify-content-center" style="z-index: 2;">
-                                <img id="mainImage" src="{{ car.images.first.image.url }}?v={% now "U" %}" 
-                                     class="w-100 h-100 object-fit-contain transition-opacity shadow-lg" 
-                                     style="max-height: 500px;" 
-                                     alt="{{ car.make }} {{ car.model }}">
-                            </div>
+                            <img id="mainImage" src="{{ car.images.first.image.url }}?v={% now "U" %}" 
+                                 class="w-100 h-100 object-fit-contain transition-opacity" 
+                                 alt="{{ car.make }} {{ car.model }}">
                         {% else %}
-                            <div class="d-flex align-items-center justify-content-center h-100 text-muted bg-light">
-                                <div class="text-center">
-                                    <i class="fas fa-car fa-5x mb-3 opacity-25"></i>
-                                    <p>No images available</p>
-                                </div>
+                            <div class="text-center text-muted opacity-50">
+                                <i class="fas fa-car fa-5x mb-3"></i>
+                                <p>No images available</p>
                             </div>
                         {% endif %}
 
                         {% if car.images.count > 1 %}
-                            <button class="btn btn-light border-0 rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center arrow-btn shadow" 
+                            <button class="btn btn-white border rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center shadow-sm arrow-btn" 
                                     onclick="prevImage()" 
-                                    style="width: 45px; height: 45px; z-index: 100; cursor: pointer; opacity: 0.8;">
+                                    style="width: 45px; height: 45px; z-index: 100; cursor: pointer; background-color: rgba(255,255,255,0.9);">
                                 <i class="fas fa-chevron-left text-dark fs-5"></i>
                             </button>
                             
-                            <button class="btn btn-light border-0 rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center arrow-btn shadow" 
+                            <button class="btn btn-white border rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center shadow-sm arrow-btn" 
                                     onclick="nextImage()" 
-                                    style="width: 45px; height: 45px; z-index: 100; cursor: pointer; opacity: 0.8;">
+                                    style="width: 45px; height: 45px; z-index: 100; cursor: pointer; background-color: rgba(255,255,255,0.9);">
                                 <i class="fas fa-chevron-right text-dark fs-5"></i>
                             </button>
                         {% endif %}
@@ -336,7 +327,6 @@
     function swapImage(element) {
         const newSrc = element.getAttribute('data-src');
         const mainImage = document.getElementById('mainImage');
-        const blurBg = document.getElementById('blurBg'); // Added blurBg reference
         
         if (element.hasAttribute('data-index')) {
             currentImageIndex = parseInt(element.getAttribute('data-index'));
@@ -348,9 +338,6 @@
             mainImage.src = newSrc;
             mainImage.style.opacity = '1';
         }, 150);
-
-        // Update Blurred Background immediately (no fade needed really, or simple sync)
-        if(blurBg) blurBg.src = newSrc;
 
         thumbnails.forEach(el => el.classList.remove('active-thumb'));
         element.classList.add('active-thumb');
