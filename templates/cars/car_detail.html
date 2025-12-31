@@ -44,7 +44,7 @@
                         {% endif %}
 
                         {% if car.images.first %}
-                            <img id="mainImage" src="{{ car.images.first.image.url }}?v={% now "U" %}" class="w-100 h-100 object-fit-cover transition-opacity" alt="{{ car.make }} {{ car.model }}">
+                            <img id="mainImage" src="{{ car.images.first.image.url }}?v={% now "U" %}" class="w-100 h-100 object-fit-contain transition-opacity" alt="{{ car.make }} {{ car.model }}">
                         {% else %}
                             <div class="d-flex align-items-center justify-content-center h-100 text-white-50">
                                 <div class="text-center">
@@ -144,7 +144,6 @@
             </div>
 
             <div class="col-lg-4 d-none d-lg-block">
-                
                 <div class="position-sticky" style="top: 100px;">
                     
                     <div class="card border-0 shadow-sm rounded-4 mb-4 position-relative overflow-hidden">
