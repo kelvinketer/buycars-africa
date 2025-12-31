@@ -20,23 +20,6 @@
         70% { box-shadow: 0 0 0 10px rgba(25, 135, 84, 0); }
         100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); }
     }
-
-    /* Sticky Mobile Actions */
-    .mobile-sticky-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: white;
-        z-index: 1050;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-        padding: 15px;
-        display: none; /* Hidden on desktop */
-    }
-    @media (max-width: 768px) {
-        .mobile-sticky-bar { display: flex; gap: 10px; }
-        .footer { padding-bottom: 80px; } /* Prevent footer overlap */
-    }
 </style>
 {% endblock %}
 
@@ -248,20 +231,6 @@
         </div>
     </div>
 </div>
-
-{% with contact_number=profile.phone_number|default:dealer.phone_number %}
-    {% if contact_number %}
-    <div class="mobile-sticky-bar">
-        <a href="tel:{{ contact_number|whatsapp_format }}" class="btn btn-outline-dark flex-grow-1 fw-bold py-3 rounded-3">
-            <i class="fas fa-phone-alt me-2"></i> Call
-        </a>
-        <a href="https://wa.me/{{ contact_number|whatsapp_format }}?text=Hi, I found your showroom on BuyCars.Africa..." 
-           class="btn btn-success flex-grow-1 fw-bold py-3 rounded-3">
-            <i class="fab fa-whatsapp me-2"></i> WhatsApp
-        </a>
-    </div>
-    {% endif %}
-{% endwith %}
 
 <script>
     function copyShowroomLink() {
