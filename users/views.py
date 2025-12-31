@@ -3,14 +3,14 @@ from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Sum, Q
+# UPDATED IMPORT: Added 'Count' for the Pie Chart logic
+from django.db.models import Sum, Q, Count
 from django.utils import timezone
 from datetime import timedelta
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
-# UPDATED IMPORT: Added 'Lead' to track the Value Meter
 from cars.models import Car, Lead 
 
 User = get_user_model()
@@ -93,20 +93,32 @@ def admin_dashboard(request):
     # 4. PENDING ACTIONS
     pending_dealers = User.objects.filter(role='DEALER', is_verified=False).count()
 
-    # --- 5. VALUE METER (LEADS) - NEW FEATURE ---
-    # Total count of all clicks (Call + WhatsApp)
+    # 5. VALUE METER (LEADS)
     total_leads = Lead.objects.count()
-    
-    # Calculate Leads Today for the "Live" feeling
     today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     leads_today = Lead.objects.filter(timestamp__gte=today_start).count()
-    # ---------------------------------------------
 
-    # 6. RECENT ACTIVITY
+    # --- 6. MARKET DOMINANCE (PIE CHART DATA) - NEW FEATURE ---
+    # Fetch top 5 brands by count
+    brand_stats = Car.objects.values('make').annotate(count=Count('id')).order_by('-count')[:5]
+    
+    brand_labels = [entry['make'] for entry in brand_stats]
+    brand_counts = [entry['count'] for entry in brand_stats]
+    
+    # Calculate 'Other' brands
+    top_5_count = sum(brand_counts)
+    other_count = total_cars - top_5_count
+    
+    if other_count > 0:
+        brand_labels.append('Other')
+        brand_counts.append(other_count)
+    # ---------------------------------------------------------
+
+    # 7. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
-    # 7. ENHANCED TRANSACTION HISTORY
+    # 8. ENHANCED TRANSACTION HISTORY
     recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
@@ -116,7 +128,7 @@ def admin_dashboard(request):
         ).first()
         trans.related_user = related_user
 
-    # 8. GROWTH ANALYTICS (Last 30 Days)
+    # 9. GROWTH ANALYTICS (Last 30 Days)
     today = timezone.now().date()
     dates = []
     user_counts = []
@@ -130,7 +142,7 @@ def admin_dashboard(request):
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
-    # 9. MASTER DEALER LIST (SEARCH & MANAGE)
+    # 10. MASTER DEALER LIST (SEARCH & MANAGE)
     all_dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('-date_joined')
     
     search_query = request.GET.get('q')
@@ -148,9 +160,13 @@ def admin_dashboard(request):
         'total_cars': total_cars,
         'pending_dealers': pending_dealers,
         
-        # Pass Value Meter Data
+        # Value Meter Data
         'total_leads': total_leads,
         'leads_today': leads_today,
+        
+        # Market Dominance Data (New)
+        'brand_labels': brand_labels,
+        'brand_counts': brand_counts,
         
         'recent_users': recent_users,
         'recent_cars': recent_cars,

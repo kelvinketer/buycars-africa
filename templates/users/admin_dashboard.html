@@ -30,7 +30,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 h-100 bg-dark text-white">
                     <div class="card-body p-4">
@@ -39,7 +38,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 h-100 bg-danger text-white">
                     <div class="card-body p-4">
@@ -53,7 +51,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 h-100 bg-success text-white">
                     <div class="card-body p-4">
@@ -70,28 +67,46 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-3 h-100 bg-warning text-dark">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="text-uppercase opacity-75 fw-bold mb-2" style="font-size: 0.8rem;">Pending Verification</h6>
-                                <h2 class="fw-bold mb-0">{{ pending_dealers }}</h2>
-                            </div>
-                            <i class="fas fa-exclamation-circle fa-2x opacity-50"></i>
-                        </div>
+        {% if pending_dealers > 0 %}
+        <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-5 d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+            <div>
+                <h5 class="fw-bold mb-0">Action Required: {{ pending_dealers }} Dealer(s) Pending Verification</h5>
+                <small>Scroll down to the Dealer Management table to approve them.</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-line me-2 text-primary"></i>30-Day Growth Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="growthChart" height="150"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card border-0 shadow-sm rounded-3 mb-5">
-            <div class="card-header bg-white py-3">
-                <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-line me-2 text-primary"></i>30-Day Growth Trends</h5>
-            </div>
-            <div class="card-body">
-                <canvas id="growthChart" height="80"></canvas>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-pie me-2 text-warning"></i>Inventory Mix</h5>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center position-relative">
+                        <div style="height: 250px; width: 100%;">
+                            <canvas id="brandChart"></canvas>
+                        </div>
+                        
+                        <div class="position-absolute text-center" style="pointer-events: none;">
+                            <h3 class="fw-bold mb-0 text-dark">{{ total_cars }}</h3>
+                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Total Cars</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -268,6 +283,7 @@
 </div>
 
 <script>
+    // --- GROWTH CHART (LINE) ---
     const ctx = document.getElementById('growthChart').getContext('2d');
     const growthChart = new Chart(ctx, {
         type: 'line',
@@ -294,8 +310,46 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false, // Allows chart to fill container
             plugins: { legend: { position: 'top' } },
             scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+
+    // --- MARKET DOMINANCE CHART (DOUGHNUT) - NEW ---
+    const ctxBrand = document.getElementById('brandChart').getContext('2d');
+    const brandChart = new Chart(ctxBrand, {
+        type: 'doughnut',
+        data: {
+            labels: {{ brand_labels|safe }},
+            datasets: [{
+                data: {{ brand_counts|safe }},
+                backgroundColor: [
+                    '#0d6efd', // Primary Blue
+                    '#dc3545', // Danger Red
+                    '#ffc107', // Warning Yellow
+                    '#198754', // Success Green
+                    '#6610f2', // Indigo
+                    '#adb5bd'  // Grey (Other)
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%', // Makes the doughnut thinner
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 10,
+                        padding: 20
+                    }
+                }
+            }
         }
     });
 </script>
