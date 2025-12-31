@@ -5,185 +5,134 @@
 <div class="bg-light min-vh-100 py-5">
     <div class="container">
         
-        <div class="text-center mb-5">
-            <h2 class="fw-bold text-dark">List a New Vehicle</h2>
-            <p class="text-muted">Fill in the details below to publish your car to thousands of buyers.</p>
-        </div>
-
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h2 class="fw-bold text-dark mb-0">Add New Vehicle</h2>
+                    <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
+                        <i class="fas fa-times me-2"></i> Cancel
+                    </a>
+                </div>
 
-                    {% if form.errors %}
-                        <div class="alert alert-danger shadow-sm border-0 rounded-4 mb-4">
-                            <h6 class="fw-bold"><i class="fas fa-exclamation-circle me-2"></i>Please correct the errors below:</h6>
-                            <ul class="mb-0 small">
-                                {% for field in form %}
-                                    {% for error in field.errors %}
-                                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                                    {% endfor %}
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-4 text-center">
-                            <h5 class="fw-bold mb-3 text-start">1. Vehicle Photo</h5>
-                            
-                            <div class="upload-box p-4 border rounded-3 bg-light position-relative" style="border: 2px dashed #cbd5e1 !important;">
-                                <div id="imagePreview" class="d-none mb-3">
-                                    <img src="#" class="rounded-3 shadow-sm object-fit-cover" style="max-height: 200px; width: 100%; max-width: 300px;">
-                                </div>
-                                
-                                <div class="file-upload-wrapper">
-                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
-                                    <p class="text-muted small mb-3">Click to select a high-quality main photo</p>
-                                    {{ form.image }}
-                                </div>
-                            </div>
-                        </div>
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%"></div>
                     </div>
 
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-4">2. Key Details</h5>
+                    <div class="card-body p-4 p-lg-5">
+                        
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
                             
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">1. Vehicle Photo</h5>
+                                <div class="bg-light border border-2 border-dashed rounded-4 p-5 text-center position-relative hover-scale" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
+                                    
+                                    <div id="imagePreview" class="d-none mb-3">
+                                        <img src="#" class="rounded-3 shadow-sm object-fit-cover" style="max-height: 200px; max-width: 100%;">
+                                    </div>
+
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <h6 class="fw-bold text-dark">Upload Main Image</h6>
+                                    <p class="text-muted small mb-3">Supported formats: JPG, PNG, WEBP</p>
+                                    
+                                    <div class="d-inline-block" style="max-width: 300px; margin: 0 auto;">
+                                        {{ form.image }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">2. Key Details</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Make</label>
                                         {{ form.make }}
-                                        <label>Make (e.g. Toyota)</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Model</label>
                                         {{ form.model }}
-                                        <label>Model (e.g. Harrier)</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Year of Manufacture</label>
                                         {{ form.year }}
-                                        <label>Year of Manufacture</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Body Type</label>
                                         {{ form.body_type }}
-                                        <label>Body Type</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Condition</label>
                                         {{ form.condition }}
-                                        <label>Condition</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Vehicle Location</label>
                                         {{ form.location }}
-                                        <label>Vehicle Location</label>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-4">3. Specs & Performance</h5>
-                            
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <div class="form-floating">
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">3. Specifications</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Transmission</label>
                                         {{ form.transmission }}
-                                        <label>Transmission</label>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Fuel Type</label>
                                         {{ form.fuel_type }}
-                                        <label>Fuel Type</label>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Engine Size (cc)</label>
                                         {{ form.engine_size }}
-                                        <label>Engine (cc)</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Mileage (km)</label>
                                         {{ form.mileage }}
-                                        <label>Mileage (km)</label>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Color</label>
                                         {{ form.color }}
-                                        <label>Exterior Color</label>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="card border-0 shadow-sm rounded-4 mb-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-4">4. Pricing & Description</h5>
-                            
-                            <div class="mb-4">
-                                <label class="fw-bold mb-2">Selling Price (KES)</label>
-                                <div class="input-group input-group-lg">
-                                    <span class="input-group-text bg-white fw-bold text-muted border-end-0">KES</span>
-                                    {{ form.price }}
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">4. Pricing & Description</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Selling Price</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text fw-bold bg-light border-end-0 text-muted">KES</span>
+                                        {{ form.price }}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Seller's Notes</label>
+                                    {{ form.description }}
+                                    <div class="form-text text-muted small mt-2">Include details about features, upgrades, or recent service history.</div>
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="fw-bold mb-2">Seller's Notes</label>
-                                {{ form.description }}
-                                <div class="form-text">Mention key features like Sunroof, Leather Seats, New Tires, etc.</div>
+                            <hr class="my-4">
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold shadow-sm hover-scale">
+                                    <i class="fas fa-check-circle me-2"></i> Publish Vehicle
+                                </button>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="d-grid gap-3 d-md-flex justify-content-md-end mb-5">
-                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-light btn-lg rounded-pill px-5 fw-bold">Cancel</a>
-                        <button type="submit" class="btn btn-danger btn-lg rounded-pill px-5 fw-bold shadow-sm">
-                            <i class="fas fa-check-circle me-2"></i> Publish Listing
-                        </button>
+                        </form>
                     </div>
+                </div>
 
-                </form>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    /* Styling for Django Form Fields to match Bootstrap Floating Labels */
-    .form-control, .form-select {
-        border-radius: 12px;
-        border: 1px solid #dee2e6;
-        padding: 1rem 0.75rem;
-        height: calc(3.5rem + 2px);
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #dc3545; /* Red border on focus */
-        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.1);
-    }
-    textarea.form-control {
-        height: 150px;
-    }
-    /* Fix for file input */
-    input[type="file"] {
-        padding-top: 15px; /* Alignment fix */
-    }
-</style>
 
 <script>
     // Image Preview Logic
@@ -205,24 +154,44 @@
                 }
             });
         }
-        
-        // Add bootstrap classes to django rendered fields manually if needed
-        const inputs = document.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            if (!input.classList.contains('form-control') && !input.classList.contains('form-select')) {
-                if (input.tagName === 'SELECT') {
-                    input.classList.add('form-select');
-                } else if (input.type !== 'checkbox' && input.type !== 'file') {
-                    input.classList.add('form-control');
-                    input.placeholder = " "; // Required for floating labels
-                }
-                
-                // Specific fix for file input
-                if (input.type === 'file') {
-                    input.classList.add('form-control'); 
-                }
-            }
-        });
     });
 </script>
+
+<style>
+    /* 1. Label Styling: Sits cleanly above input */
+    .form-label {
+        margin-bottom: 0.5rem;
+        display: block;
+        letter-spacing: 0.5px;
+        font-size: 0.75rem;
+    }
+    
+    /* 2. Input Styling: Light grey background to distinguish from white card */
+    .form-control, .form-select {
+        background-color: #f8fafc !important; 
+        border: 1px solid #e2e8f0;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        color: #1e293b !important; /* Dark Text */
+    }
+
+    /* 3. Focus State: Brand Red border */
+    .form-control:focus, .form-select:focus {
+        background-color: #ffffff !important;
+        border-color: #dc3545; 
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1);
+    }
+
+    /* 4. Input Group Fix (For Price) */
+    .input-group-text {
+        background-color: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #64748b;
+    }
+    
+    /* 5. Hover Effect for Upload Box */
+    .hover-scale { transition: transform 0.2s; }
+    .hover-scale:hover { transform: scale(1.01); border-color: #0f172a !important; }
+</style>
 {% endblock %}
