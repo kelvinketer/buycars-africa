@@ -2,11 +2,10 @@ from django import forms
 from .models import Car
 
 class CarForm(forms.ModelForm):
-    # We define 'image' here manually because it is NOT part of the Car model directly.
-    # UPDATED: Added 'multiple': True to allow selecting many photos
+    # FIX: Changed ClearableFileInput to FileInput to allow multiple files
     image = forms.ImageField(
         required=False, 
-        widget=forms.ClearableFileInput(attrs={
+        widget=forms.FileInput(attrs={
             'class': 'form-control', 
             'multiple': True 
         })
