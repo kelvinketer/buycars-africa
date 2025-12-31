@@ -38,7 +38,6 @@ urlpatterns = [
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
     # --- DEALER LANDING PAGE (NEW) ---
-    # This page is specifically for marketing to new yards (buycars.africa/sell)
     path('sell/', TemplateView.as_view(template_name='saas/sell.html'), name='sell_page'),
 
     # --- LEAD TRACKING ---
@@ -63,6 +62,10 @@ urlpatterns = [
     # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
+
+    # --- [NEW] SET MAIN IMAGE ROUTE ---
+    # This was the missing line causing the error!
+    path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', car_views.set_main_image, name='set_main_image'),
 
     # --- PAYMENTS (M-PESA) ---
     path('payments/', include('payments.urls')), 
