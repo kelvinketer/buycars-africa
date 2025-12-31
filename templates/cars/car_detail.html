@@ -332,7 +332,11 @@
 
 <script>
     function trackLead(carId, action) {
-        fetch(`/track/${carId}/${action}/`, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        // Send async request to track the click
+        fetch(`/track/${carId}/${action}/`, { 
+            method: 'GET', 
+            headers: { 'X-Requested-With': 'XMLHttpRequest' } 
+        }).catch(err => console.log('Tracking error:', err));
     }
 
     function calculateLoan() {

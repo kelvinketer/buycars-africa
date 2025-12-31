@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse 
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count 
@@ -7,7 +7,8 @@ from django.contrib.auth import get_user_model
 import re 
 
 from users.models import DealerProfile
-from .models import Car, CarImage, CarLead 
+# UPDATED IMPORTS: Using CarView and Lead instead of CarLead
+from .models import Car, CarImage, CarView, Lead 
 from .forms import CarForm 
 
 User = get_user_model() 
@@ -67,24 +68,44 @@ def public_homepage(request):
 
 def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
+    
+    # --- NEW: Track Page View ---
+    ip = request.META.get('REMOTE_ADDR')
+    CarView.objects.create(car=car, ip_address=ip)
+    # ----------------------------
+
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
+# --- UPDATED TRACKING VIEW ---
 def track_action(request, car_id, action_type):
-    car = get_object_or_404(Car, pk=car_id)
-    ip = request.META.get('REMOTE_ADDR')
-    CarLead.objects.create(car=car, action=action_type.upper(), ip_address=ip)
+    """
+    Records a 'Call' or 'WhatsApp' click as a Lead.
+    Designed to work with AJAX (fetch) calls from the frontend.
+    """
+    car = get_object_or_404(Car, id=car_id)
     
-    try: raw_phone = car.dealer.dealer_profile.phone_number
-    except: raw_phone = '254700000000'
-    clean_phone = sanitize_phone(raw_phone) or '254700000000'
+    # Normalize action type
+    action_type = action_type.upper()
+    if action_type not in ['CALL', 'WHATSAPP']:
+        return JsonResponse({'status': 'error', 'message': 'Invalid action'}, status=400)
 
-    if action_type.upper() == 'WHATSAPP':
-        msg = f"Hi, I am interested in the {car.year} {car.make} {car.model} listed for KES {car.price}"
-        return HttpResponseRedirect(f"https://wa.me/{clean_phone}?text={msg}")
-    elif action_type.upper() == 'CALL':
-        return HttpResponse(status=302, headers={'Location': f"tel:{clean_phone}"})
-    return HttpResponseRedirect(f"/car/{car.id}/")
+    # Get IP Address
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    # Record the Lead
+    Lead.objects.create(
+        car=car,
+        action_type=action_type,
+        ip_address=ip,
+        user=request.user if request.user.is_authenticated else None
+    )
+
+    return JsonResponse({'status': 'success', 'action': action_type})
 
 def dealer_showroom(request, username):
     dealer = get_object_or_404(User, username=username)
@@ -111,10 +132,13 @@ def dealer_dashboard(request):
     elif profile.plan_type == 'PRO': limit = 999999
     can_add = car_count < limit or profile.plan_type == 'PRO'
 
-    leads = CarLead.objects.filter(car__dealer=request.user).values('action').annotate(total=Count('id'))
-    chart_labels = [i['action'] for i in leads]
+    # --- UPDATED DASHBOARD ANALYTICS (Using Lead model) ---
+    # Note: 'action_type' is the new field name in the Lead model
+    leads = Lead.objects.filter(car__dealer=request.user).values('action_type').annotate(total=Count('id'))
+    chart_labels = [i['action_type'] for i in leads]
     chart_values = [i['total'] for i in leads]
-    recent = CarLead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
+    
+    recent = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
     
     context = {
         'cars': my_cars, 'total_cars': car_count, 'total_value': total_value,

@@ -10,7 +10,8 @@ from datetime import timedelta
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
-from cars.models import Car 
+# UPDATED IMPORT: Added 'Lead' to track the Value Meter
+from cars.models import Car, Lead 
 
 User = get_user_model()
 
@@ -92,11 +93,20 @@ def admin_dashboard(request):
     # 4. PENDING ACTIONS
     pending_dealers = User.objects.filter(role='DEALER', is_verified=False).count()
 
-    # 5. RECENT ACTIVITY
+    # --- 5. VALUE METER (LEADS) - NEW FEATURE ---
+    # Total count of all clicks (Call + WhatsApp)
+    total_leads = Lead.objects.count()
+    
+    # Calculate Leads Today for the "Live" feeling
+    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    leads_today = Lead.objects.filter(timestamp__gte=today_start).count()
+    # ---------------------------------------------
+
+    # 6. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
-    # 6. ENHANCED TRANSACTION HISTORY
+    # 7. ENHANCED TRANSACTION HISTORY
     recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
@@ -106,7 +116,7 @@ def admin_dashboard(request):
         ).first()
         trans.related_user = related_user
 
-    # 7. GROWTH ANALYTICS (Last 30 Days)
+    # 8. GROWTH ANALYTICS (Last 30 Days)
     today = timezone.now().date()
     dates = []
     user_counts = []
@@ -120,11 +130,9 @@ def admin_dashboard(request):
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
-    # 8. MASTER DEALER LIST (SEARCH & MANAGE) - NEW FEATURE
-    # Fetch all dealers initially
+    # 9. MASTER DEALER LIST (SEARCH & MANAGE)
     all_dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('-date_joined')
     
-    # Handle Search
     search_query = request.GET.get('q')
     if search_query:
         all_dealers = all_dealers.filter(
@@ -139,13 +147,18 @@ def admin_dashboard(request):
         'total_users': total_users,
         'total_cars': total_cars,
         'pending_dealers': pending_dealers,
+        
+        # Pass Value Meter Data
+        'total_leads': total_leads,
+        'leads_today': leads_today,
+        
         'recent_users': recent_users,
         'recent_cars': recent_cars,
         'recent_transactions': recent_transactions,
         'analytics_dates': dates,
         'analytics_users': user_counts,
         'analytics_cars': car_counts,
-        'all_dealers': all_dealers, # Passed to template
+        'all_dealers': all_dealers,
         'search_query': search_query,
     }
     return render(request, 'users/admin_dashboard.html', context)
@@ -156,7 +169,6 @@ def admin_dashboard(request):
 def verify_dealer(request, user_id):
     if request.method == 'POST':
         user = get_object_or_404(User, id=user_id)
-        # Toggle Logic: If verified, unverify. If not, verify.
         if user.is_verified:
             user.is_verified = False
             messages.warning(request, f"Dealer {user.username} has been UNVERIFIED.")
