@@ -32,6 +32,7 @@
                 
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-lg-4">
                     <div class="position-relative bg-dark" style="height: 500px; min-height: 300px;">
+                        
                         {% if car.status != 'AVAILABLE' %}
                             <div class="position-absolute top-0 end-0 m-3 z-3">
                                 {% if car.status == 'SOLD' %}
@@ -52,6 +53,19 @@
                                 </div>
                             </div>
                         {% endif %}
+
+                        {% if car.images.count > 1 %}
+                            <button class="btn btn-dark bg-opacity-50 border-0 rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3 d-flex align-items-center justify-content-center arrow-btn" 
+                                    onclick="prevImage()" style="width: 40px; height: 40px; z-index: 10;">
+                                <i class="fas fa-chevron-left text-white"></i>
+                            </button>
+                            
+                            <button class="btn btn-dark bg-opacity-50 border-0 rounded-circle position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center justify-content-center arrow-btn" 
+                                    onclick="nextImage()" style="width: 40px; height: 40px; z-index: 10;">
+                                <i class="fas fa-chevron-right text-white"></i>
+                            </button>
+                        {% endif %}
+
                     </div>
                 </div>
 
@@ -60,6 +74,7 @@
                     {% for img in car.images.all %}
                         <div onclick="swapImage(this)" 
                              data-src="{{ img.image.url }}"
+                             data-index="{{ forloop.counter0 }}"
                              class="thumbnail-wrapper rounded-3 border overflow-hidden position-relative {% if forloop.first %}active-thumb{% endif %}" 
                              style="min-width: 80px; width: 80px; height: 60px; cursor: pointer;">
                             <img src="{{ img.image.url }}" class="w-100 h-100 object-fit-cover">
@@ -286,14 +301,26 @@
     .transition-opacity { transition: opacity 0.2s ease-in-out; }
     .active-thumb { border: 2px solid #dc3545 !important; opacity: 1; }
     .thumbnail-wrapper:hover { opacity: 0.8; }
+    
+    /* Arrow Hover Effect */
+    .arrow-btn:hover { background-color: rgba(0,0,0,0.8) !important; }
 </style>
 
 <script>
     // 1. Image Gallery Logic
+    let currentImageIndex = 0;
+    const thumbnails = document.querySelectorAll('.thumbnail-wrapper');
+    const totalImages = thumbnails.length;
+
     function swapImage(element) {
         const newSrc = element.getAttribute('data-src');
         const mainImage = document.getElementById('mainImage');
         
+        // Update index
+        if (element.hasAttribute('data-index')) {
+            currentImageIndex = parseInt(element.getAttribute('data-index'));
+        }
+
         // Simple fade effect
         mainImage.style.opacity = '0.7';
         setTimeout(() => {
@@ -302,8 +329,23 @@
         }, 150);
 
         // Highlight active thumbnail
-        document.querySelectorAll('.thumbnail-wrapper').forEach(el => el.classList.remove('active-thumb'));
+        thumbnails.forEach(el => el.classList.remove('active-thumb'));
         element.classList.add('active-thumb');
+        
+        // Ensure thumbnail is visible in scroll strip
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    function nextImage() {
+        if (totalImages === 0) return;
+        let nextIndex = (currentImageIndex + 1) % totalImages;
+        swapImage(thumbnails[nextIndex]);
+    }
+
+    function prevImage() {
+        if (totalImages === 0) return;
+        let prevIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+        swapImage(thumbnails[prevIndex]);
     }
 
     // 2. Lead Tracking
