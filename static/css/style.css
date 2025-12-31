@@ -182,3 +182,34 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .footer a:hover {
     color: white;
 }
+
+/* --- 8. GLOBAL FORM FIXES (Input Visibility) --- */
+/* Forces all inputs to have dark text on white background */
+.form-control, 
+.form-select, 
+input, 
+textarea, 
+select {
+    color: #1a202c !important;       /* Dark text (almost black) */
+    background-color: #ffffff !important; /* White background */
+    border-color: #ced4da;
+}
+
+/* Focus State */
+.form-control:focus, 
+.form-select:focus, 
+input:focus, 
+textarea:focus, 
+select:focus {
+    color: #1a202c !important;
+    background-color: #ffffff !important;
+    border-color: var(--accent-color); /* Uses your Brand Red */
+    box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25); /* Red glow */
+    outline: none;
+}
+
+/* Placeholder Text */
+::placeholder {
+    color: #94a3b8 !important; /* Muted Grey */
+    opacity: 1;
+}
