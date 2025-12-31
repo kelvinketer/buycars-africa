@@ -85,7 +85,7 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="ps-4">Receipt No.</th>
-                            <th>Phone Number</th>
+                            <th>Payer Identity</th>
                             <th>Amount</th>
                             <th>Status</th>
                             <th class="text-end pe-4">Date</th>
@@ -97,8 +97,32 @@
                             <td class="ps-4 font-monospace small text-primary fw-bold">
                                 {{ transaction.mpesa_receipt_number|default:"PENDING..." }}
                             </td>
-                            <td>{{ transaction.phone_number }}</td>
-                            <td class="fw-bold text-dark">KES {{ transaction.amount|intcomma }}</td>
+                            <td>
+                                {% if transaction.related_user %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded-circle text-dark d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                            {{ transaction.related_user.username|slice:":1"|upper }}
+                                        </div>
+                                        <div>
+                                            <a href="#" class="text-dark text-decoration-none fw-bold small d-block">
+                                                {{ transaction.related_user.username }}
+                                            </a>
+                                            <span class="text-muted small" style="font-size: 0.75rem;">{{ transaction.phone_number }}</span>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted small">{{ transaction.phone_number }}</span>
+                                    <span class="badge bg-light text-secondary border ms-1" style="font-size: 0.65rem;">Guest</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold text-dark">
+                                KES {{ transaction.amount|intcomma }}
+                                {% if transaction.amount == 1000 %}
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info ms-1" style="font-size: 0.6rem;">Lite</span>
+                                {% elif transaction.amount == 2500 %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success ms-1" style="font-size: 0.6rem;">Pro</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if transaction.status == 'SUCCESS' %}
                                     <span class="badge bg-success-subtle text-success border border-success rounded-pill px-3">Paid</span>
@@ -233,7 +257,7 @@
                 {
                     label: 'New Cars Listed',
                     data: {{ analytics_cars|safe }},
-                    borderColor: '#dc3545', // Danger Red
+                    borderColor: '#dc3545',
                     backgroundColor: 'rgba(220, 53, 69, 0.1)',
                     tension: 0.4,
                     fill: true
@@ -241,7 +265,7 @@
                 {
                     label: 'New Dealers Joined',
                     data: {{ analytics_users|safe }},
-                    borderColor: '#0d6efd', // Primary Blue
+                    borderColor: '#0d6efd',
                     backgroundColor: 'rgba(13, 110, 253, 0.1)',
                     tension: 0.4,
                     fill: true
@@ -251,17 +275,10 @@
         options: {
             responsive: true,
             plugins: {
-                legend: {
-                    position: 'top',
-                }
+                legend: { position: 'top' }
             },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1 // Force whole numbers
-                    }
-                }
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
             }
         }
     });

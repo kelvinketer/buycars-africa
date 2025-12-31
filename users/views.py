@@ -3,9 +3,9 @@ from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Sum
-from django.utils import timezone  # NEEDED FOR DATES
-from datetime import timedelta     # NEEDED FOR 30-DAY LOOP
+from django.db.models import Sum, Q  # Added Q for complex queries
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
@@ -95,10 +95,22 @@ def admin_dashboard(request):
     # 5. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
-    recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
 
-    # 6. GROWTH ANALYTICS (Last 30 Days)
-    # We loop through the last 30 days to build the chart data
+    # 6. ENHANCED TRANSACTION HISTORY
+    recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
+    
+    # Logic: Match Phone Numbers to actual Users
+    for trans in recent_transactions:
+        phone = trans.phone_number
+        # Search for a user with this phone number (checking both User model and Profile)
+        related_user = User.objects.filter(
+            Q(phone_number=phone) | 
+            Q(dealer_profile__phone_number=phone)
+        ).first()
+        # Attach the found user to the transaction object temporarily
+        trans.related_user = related_user
+
+    # 7. GROWTH ANALYTICS (Last 30 Days)
     today = timezone.now().date()
     dates = []
     user_counts = []
@@ -106,12 +118,9 @@ def admin_dashboard(request):
 
     for i in range(29, -1, -1):
         target_date = today - timedelta(days=i)
-        dates.append(target_date.strftime('%b %d')) # e.g., "Dec 30"
-        
-        # Count daily signups and uploads
+        dates.append(target_date.strftime('%b %d'))
         daily_users = User.objects.filter(date_joined__date=target_date).count()
         daily_cars = Car.objects.filter(created_at__date=target_date).count()
-        
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
@@ -123,7 +132,6 @@ def admin_dashboard(request):
         'recent_users': recent_users,
         'recent_cars': recent_cars,
         'recent_transactions': recent_transactions,
-        # Pass Analytics Data
         'analytics_dates': dates,
         'analytics_users': user_counts,
         'analytics_cars': car_counts,
