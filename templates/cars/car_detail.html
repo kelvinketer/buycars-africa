@@ -109,13 +109,6 @@
     </div>
 </div>
 
-<div class="d-block d-lg-none fixed-bottom bg-white border-top shadow-lg p-3" style="z-index: 1050;">
-    <div class="d-flex gap-2">
-        <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" class="btn btn-success flex-grow-1 rounded-pill fw-bold"><i class="fab fa-whatsapp"></i> Chat</a>
-        <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" class="btn btn-dark flex-grow-1 rounded-pill fw-bold"><i class="fas fa-phone"></i> Call</a>
-    </div>
-</div>
-
 <style>
     .transition-opacity { transition: opacity 0.2s ease-in-out; }
     .active-thumb { border: 2px solid #dc3545 !important; opacity: 1; }

@@ -1,13 +1,28 @@
 from django import forms
 from .models import Car
 
-# Custom Widget to allow 'multiple' attribute without Django throwing a ValueError
+# 1. Custom Widget to allow 'multiple' attribute
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
+# 2. Custom Field to handle the list of files without error
+class MultipleFileField(forms.FileField):
+    def to_python(self, data):
+        if not data:
+            return None
+        if not isinstance(data, list):
+            data = [data]
+        return data
+
+    def validate(self, value):
+        if self.required and not value:
+            raise forms.ValidationError(self.error_messages['required'], code='required')
+        # We skip standard FileField validation here because it rejects lists
+        return
+
 class CarForm(forms.ModelForm):
-    # UPDATED: Use standard FileField for validation safety, but MultipleWidget for UI
-    image = forms.FileField(
+    # UPDATED: Use the custom field we defined above
+    image = MultipleFileField(
         required=False, 
         widget=MultipleFileInput(attrs={
             'class': 'form-control', 
@@ -18,8 +33,7 @@ class CarForm(forms.ModelForm):
 
     class Meta:
         model = Car
-        # We exclude 'status' here so we don't conflict with model logic, 
-        # but we will handle it manually in the view.
+        # We exclude 'status' to handle it manually in the view
         exclude = ['dealer', 'status', 'is_featured', 'created_at']
         
         widgets = {

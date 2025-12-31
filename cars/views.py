@@ -255,7 +255,7 @@ def edit_car(request, car_id):
             new_images = request.FILES.getlist('image')
             if new_images:
                 for img in new_images:
-                    # Create new image, set is_main=False to avoid overriding existing main
+                    # Create new image, set is_main=False
                     CarImage.objects.create(car=car, image=img, is_main=False)
             
             # 4. Success Message & Redirect to Detail Page
