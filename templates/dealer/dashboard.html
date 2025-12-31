@@ -11,23 +11,23 @@
         color: #6c757d;
         font-weight: 600;
         padding: 12px 20px;
-        border-radius: 50px; /* Pill shape */
+        border-radius: 50px;
         transition: all 0.2s;
     }
     .nav-pills .nav-link:hover {
         background-color: #f8f9fa;
         color: #000;
-        transform: translateX(5px); /* Subtle slide effect */
+        transform: translateX(5px);
     }
     .nav-pills .nav-link.active {
-        background-color: #0d6efd; /* Bootstrap Primary Blue */
+        background-color: #0d6efd;
         color: white;
         box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
     }
     .nav-pills .nav-link i {
-        width: 25px; /* Align icons */
+        width: 25px;
     }
-    /* Logout Button Reset */
+    /* Logout Button */
     .btn-logout {
         background: none;
         border: none;
@@ -37,7 +37,7 @@
         transition: color 0.2s;
     }
     .btn-logout:hover {
-        color: #dc3545 !important; /* Darker red on hover */
+        color: #dc3545 !important;
         text-decoration: underline;
     }
     .hover-scale { transition: transform 0.2s; }
@@ -105,9 +105,7 @@
                         <h6 class="fw-bold text-primary mb-2">Need Help?</h6>
                         <p class="small text-muted mb-3">Contact our support team for assistance.</p>
                         
-                        <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Support,%20I%20need%20assistance%20with%20my%20dealer%20account." 
-                           target="_blank"
-                           class="btn btn-light text-primary fw-bold btn-sm rounded-pill w-100 shadow-sm border">
+                        <a href="https://wa.me/254727025050" target="_blank" class="btn btn-light text-primary fw-bold btn-sm rounded-pill w-100 shadow-sm border">
                             <i class="fab fa-whatsapp me-2"></i> WhatsApp Support
                         </a>
 
@@ -121,7 +119,6 @@
                         </form>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-lg-9">
@@ -159,86 +156,85 @@
                     </div>
                 </div>
 
-                {% if not user.is_verified %}
-                <div class="alert alert-warning border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-                    <div class="bg-warning bg-opacity-25 rounded-circle p-3 me-3 text-warning-emphasis">
-                        <i class="fas fa-exclamation-triangle fa-lg"></i>
-                    </div>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark">Verification Pending</h6>
-                        <p class="mb-0 small text-muted">Verified dealers get 3x more leads. <a href="https://wa.me/254727025050" class="fw-bold text-dark text-decoration-underline">Contact Admin</a> to verify.</p>
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="row g-4 mb-4">
+                <div class="row g-3 g-lg-4 mb-4">
                     
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-muted small fw-bold mb-1 text-uppercase">Total Cars</p>
-                                    <h2 class="fw-bold mb-0 text-dark">{{ total_cars }}</h2>
-                                </div>
-                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3">
-                                    <i class="fas fa-car fa-lg"></i>
+                    <div class="col-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-lg-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="text-muted small fw-bold mb-0 text-uppercase">Inventory</p>
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2">
+                                    <i class="fas fa-car"></i>
                                 </div>
                             </div>
-                            <div class="mt-3">
-                                <div class="progress" style="height: 4px;">
-                                    <div class="progress-bar bg-primary" style="width: {% widthratio total_cars limit 100 %}%"></div>
-                                </div>
-                                <small class="text-muted mt-2 d-block" style="font-size: 0.75rem;">{{ total_cars }} / {{ limit }} Used</small>
+                            <h2 class="fw-bold mb-0 text-dark">{{ total_cars }}</h2>
+                            <div class="progress mt-3" style="height: 4px;">
+                                <div class="progress-bar bg-primary" style="width: {% widthratio total_cars limit 100 %}%"></div>
                             </div>
+                            <small class="text-muted mt-2 d-block" style="font-size: 0.75rem;">{{ total_cars }} / {{ limit }} Used</small>
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-muted small fw-bold mb-1 text-uppercase">Portfolio</p>
-                                    <h2 class="fw-bold mb-0 text-dark">KES {{ total_value|floatformat:0|intcomma }}</h2>
-                                </div>
-                                <div class="bg-success bg-opacity-10 text-success rounded-circle p-3">
-                                    <i class="fas fa-wallet fa-lg"></i>
+                    <div class="col-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-lg-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="text-muted small fw-bold mb-0 text-uppercase">Asset Value</p>
+                                <div class="bg-success bg-opacity-10 text-success rounded-circle p-2">
+                                    <i class="fas fa-wallet"></i>
                                 </div>
                             </div>
-                            <small class="text-muted mt-3 d-block pt-2"><i class="fas fa-chart-line text-success me-1"></i> Asset Value</small>
+                            <h4 class="fw-bold mb-0 text-dark">KES {{ total_value|floatformat:0|intcomma }}</h4>
+                            <small class="text-muted mt-2 d-block" style="font-size: 0.75rem;">Total listed price</small>
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-muted small fw-bold mb-1 text-uppercase">Current Plan</p>
-                                    <h2 class="fw-bold mb-0 text-dark">
-                                        {% if user.dealer_profile.plan_type == 'PRO' %}Pro
-                                        {% elif user.dealer_profile.plan_type == 'LITE' %}Lite
-                                        {% elif user.dealer_profile.plan_type == 'STARTER' %}Starter
-                                        {% else %}Free
-                                        {% endif %}
-                                    </h2>
-                                </div>
-                                <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3">
-                                    <i class="fas fa-crown fa-lg"></i>
-                                </div>
+                    <div class="col-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-lg-4 position-relative overflow-hidden">
+                            <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                                <i class="fas fa-chart-line fa-3x text-danger"></i>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="text-muted small fw-bold mb-0 text-uppercase">Cost Per Lead</p>
                             </div>
                             
-                            <div class="d-flex align-items-center justify-content-between mt-3 pt-2">
-                                <div>
-                                    {% if user.dealer_profile.is_plan_active %}
-                                        <span class="text-success fw-bold small"><i class="fas fa-check-circle me-1"></i> Active</span>
-                                    {% else %}
-                                        <span class="text-danger fw-bold small"><i class="fas fa-times-circle me-1"></i> Inactive</span>
-                                    {% endif %}
-                                </div>
-                                <a href="{% url 'pricing' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold">Change Plan</a>
-                            </div>
+                            {% if plan_cost > 0 %}
+                                {% if leads_30 > 0 %}
+                                    <h2 class="fw-bold mb-0 text-dark">KES {{ cpl }}</h2>
+                                    <small class="text-success fw-bold mt-2 d-block" style="font-size: 0.75rem;">
+                                        <i class="fas fa-check-circle me-1"></i> {{ leads_30 }} Leads (30d)
+                                    </small>
+                                {% else %}
+                                    <h4 class="fw-bold mb-0 text-muted">--</h4>
+                                    <small class="text-muted mt-2 d-block" style="font-size: 0.75rem;">Waiting for leads...</small>
+                                {% endif %}
+                            {% else %}
+                                <h4 class="fw-bold mb-0 text-success">FREE</h4>
+                                <small class="text-muted mt-2 d-block" style="font-size: 0.75rem;">Infinite ROI</small>
+                            {% endif %}
                         </div>
                     </div>
 
+                    <div class="col-6 col-xl-3">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-lg-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <p class="text-muted small fw-bold mb-0 text-uppercase">Plan</p>
+                                <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-2">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                            </div>
+                            <h4 class="fw-bold mb-0 text-dark">
+                                {% if user.dealer_profile.plan_type == 'PRO' %}Pro
+                                {% elif user.dealer_profile.plan_type == 'LITE' %}Lite
+                                {% elif user.dealer_profile.plan_type == 'STARTER' %}Starter
+                                {% else %}Free
+                                {% endif %}
+                            </h4>
+                            <div class="mt-2">
+                                <a href="{% url 'pricing' %}" class="btn btn-outline-dark btn-sm rounded-pill w-100 fw-bold" style="font-size: 0.75rem;">
+                                    Manage Plan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row g-4 mb-4">
@@ -284,7 +280,7 @@
                     <div class="col-lg-4">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
-                                <h6 class="fw-bold mb-0">Lead Performance</h6>
+                                <h6 class="fw-bold mb-0">Lead Trend</h6>
                                 <span class="badge bg-success bg-opacity-10 text-success rounded-pill small">
                                     <i class="fas fa-arrow-up me-1"></i> 30 Days
                                 </span>
@@ -304,7 +300,6 @@
                         <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
                             <div class="card-body p-0 d-flex align-items-stretch">
                                 <div class="bg-success" style="width: 6px;"></div>
-                                
                                 <div class="p-4 flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">
@@ -312,17 +307,13 @@
                                         </div>
                                         <small class="text-muted fw-bold">Most Viewed</small>
                                     </div>
-                                    
                                     {% if hot_car %}
                                         <div class="d-flex align-items-center mt-3">
                                             {% if hot_car.images.first %}
                                                 <img src="{{ hot_car.images.first.image.url }}" class="rounded-3 me-3" width="60" height="60" style="object-fit: cover;">
                                             {% else %}
-                                                <div class="bg-light rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                                    <i class="fas fa-car text-muted fa-lg"></i>
-                                                </div>
+                                                <div class="bg-light rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fas fa-car text-muted"></i></div>
                                             {% endif %}
-                                            
                                             <div>
                                                 <h6 class="fw-bold text-dark mb-1 text-truncate" style="max-width: 200px;">{{ hot_car.year }} {{ hot_car.make }} {{ hot_car.model }}</h6>
                                                 <div class="d-flex align-items-center gap-3">
@@ -343,7 +334,6 @@
                         <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
                             <div class="card-body p-0 d-flex align-items-stretch">
                                 <div class="bg-warning" style="width: 6px;"></div>
-                                
                                 <div class="p-4 flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div class="badge bg-warning bg-opacity-10 text-warning-emphasis rounded-pill px-3 py-1">
@@ -351,17 +341,13 @@
                                         </div>
                                         <small class="text-muted fw-bold">Least Viewed</small>
                                     </div>
-
                                     {% if stale_car %}
                                         <div class="d-flex align-items-center mt-3">
                                             {% if stale_car.images.first %}
                                                 <img src="{{ stale_car.images.first.image.url }}" class="rounded-3 me-3" width="60" height="60" style="object-fit: cover;">
                                             {% else %}
-                                                <div class="bg-light rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                                    <i class="fas fa-car text-muted fa-lg"></i>
-                                                </div>
+                                                <div class="bg-light rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="fas fa-car text-muted"></i></div>
                                             {% endif %}
-                                            
                                             <div>
                                                 <h6 class="fw-bold text-dark mb-1 text-truncate" style="max-width: 200px;">{{ stale_car.year }} {{ stale_car.make }} {{ stale_car.model }}</h6>
                                                 <div class="d-flex align-items-center gap-2">
@@ -453,7 +439,6 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -481,16 +466,15 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- NEW LINE CHART CONFIGURATION ---
         const ctx = document.getElementById('leadsChart');
         if (ctx) {
             new Chart(ctx, {
                 type: 'line', 
                 data: {
-                    labels: {{ chart_labels|safe }}, // Dates
+                    labels: {{ chart_labels|safe }}, 
                     datasets: [{
                         label: 'Leads',
-                        data: {{ chart_values|safe }}, // Counts
+                        data: {{ chart_values|safe }}, 
                         borderColor: '#0d6efd',
                         backgroundColor: 'rgba(13, 110, 253, 0.1)',
                         borderWidth: 2,

@@ -2,13 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# UPDATED IMPORTS: Added F for efficiency and Q, Count for queries
 from django.db.models import Q, Count, F
-# NEW IMPORTS FOR CHART & DATE LOGIC
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from datetime import timedelta
-
 from django.contrib.auth import get_user_model 
 import re 
 
@@ -132,10 +129,19 @@ def dealer_dashboard(request):
     car_count = my_cars.count()
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
-    # 2. Plan Limits
+    # 2. Plan Limits & ROI Cost Setup
     limit = 3
-    if profile.plan_type == 'LITE': limit = 15
-    elif profile.plan_type == 'PRO': limit = 999999
+    plan_cost = 0  # Default to Free
+    
+    if profile.plan_type == 'LITE': 
+        limit = 15
+        plan_cost = 5000
+    elif profile.plan_type == 'PRO': 
+        limit = 999999
+        plan_cost = 12000
+    elif profile.plan_type == 'STARTER':
+        plan_cost = 1500
+        
     can_add = car_count < limit or profile.plan_type == 'PRO'
 
     # 3. Chart Logic (30 Days Lead Performance)
@@ -152,15 +158,24 @@ def dealer_dashboard(request):
     
     chart_labels = []
     chart_values = []
+    total_leads_30 = 0 # For ROI Calculation
+    
     for i in range(30):
         d = (timezone.now() - timedelta(days=29-i)).date()
         d_str = d.strftime('%Y-%m-%d')
+        count = leads_dict.get(d_str, 0)
+        
         chart_labels.append(d.strftime('%b %d'))
-        chart_values.append(leads_dict.get(d_str, 0))
+        chart_values.append(count)
+        total_leads_30 += count # Aggregate total leads for ROI
 
-    # --- 4. STOCK INTELLIGENCE (HOT VS STALE) ---
+    # 4. ROI Calculator (Cost Per Lead)
+    cpl = 0
+    if total_leads_30 > 0 and plan_cost > 0:
+        cpl = int(plan_cost / total_leads_30)
+
+    # 5. Stock Intelligence (Hot vs Stale)
     # Annotate cars with their total view count
-    # Note: Assumes default related_name 'carview_set' or lowercased model 'carview'
     inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('carview'))
     
     # Hot Car: Highest views
@@ -178,7 +193,6 @@ def dealer_dashboard(request):
     else:
         # If all cars are new, just take the lowest viewed one overall
         stale_car = inventory_stats.order_by('view_count').first()
-    # ------------------------------------------
 
     recent = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
     
@@ -191,8 +205,12 @@ def dealer_dashboard(request):
         'recent_activity': recent, 
         'limit': limit, 
         'can_add': can_add,
-        'hot_car': hot_car,      # <--- Passed to template
-        'stale_car': stale_car,  # <--- Passed to template
+        'hot_car': hot_car,
+        'stale_car': stale_car,
+        # ROI Data
+        'plan_cost': plan_cost,
+        'leads_30': total_leads_30,
+        'cpl': cpl,
     }
     return render(request, 'dealer/dashboard.html', context)
 
