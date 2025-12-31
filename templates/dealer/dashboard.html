@@ -121,6 +121,7 @@
                 </div>
 
             </div>
+
             <div class="col-lg-9">
                 
                 <div class="d-lg-none mb-4 overflow-auto pb-2">
@@ -169,6 +170,7 @@
                 {% endif %}
 
                 <div class="row g-4 mb-4">
+                    
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -188,6 +190,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -202,28 +205,38 @@
                             <small class="text-muted mt-3 d-block pt-2"><i class="fas fa-chart-line text-success me-1"></i> Asset Value</small>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <p class="text-muted small fw-bold mb-1 text-uppercase">Plan</p>
+                                    <p class="text-muted small fw-bold mb-1 text-uppercase">Current Plan</p>
                                     <h2 class="fw-bold mb-0 text-dark">
-                                        {% if user.dealer_profile.plan_type == 'PRO' %}Pro{% else %}{{ user.dealer_profile.plan_type|title }}{% endif %}
+                                        {% if user.dealer_profile.plan_type == 'PRO' %}Pro
+                                        {% elif user.dealer_profile.plan_type == 'LITE' %}Lite
+                                        {% elif user.dealer_profile.plan_type == 'STARTER' %}Starter
+                                        {% else %}Free
+                                        {% endif %}
                                     </h2>
                                 </div>
                                 <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3">
                                     <i class="fas fa-crown fa-lg"></i>
                                 </div>
                             </div>
-                            <small class="text-muted mt-3 d-block pt-2">
-                                {% if user.dealer_profile.plan_type == 'PRO' %}
-                                    <span class="text-success fw-bold">Active</span>
-                                {% else %}
-                                    <a href="{% url 'pricing' %}" class="text-dark fw-bold text-decoration-none">Upgrade Now &rarr;</a>
-                                {% endif %}
-                            </small>
+                            
+                            <div class="d-flex align-items-center justify-content-between mt-3 pt-2">
+                                <div>
+                                    {% if user.dealer_profile.is_plan_active %}
+                                        <span class="text-success fw-bold small"><i class="fas fa-check-circle me-1"></i> Active</span>
+                                    {% else %}
+                                        <span class="text-danger fw-bold small"><i class="fas fa-times-circle me-1"></i> Inactive</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'pricing' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold">Change Plan</a>
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="row g-4 mb-4">

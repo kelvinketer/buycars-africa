@@ -7,10 +7,10 @@
     <div class="container py-lg-5">
         
         <div class="text-center mb-5 mw-800 mx-auto">
-            <h6 class="text-danger fw-bold text-uppercase letter-spacing-2">Simple, Transparent Pricing</h6>
-            <h1 class="display-5 fw-bold text-dark mb-3">Choose the plan that fits your growth</h1>
+            <h6 class="text-danger fw-bold text-uppercase letter-spacing-2">Manage Subscription</h6>
+            <h1 class="display-5 fw-bold text-dark mb-3">Upgrade or Change Your Plan</h1>
             <p class="text-muted lead">
-                All plans include secure M-PESA payments, dealer dashboard access, and verified buyer traffic.
+                Payments are processed instantly via M-PESA. Changing plans starts a new 30-day cycle.
             </p>
         </div>
 
@@ -30,17 +30,17 @@
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
                             <li><i class="fas fa-check-circle text-success me-2"></i> <strong>5</strong> Active Car Listings</li>
                             <li><i class="fas fa-check-circle text-success me-2"></i> <strong>7</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-check-circle text-secondary me-2"></i> Standard Visibility</li>
-                            <li><i class="fas fa-check-circle text-secondary me-2"></i> Basic Analytics</li>
                             <li class="opacity-50 text-decoration-line-through"><i class="fas fa-times-circle me-2"></i> Featured Listings</li>
                         </ul>
 
                         <div class="d-grid">
                             {% if user.is_authenticated %}
-                                {% if user.dealer_profile.plan_type == 'STARTER' %}
+                                {% if user.dealer_profile.plan_type == 'STARTER' and user.dealer_profile.is_plan_active %}
                                     <button class="btn btn-outline-secondary rounded-pill py-2 fw-bold" disabled>Current Plan</button>
+                                {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
+                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Downgrade</a>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Select Starter</a>
+                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-dark rounded-pill py-2 fw-bold">Upgrade</a>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Get Started</a>
@@ -52,18 +52,12 @@
 
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden" style="background: #0f172a; color: white; transform: scale(1.02); z-index: 2;">
-                    <div class="position-absolute top-0 end-0 bg-primary text-white small fw-bold px-3 py-1 rounded-bottom-start shadow-sm">
-                        MOST POPULAR
-                    </div>
-
                     <div class="card-body p-4 p-lg-5">
                         <div class="mb-4">
                             <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-bold small">LITE</span>
                         </div>
-                        <div class="d-flex align-items-baseline">
-                            <h2 class="fw-bold mb-0">KES 5,000</h2>
-                            <span class="text-white-50 ms-2">/ month</span>
-                        </div>
+                        <h2 class="fw-bold mb-0">KES 5,000</h2>
+                        <span class="text-white-50 ms-2">/ month</span>
                         <hr class="my-4 border-white opacity-25">
                         
                         <p class="text-primary fw-bold small mb-3">Grow Sales</p>
@@ -71,23 +65,19 @@
                             <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>15</strong> Active Car Listings</li>
                             <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>16</strong> Verified Leads/mo</li>
                             <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>2</strong> Featured Listings</li>
-                            <li><i class="fas fa-check-circle text-white-50 me-2"></i> Higher Search Ranking</li>
-                            <li><i class="fas fa-check-circle text-white-50 me-2"></i> Priority Email Support</li>
                         </ul>
 
                         <div class="d-grid">
                             {% if user.is_authenticated %}
-                                {% if user.dealer_profile.plan_type == 'LITE' %}
-                                    <button class="btn btn-light text-primary fw-bold rounded-pill py-3" disabled>Active Plan</button>
+                                {% if user.dealer_profile.plan_type == 'LITE' and user.dealer_profile.is_plan_active %}
+                                    <button class="btn btn-light text-primary fw-bold rounded-pill py-3" disabled>Current Plan</button>
+                                {% elif user.dealer_profile.plan_type == 'PRO' %}
+                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-light rounded-pill py-3 fw-bold">Downgrade</a>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">
-                                        Choose Lite
-                                    </a>
+                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Upgrade</a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">
-                                    Get Started
-                                </a>
+                                <a href="{% url 'signup' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
@@ -100,28 +90,24 @@
                         <div class="mb-4">
                             <span class="badge bg-white border text-dark rounded-pill px-3 py-2 fw-bold small">PRO</span>
                         </div>
-                        <div class="d-flex align-items-baseline">
-                            <h2 class="fw-bold mb-0">KES 12,000</h2>
-                            <span class="text-muted ms-2">/ month</span>
-                        </div>
+                        <h2 class="fw-bold mb-0">KES 12,000</h2>
+                        <span class="text-muted ms-2">/ month</span>
                         <hr class="my-4 opacity-10">
                         
                         <p class="text-dark fw-bold small mb-3">Scale & Dominate</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
                             <li><i class="fas fa-check-circle text-dark me-2"></i> <strong>50</strong> Active Car Listings</li>
                             <li><i class="fas fa-check-circle text-dark me-2"></i> <strong>30</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>5</strong> Featured Listings</li>
                             <li><i class="fas fa-check-circle text-success me-2"></i> Homepage Placement</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Brand Profile (Logo)</li>
                         </ul>
 
                         <div class="d-grid">
                             {% if user.is_authenticated %}
-                                {% if user.dealer_profile.plan_type == 'PRO' %}
+                                {% if user.dealer_profile.plan_type == 'PRO' and user.dealer_profile.is_plan_active %}
                                     <button class="btn btn-outline-dark rounded-pill py-2 fw-bold" disabled>Current Plan</button>
                                 {% else %}
                                     <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark rounded-pill py-2 fw-bold hover-scale">
-                                        Go Pro
+                                        Upgrade to Pro
                                     </a>
                                 {% endif %}
                             {% else %}
@@ -133,22 +119,6 @@
             </div>
 
         </div>
-
-        <div class="row mt-5 pt-4 text-center justify-content-center opacity-75">
-            <div class="col-6 col-md-3 mb-3">
-                <i class="fas fa-mobile-alt fa-2x mb-2 d-block text-success"></i>
-                <small class="fw-bold">M-PESA Secure</small>
-            </div>
-            <div class="col-6 col-md-3 mb-3">
-                <i class="fas fa-check-double fa-2x mb-2 d-block text-primary"></i>
-                <small class="fw-bold">No Fake Leads</small>
-            </div>
-            <div class="col-6 col-md-3 mb-3">
-                <i class="fas fa-headset fa-2x mb-2 d-block text-dark"></i>
-                <small class="fw-bold">Local Support</small>
-            </div>
-        </div>
-
     </div>
 </div>
 
