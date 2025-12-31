@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# UPDATED IMPORTS: Added F to increment counts efficiently
+# UPDATED IMPORTS: Added F for efficiency and Q, Count for queries
 from django.db.models import Q, Count, F
-# NEW IMPORTS FOR CHART
+# NEW IMPORTS FOR CHART & DATE LOGIC
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from datetime import timedelta
@@ -13,7 +13,6 @@ from django.contrib.auth import get_user_model
 import re 
 
 from users.models import DealerProfile
-# UPDATED IMPORTS: Added SearchTerm
 from .models import Car, CarImage, CarView, Lead, SearchTerm
 from .forms import CarForm 
 
@@ -39,15 +38,13 @@ def public_homepage(request):
     max_year = request.GET.get('max_year')   
 
     if q:
-        # --- NEW: SEARCH TRACKING LOGIC ---
-        # Cleanup the query (remove extra spaces, lowercase)
+        # --- SEARCH TRACKING LOGIC ---
         clean_q = q.strip().lower()
-        if len(clean_q) > 2: # Only track meaningful searches
+        if len(clean_q) > 2: 
             obj, created = SearchTerm.objects.get_or_create(term=clean_q)
             if not created:
-                # Increment count efficiently
                 SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
-        # ----------------------------------
+        # -----------------------------
 
         cars = cars.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
     
@@ -129,20 +126,20 @@ def dealer_showroom(request, username):
 
 @login_required
 def dealer_dashboard(request):
+    # 1. Base Query
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
     total_value = sum(car.price for car in my_cars)
     car_count = my_cars.count()
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
+    # 2. Plan Limits
     limit = 3
     if profile.plan_type == 'LITE': limit = 15
     elif profile.plan_type == 'PRO': limit = 999999
     can_add = car_count < limit or profile.plan_type == 'PRO'
 
-    # --- NEW: 30-Day Lead Performance Logic ---
+    # 3. Chart Logic (30 Days Lead Performance)
     thirty_days_ago = timezone.now() - timedelta(days=30)
-
-    # Group leads by Date (Truncate timestamp to Day)
     daily_leads = Lead.objects.filter(
         car__dealer=request.user, 
         timestamp__gte=thirty_days_ago
@@ -151,28 +148,51 @@ def dealer_dashboard(request):
      .annotate(count=Count('id'))\
      .order_by('date')
 
-    # Convert QuerySet to Dictionary for easy lookup { '2025-01-01': 5, ... }
     leads_dict = {item['date'].strftime('%Y-%m-%d'): item['count'] for item in daily_leads}
     
-    # Generate full list of last 30 days (fill zeros for empty days)
     chart_labels = []
     chart_values = []
-    
     for i in range(30):
-        d = (timezone.now() - timedelta(days=29-i)).date() # Start from 30 days ago
+        d = (timezone.now() - timedelta(days=29-i)).date()
         d_str = d.strftime('%Y-%m-%d')
-        label = d.strftime('%b %d') # e.g., "Jan 01"
-        
-        chart_labels.append(label)
-        chart_values.append(leads_dict.get(d_str, 0)) # Default to 0 if no leads
+        chart_labels.append(d.strftime('%b %d'))
+        chart_values.append(leads_dict.get(d_str, 0))
+
+    # --- 4. STOCK INTELLIGENCE (HOT VS STALE) ---
+    # Annotate cars with their total view count
+    # Note: Assumes default related_name 'carview_set' or lowercased model 'carview'
+    inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('carview'))
+    
+    # Hot Car: Highest views
+    hot_car = inventory_stats.order_by('-view_count').first()
+    
+    # Stale Car: Lowest views
+    # Logic: exclude cars created in the last 3 days (give them a chance to get views)
+    three_days_ago_date = timezone.now() - timedelta(days=3)
+    
+    # First look for cars older than 3 days
+    stale_candidates = inventory_stats.filter(created_at__lte=three_days_ago_date)
+    
+    if stale_candidates.exists():
+        stale_car = stale_candidates.order_by('view_count').first()
+    else:
+        # If all cars are new, just take the lowest viewed one overall
+        stale_car = inventory_stats.order_by('view_count').first()
     # ------------------------------------------
 
     recent = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
     
     context = {
-        'cars': my_cars, 'total_cars': car_count, 'total_value': total_value,
-        'chart_labels': chart_labels, 'chart_values': chart_values,
-        'recent_activity': recent, 'limit': limit, 'can_add': can_add
+        'cars': my_cars, 
+        'total_cars': car_count, 
+        'total_value': total_value,
+        'chart_labels': chart_labels, 
+        'chart_values': chart_values,
+        'recent_activity': recent, 
+        'limit': limit, 
+        'can_add': can_add,
+        'hot_car': hot_car,      # <--- Passed to template
+        'stale_car': stale_car,  # <--- Passed to template
     }
     return render(request, 'dealer/dashboard.html', context)
 
