@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+# UPDATED IMPORTS: Added F for efficiency and Q, Count for queries
 from django.db.models import Q, Count, F
+# NEW IMPORTS FOR CHART & DATE LOGIC
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from datetime import timedelta
+
 from django.contrib.auth import get_user_model 
 import re 
 
@@ -175,8 +178,8 @@ def dealer_dashboard(request):
         cpl = int(plan_cost / total_leads_30)
 
     # 5. Stock Intelligence (Hot vs Stale)
-    # Annotate cars with their total view count
-    inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('carview'))
+    # FIX: Changed 'carview' to 'views' to match your model definition
+    inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('views'))
     
     # Hot Car: Highest views
     hot_car = inventory_stats.order_by('-view_count').first()
