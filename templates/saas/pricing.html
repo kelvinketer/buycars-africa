@@ -18,7 +18,7 @@
             
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4 p-lg-5">
+                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold small">STARTER</span>
                         </div>
@@ -33,17 +33,19 @@
                             <li class="opacity-50 text-decoration-line-through"><i class="fas fa-times-circle me-2"></i> Featured Listings</li>
                         </ul>
 
-                        <div class="d-grid">
+                        <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'STARTER' and user.dealer_profile.is_plan_active %}
-                                    <button class="btn btn-outline-secondary rounded-pill py-2 fw-bold" disabled>Current Plan</button>
+                                    <button class="btn btn-secondary rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
+                                        <i class="fas fa-check-circle me-2"></i> Current Plan
+                                    </button>
                                 {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
-                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Downgrade</a>
+                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Downgrade</a>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-dark rounded-pill py-2 fw-bold">Upgrade</a>
+                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Select Starter</a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
@@ -52,7 +54,7 @@
 
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden" style="background: #0f172a; color: white; transform: scale(1.02); z-index: 2;">
-                    <div class="card-body p-4 p-lg-5">
+                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-bold small">LITE</span>
                         </div>
@@ -67,14 +69,16 @@
                             <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>2</strong> Featured Listings</li>
                         </ul>
 
-                        <div class="d-grid">
+                        <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'LITE' and user.dealer_profile.is_plan_active %}
-                                    <button class="btn btn-light text-primary fw-bold rounded-pill py-3" disabled>Current Plan</button>
+                                    <button class="btn btn-primary fw-bold rounded-pill py-3 disabled" style="opacity: 1; border: 1px solid #0d6efd;">
+                                        <i class="fas fa-check-circle me-2"></i> Current Plan
+                                    </button>
                                 {% elif user.dealer_profile.plan_type == 'PRO' %}
-                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-light rounded-pill py-3 fw-bold">Downgrade</a>
+                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-light rounded-pill py-3 fw-bold hover-scale">Downgrade</a>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Upgrade</a>
+                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Upgrade to Lite</a>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Get Started</a>
@@ -85,8 +89,13 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 bg-light">
-                    <div class="card-body p-4 p-lg-5">
+                <div class="card h-100 border-0 shadow-sm rounded-4 bg-light position-relative overflow-hidden">
+                    
+                    <div class="position-absolute top-0 end-0 bg-warning text-dark fw-bold px-3 py-1 small rounded-bottom-start">
+                        BEST VALUE
+                    </div>
+
+                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-white border text-dark rounded-pill px-3 py-2 fw-bold small">PRO</span>
                         </div>
@@ -101,17 +110,29 @@
                             <li><i class="fas fa-check-circle text-success me-2"></i> Homepage Placement</li>
                         </ul>
 
-                        <div class="d-grid">
+                        <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'PRO' and user.dealer_profile.is_plan_active %}
-                                    <button class="btn btn-outline-dark rounded-pill py-2 fw-bold" disabled>Current Plan</button>
+                                    <button class="btn btn-success rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
+                                        <i class="fas fa-check-circle me-2"></i> Current Plan
+                                    </button>
+                                    
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">Need more than 50 cars?</small>
+                                        <a href="https://wa.me/254727025050?text=Hi,%20I%20am%20a%20PRO%20dealer%20and%20I%20need%20a%20custom%20plan%20for%20more%20than%2050%20cars." 
+                                           target="_blank" 
+                                           class="fw-bold text-dark small text-decoration-underline">
+                                            Contact for Enterprise
+                                        </a>
+                                    </div>
+
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark rounded-pill py-2 fw-bold hover-scale">
+                                    <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale">
                                         Upgrade to Pro
                                     </a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill py-2 fw-bold">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
