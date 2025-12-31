@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView # <--- NEW IMPORT
 from cars import views as car_views 
 from users import views as user_views 
 from django.conf import settings
@@ -55,8 +56,10 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # --- PRICING PAGE ---
-    path('pricing/', car_views.pricing_page, name='pricing'),
+    # --- PRICING PAGE (Updated) ---
+    # We use TemplateView to render the template directly. 
+    # Name must be 'pricing_page' to match redirect logic in views.
+    path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing_page'),
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),

@@ -33,11 +33,12 @@ class DealerProfile(models.Model):
     """
     Extra profile information for Car Yards (Logos, Locations, Stats).
     """
-    # --- UPDATED: 3-Tier Subscription Plan ---
+    # --- UPDATED: 3-Tier Pricing Model ---
     PLAN_CHOICES = [
-        ('FREE', 'Free Plan (3 Cars)'),
-        ('LITE', 'Biashara Lite (15 Cars)'), # KES 1,000
-        ('PRO', 'Showroom Pro (Unlimited)'), # KES 2,500
+        ('FREE', 'Free (Inactive)'),
+        ('STARTER', 'Starter (5 Cars)'), # KES 1,500
+        ('LITE', 'Lite (15 Cars)'),      # KES 5,000
+        ('PRO', 'Pro (50 Cars)'),        # KES 12,000
     ]
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dealer_profile')
@@ -66,46 +67,67 @@ class DealerProfile(models.Model):
     
     # --- SUBSCRIPTION FIELDS ---
     plan_type = models.CharField(max_length=10, choices=PLAN_CHOICES, default='FREE')
-    subscription_expiry = models.DateTimeField(null=True, blank=True) # Tracks when Pro/Lite expires
+    subscription_expiry = models.DateTimeField(null=True, blank=True) # Tracks when plan expires
 
     def __str__(self):
         return self.business_name
 
     @property
     def is_plan_active(self):
-        """Check if the paid plan (LITE or PRO) is still valid"""
+        """Check if the paid plan (STARTER, LITE, PRO) is still valid"""
         if self.plan_type == 'FREE':
-            return True
+            return False # Free is now considered inactive/expired
+            
         # If they are on a paid plan, check the date
         if self.subscription_expiry and self.subscription_expiry > timezone.now():
             return True
         return False
 
+    @property
+    def plan_limits(self):
+        """Return limits dictionary based on the current plan"""
+        # Define limits for each tier
+        LIMITS = {
+            'FREE': {'cars': 0, 'featured': 0, 'leads': 0},
+            'STARTER': {'cars': 5, 'featured': 0, 'leads': 7},
+            'LITE': {'cars': 15, 'featured': 2, 'leads': 16},
+            'PRO': {'cars': 50, 'featured': 5, 'leads': 30},
+        }
+        
+        # If plan is expired or Free, return restricted limits
+        if not self.is_plan_active:
+            return LIMITS['FREE']
+            
+        return LIMITS.get(self.plan_type, LIMITS['FREE'])
+
     def can_add_car(self):
         """
-        Returns True if the dealer can add more cars based on their plan.
-        FREE: 3 Cars
-        LITE: 15 Cars
-        PRO: Unlimited
+        Returns True if the dealer can add more cars based on their plan limits.
         """
-        # 1. Determine effective plan (Downgrade to FREE if expired)
-        current_plan = self.plan_type
-        if not self.is_plan_active:
-            current_plan = 'FREE'
-
-        # 2. Check Limits
-        if current_plan == 'PRO':
-            return True # Unlimited
-            
-        # We access the user's cars via the related_name 'cars' (set in Car model)
-        # If 'cars' related_name is missing, we fallback to 'car_set'
+        limit = self.plan_limits['cars']
+        
+        # Access cars via related_name 'cars' (defined in Car model)
         if hasattr(self.user, 'cars'):
             current_count = self.user.cars.count()
         else:
             current_count = self.user.car_set.count()
 
-        if current_plan == 'LITE':
-            return current_count < 15
+        return current_count < limit
+
+    def can_feature_car(self):
+        """
+        Returns True if the dealer has remaining featured listing slots.
+        """
+        limit = self.plan_limits['featured']
         
-        # Default FREE Limit
-        return current_count < 3
+        # Count currently featured cars (requires is_featured boolean on Car model)
+        if hasattr(self.user, 'cars'):
+            featured_count = self.user.cars.filter(is_featured=True).count()
+        else:
+            # Fallback if related_name isn't set, though 'cars' is standard
+            try:
+                featured_count = self.user.car_set.filter(is_featured=True).count()
+            except:
+                featured_count = 0
+            
+        return featured_count < limit

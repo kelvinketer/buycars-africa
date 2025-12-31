@@ -1,6 +1,6 @@
 import json
 import base64
-import requests # Corrected import
+import requests
 import africastalking
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -70,7 +70,7 @@ def stk_push_request(phone_number, amount, user, plan_type):
     # 2. Generate Timestamp & Password
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     passkey = settings.MPESA_PASSKEY
-    shortcode = settings.MPESA_SHORTCODE
+    shortcode = settings.MPESA_SHORTCODE # This is the Store Number
     
     password_str = shortcode + passkey + timestamp
     password_b64 = base64.b64encode(password_str.encode()).decode()
@@ -81,6 +81,11 @@ def stk_push_request(phone_number, amount, user, plan_type):
     # Use setting for Transaction Type (Paybill vs Buy Goods)
     transaction_type = getattr(settings, 'MPESA_TRANSACTION_TYPE', 'CustomerPayBillOnline')
 
+    # Determine PartyB (Destination)
+    # If using a Till Number, PartyB is the Till Number.
+    # If using Paybill, PartyB is the Shortcode.
+    party_b = getattr(settings, 'MPESA_TILL_NUMBER', shortcode)
+
     payload = {
         "BusinessShortCode": shortcode,
         "Password": password_b64,
@@ -88,10 +93,10 @@ def stk_push_request(phone_number, amount, user, plan_type):
         "TransactionType": transaction_type,
         "Amount": int(amount),
         "PartyA": phone_number,
-        "PartyB": shortcode,
+        "PartyB": party_b,   # Updated to use Till Number if set
         "PhoneNumber": phone_number,
         "CallBackURL": settings.MPESA_CALLBACK_URL,
-        "AccountReference": f"BuyCars{plan_type}", # Removed space for safety
+        "AccountReference": f"BuyCars{plan_type}", 
         "TransactionDesc": f"Upgrade to {plan_type}"
     }
 
@@ -117,9 +122,11 @@ def stk_push_request(phone_number, amount, user, plan_type):
 # --- VIEW 1: SHOW CHECKOUT PAGE ---
 @login_required
 def initiate_payment(request, plan_type):
+    # Updated 3-Tier Pricing
     PRICES = {
-        'LITE': 1000,
-        'PRO': 2500
+        'STARTER': 1500,
+        'LITE': 5000,
+        'PRO': 12000
     }
     
     amount = PRICES.get(plan_type.upper())
@@ -130,7 +137,7 @@ def initiate_payment(request, plan_type):
     phone = request.user.dealer_profile.phone_number or ''
 
     context = {
-        'plan_type': plan_type,
+        'plan_type': plan_type.upper(),
         'plan_name': f"{plan_type.title()} Plan",
         'amount': amount,
         'phone_number': phone
@@ -144,8 +151,9 @@ def process_payment(request):
         phone = request.POST.get('phone_number')
         plan_type = request.POST.get('plan_type')
         
-        PRICES = {'LITE': 1000, 'PRO': 2500}
-        amount = PRICES.get(plan_type, 2500)
+        # Updated 3-Tier Pricing
+        PRICES = {'STARTER': 1500, 'LITE': 5000, 'PRO': 12000}
+        amount = PRICES.get(plan_type, 1500) # Default to Starter
 
         response = stk_push_request(phone, amount, request.user, plan_type)
         
@@ -187,18 +195,22 @@ def mpesa_callback(request):
                     
                     transaction.save()
                     
-                    # --- UPGRADE USER ---
+                    # --- UPGRADE USER (UPDATED 3-TIER LOGIC) ---
                     try:
                         profile = DealerProfile.objects.get(user=transaction.user)
                         
+                        amt = int(transaction.amount)
                         new_plan_name = "Free"
-                        # Robust logic: Check amount to determine plan
-                        if int(transaction.amount) >= 2500:
+                        
+                        if amt >= 12000:
                             profile.plan_type = 'PRO'
                             new_plan_name = "Pro"
-                        elif int(transaction.amount) >= 1000:
+                        elif amt >= 5000:
                             profile.plan_type = 'LITE'
                             new_plan_name = "Lite"
+                        elif amt >= 1500:
+                            profile.plan_type = 'STARTER'
+                            new_plan_name = "Starter"
                             
                         # Set Expiry to 30 days from NOW
                         profile.subscription_expiry = timezone.now() + timedelta(days=30)
