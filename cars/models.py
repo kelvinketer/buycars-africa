@@ -47,10 +47,8 @@ class Car(models.Model):
     year = models.IntegerField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     
-    # Renamed from 'mileage_km' to 'mileage' to match your Form
     mileage = models.IntegerField(default=0, help_text="Mileage in km")
     
-    # New Fields required by the Form
     engine_size = models.IntegerField(help_text="Engine cc", null=True, blank=True)
     color = models.CharField(max_length=50, default='White')
     location = models.CharField(max_length=100, default='Nairobi')
@@ -76,24 +74,32 @@ class CarImage(models.Model):
     def __str__(self):
         return f"Image for {self.car.model}"
 
-# --- NEW: RENAMED TO CarLead (To Fix Ghost Table Error) ---
-class CarLead(models.Model):  # <--- Renamed from CarAnalytics
-    ACTION_CHOICES = [
-        ('VIEW', 'Page View'),
-        ('WHATSAPP', 'WhatsApp Click'),
-        ('CALL', 'Phone Call'),
-    ]
-    
-    # Changed related_name to 'leads' for clarity
-    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='leads') 
-    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    
-    # Track IP
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
+# --- NEW ANALYTICS MODELS (Replaces old CarLead) ---
 
-    class Meta:
-        verbose_name_plural = "Car Leads"
+class CarView(models.Model):
+    """Tracks simple page views (Traffic)."""
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='views')
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.action} on {self.car} - {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        return f"View on {self.car} at {self.timestamp}"
+
+class Lead(models.Model):
+    """Tracks valuable actions (Call/WhatsApp clicks)."""
+    ACTION_CHOICES = [
+        ('CALL', 'Phone Call'),
+        ('WHATSAPP', 'WhatsApp Message'),
+    ]
+    
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='leads')
+    # Renamed field from 'action' to 'action_type' to match views.py logic
+    action_type = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    # Optional: Track who clicked if they are logged in
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.get_action_type_display()} for {self.car} at {self.timestamp}"
