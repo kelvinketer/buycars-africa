@@ -229,7 +229,6 @@ def add_car(request):
             messages.success(request, 'Vehicle uploaded successfully!')
             return redirect('dealer_dashboard')
         else:
-            # Add this for debugging!
             print("Form Errors:", form.errors)
     else:
         form = CarForm()
@@ -250,12 +249,19 @@ def edit_car(request, car_id):
                 for img in new_images:
                     # Append new images without removing old ones
                     CarImage.objects.create(car=car, image=img, is_main=False)
-            # ---------------------------
+            
+            # --- FEEDBACK: Count new photos & Redirect to Detail Page ---
+            count = len(new_images)
+            if count > 0:
+                messages.success(request, f'Changes saved! {count} new photo(s) added successfully.')
+            else:
+                messages.success(request, 'Vehicle details updated successfully!')
+            
+            # Redirect to the public detail page so user can verify changes visually
+            return redirect('car_detail', car_id=car.id)
+            # ------------------------------------------------------------
 
-            messages.success(request, 'Vehicle updated!')
-            return redirect('dealer_dashboard')
         else:
-            # Add this for debugging!
             print("Form Errors:", form.errors)
     else:
         form = CarForm(instance=car)
