@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Car, CarImage, CarLead
+from .models import Car, CarImage, CarView, Lead  # Updated imports
 
 class CarImageInline(admin.TabularInline):
     model = CarImage
@@ -17,9 +17,17 @@ class CarAdmin(admin.ModelAdmin):
     list_filter = ('status', 'is_featured', 'make', 'transmission')
     search_fields = ('make', 'model', 'dealer__username')
 
-@admin.register(CarLead)
-class CarLeadAdmin(admin.ModelAdmin):
-    list_display = ('action', 'car', 'timestamp', 'ip_address')
-    list_filter = ('action', 'timestamp')
+# --- NEW: Register the new analytics models ---
+
+@admin.register(CarView)
+class CarViewAdmin(admin.ModelAdmin):
+    list_display = ('car', 'ip_address', 'timestamp')
+    readonly_fields = ('timestamp',)
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    # Note: 'action_type' is the new field name we created
+    list_display = ('action_type', 'car', 'timestamp', 'ip_address')
+    list_filter = ('action_type', 'timestamp')
     search_fields = ('car__make', 'car__model')
-    readonly_fields = ('timestamp', 'ip_address', 'action', 'car')
+    readonly_fields = ('timestamp', 'ip_address', 'action_type', 'car')
