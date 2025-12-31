@@ -35,7 +35,8 @@ class ProfileUpdateForm(forms.ModelForm):
             'business_name', 
             'phone_number', 
             'city', 
-            'physical_address', 
+            'address',           # NEW
+            'google_map_link',   # NEW
             'website_link', 
             'logo'
         ]
@@ -44,7 +45,12 @@ class ProfileUpdateForm(forms.ModelForm):
             'business_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. RJ Motorworld'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 0712345678 (WhatsApp)'}),
             'city': forms.Select(attrs={'class': 'form-select'}),
-            'physical_address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Along Kiambu Road'}),
+            
+            # --- New Fields Widgets ---
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 123 Ngong Road, Greenhouse Mall, Suite 4B'}),
+            'google_map_link': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Paste Google Maps Link here'}),
+            # --------------------------
+
             'website_link': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
             'logo': forms.FileInput(attrs={'class': 'form-control'}),
         }

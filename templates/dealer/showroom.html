@@ -20,18 +20,33 @@
         70% { box-shadow: 0 0 0 10px rgba(25, 135, 84, 0); }
         100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); }
     }
+
+    .showroom-header-bg {
+        height: 260px;
+        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Pattern Overlay for Texture */
+    .showroom-header-pattern {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        opacity: 0.05;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 
 <div class="position-relative mb-5">
-    <div class="w-100 position-absolute" style="height: 240px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); top: 0; left: 0; z-index: 1;">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;"></div>
+    <div class="showroom-header-bg w-100 position-absolute" style="top: 0; left: 0; z-index: 1;">
+        <div class="showroom-header-pattern"></div>
     </div>
 
-    <div class="container position-relative" style="z-index: 2; padding-top: 100px;">
-        <div class="card border-0 shadow-lg rounded-4 bg-white" style="overflow: visible;">
+    <div class="container position-relative" style="z-index: 2; padding-top: 120px;">
+        <div class="card border-0 shadow-lg rounded-4 bg-white overflow-hidden">
             <div class="card-body p-4 p-lg-5">
                 <div class="row align-items-center">
                     
@@ -41,16 +56,16 @@
                                 <img src="{{ profile.logo.url }}" 
                                      alt="{{ profile.business_name }}" 
                                      class="rounded-circle border border-4 border-white shadow-sm bg-white" 
-                                     style="width: 140px; height: 140px; object-fit: cover; margin-top: -70px;">
+                                     style="width: 140px; height: 140px; object-fit: cover; margin-top: -80px;">
                             {% else %}
                                 <div class="d-inline-flex align-items-center justify-content-center bg-light text-secondary rounded-circle border border-4 border-white shadow-sm" 
-                                     style="width: 140px; height: 140px; margin-top: -70px;">
+                                     style="width: 140px; height: 140px; margin-top: -80px;">
                                     <span class="fw-bold display-4 text-uppercase">{{ dealer.username|slice:":1" }}</span>
                                 </div>
                             {% endif %}
                             
                             {% if dealer.is_verified %}
-                                <span class="position-absolute bottom-0 end-0 bg-white rounded-circle p-1 verified-badge" title="Verified Dealer">
+                                <span class="position-absolute bottom-0 end-0 bg-white rounded-circle p-1 verified-badge" title="Verified Dealer" style="margin-bottom: 10px; margin-right: 10px;">
                                     <i class="fas fa-check-circle text-success fa-2x"></i>
                                 </span>
                             {% endif %}
@@ -61,26 +76,18 @@
                         <h1 class="fw-bold mb-1 text-dark">{{ profile.business_name|default:dealer.username }}</h1>
                         
                         <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 mb-4 text-muted mt-2">
-                            <span class="d-flex align-items-center small">
+                            <span class="d-flex align-items-center small bg-light px-2 py-1 rounded-pill border">
                                 <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ profile.get_city_display|default:profile.city|default:"Kenya" }}
                             </span>
                             
-                            <span class="d-flex align-items-center small">
+                            <span class="d-flex align-items-center small bg-light px-2 py-1 rounded-pill border">
                                 <i class="fas fa-shield-alt text-primary me-2"></i>Verified Identity
                             </span>
                             
-                            <span class="d-flex align-items-center small">
+                            <span class="d-flex align-items-center small bg-light px-2 py-1 rounded-pill border">
                                 <i class="fas fa-clock text-success me-2"></i>
                                 Replies within 
-                                {% if dealer.id|divisibleby:4 %}
-                                    1 hour
-                                {% elif dealer.id|divisibleby:3 %}
-                                    2 hours
-                                {% elif dealer.id|divisibleby:2 %}
-                                    3 hours
-                                {% else %}
-                                    4 hours
-                                {% endif %}
+                                {% if dealer.id|divisibleby:4 %}1 hour{% elif dealer.id|divisibleby:3 %}2 hours{% else %}few hours{% endif %}
                             </span>
                         </div>
 
@@ -100,6 +107,12 @@
                                 {% endif %}
                             {% endwith %}
 
+                            {% if profile.google_map_link %}
+                                <a href="{{ profile.google_map_link }}" target="_blank" class="btn btn-light border rounded-pill px-3 fw-bold text-primary" title="View on Maps">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </a>
+                            {% endif %}
+
                             <button class="btn btn-light border rounded-circle shadow-sm" 
                                     style="width: 42px; height: 42px;"
                                     onclick="copyShowroomLink()"
@@ -107,9 +120,15 @@
                                 <i class="fas fa-share-alt text-muted"></i>
                             </button>
                         </div>
+                        
+                        {% if profile.address %}
+                            <div class="mt-3 small text-muted">
+                                <i class="fas fa-location-arrow me-1"></i> {{ profile.address }}
+                            </div>
+                        {% endif %}
                     </div>
 
-                    <div class="col-md-auto mt-4 mt-md-0 d-none d-md-block">
+                    <div class="col-md-auto mt-4 mt-md-0 d-none d-lg-block">
                         <div class="bg-light rounded-4 p-4 text-center border border-dashed">
                             <h2 class="fw-bold mb-0 text-dark display-6">{{ cars.count }}</h2>
                             <small class="text-uppercase fw-bold text-muted" style="letter-spacing: 1px;">Vehicles</small>
@@ -127,7 +146,7 @@
         <div class="row mb-4 align-items-center">
             <div class="col-md-6">
                 <h4 class="fw-bold mb-0">Current Inventory</h4>
-                <p class="text-muted small mb-0">Browsing all available vehicles</p>
+                <p class="text-muted small mb-0">Browsing all available vehicles from this dealer</p>
             </div>
             <div class="col-md-6">
                 <form method="GET" class="d-flex mt-3 mt-md-0 position-relative">
@@ -135,7 +154,7 @@
                     <input class="form-control rounded-pill border-0 shadow-sm ps-5 py-3" 
                            type="search" 
                            name="q" 
-                           value="{{ request.GET.q }}" 
+                           value="{{ request.GET.q|default:'' }}" 
                            placeholder="Search Make, Model, or Price...">
                 </form>
             </div>
@@ -146,21 +165,17 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card car-card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative hover-lift">
                     
-                    {% if car.status != 'AVAILABLE' %}
-                        <div class="position-absolute top-0 end-0 m-3 z-3">
-                            {% if car.status == 'SOLD' %}
-                                <span class="badge bg-danger fw-bold py-2 px-3 shadow-sm rounded-pill">SOLD OUT</span>
-                            {% elif car.status == 'RESERVED' %}
-                                <span class="badge bg-warning text-dark fw-bold py-2 px-3 shadow-sm rounded-pill">RESERVED</span>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="position-absolute top-0 end-0 m-3 z-3">
+                    <div class="position-absolute top-0 end-0 m-3 z-3">
+                        {% if car.status == 'SOLD' %}
+                            <span class="badge bg-danger fw-bold py-2 px-3 shadow-sm rounded-pill">SOLD OUT</span>
+                        {% elif car.status == 'RESERVED' %}
+                            <span class="badge bg-warning text-dark fw-bold py-2 px-3 shadow-sm rounded-pill">RESERVED</span>
+                        {% else %}
                             <span class="badge bg-white text-success fw-bold py-2 px-3 shadow-sm rounded-pill">
                                 <i class="fas fa-check-circle me-1"></i> Available
                             </span>
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                    </div>
 
                     <div class="car-image-container position-relative">
                         <a href="{% url 'car_detail' car.id %}">
@@ -174,7 +189,7 @@
                                 {% endif %}
                             </div>
                         </a>
-                        <span class="position-absolute bottom-0 start-0 m-3 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold px-3 py-2 rounded-2 backdrop-blur">
+                        <span class="position-absolute bottom-0 start-0 m-3 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold px-3 py-2 rounded-2">
                             {{ car.year }}
                         </span>
                     </div>

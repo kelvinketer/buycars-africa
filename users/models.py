@@ -54,7 +54,14 @@ class DealerProfile(models.Model):
         ('OTH', 'Other'),
     )
     city = models.CharField(max_length=3, choices=CITY_CHOICES, default='NBI')
+    
+    # Existing field (kept for safe-keeping)
     physical_address = models.TextField(blank=True, null=True)
+
+    # --- NEW FIELDS FOR ENHANCED SHOWROOM ---
+    address = models.CharField(max_length=255, blank=True, help_text="e.g. 123 Ngong Road, Greenhouse Mall, Suite 4B")
+    google_map_link = models.URLField(max_length=500, blank=True, help_text="Link to Google Maps location (for the button)")
+    # ----------------------------------------
     
     # Contact Override (Optional: if business phone differs from login phone)
     phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Business contact number")
