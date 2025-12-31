@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView # <--- NEW IMPORT
+from django.views.generic import TemplateView 
 from cars import views as car_views 
 from users import views as user_views 
 from django.conf import settings
@@ -12,10 +12,7 @@ urlpatterns = [
     
     # --- SUPER ADMIN (CEO Dashboard) ---
     path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'),
-    
-    # --- NEW: Dealer Verification Action ---
     path('super-admin/verify/<int:user_id>/', user_views.verify_dealer, name='verify_dealer'),
-    # ---------------------------------------
 
     # --- PASSWORD RESET ROUTES ---
     path('reset_password/', 
@@ -37,11 +34,7 @@ urlpatterns = [
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
-    
-    # --- BRANDS LIST ---
     path('brands/', car_views.all_brands, name='brands_list'),
-    
-    # --- DEALER SHOWROOM (Public Profile) ---
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
 
     # --- LEAD TRACKING ---
@@ -56,10 +49,9 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # --- PRICING PAGE (Updated) ---
-    # We use TemplateView to render the template directly. 
-    # Name must be 'pricing_page' to match redirect logic in views.
-    path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing_page'),
+    # --- PRICING PAGE (FIXED) ---
+    # Renamed from 'pricing_page' to 'pricing' to match the dashboard template
+    path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing'),
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
