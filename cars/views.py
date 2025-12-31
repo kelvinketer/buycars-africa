@@ -218,13 +218,11 @@ def add_car(request):
             car.status = 'AVAILABLE'
             car.save()
             
-            # --- HANDLE MULTIPLE IMAGES ---
             images = request.FILES.getlist('image') 
             
             for index, img in enumerate(images):
                 is_main = (index == 0)
                 CarImage.objects.create(car=car, image=img, is_main=is_main)
-            # ------------------------------
 
             messages.success(request, 'Vehicle uploaded successfully!')
             return redirect('dealer_dashboard')
@@ -241,26 +239,25 @@ def edit_car(request, car_id):
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
-            # 1. Save Basic Data
             car = form.save(commit=False)
             
-            # 2. Manually Update Status (since it's excluded from form but in HTML)
             new_status = request.POST.get('status')
             if new_status in ['AVAILABLE', 'RESERVED', 'SOLD']:
                 car.status = new_status
             
             car.save()
             
-            # 3. Handle Multiple Images
             new_images = request.FILES.getlist('image')
             if new_images:
                 for img in new_images:
-                    # Create new image, set is_main=False
                     CarImage.objects.create(car=car, image=img, is_main=False)
             
-            # 4. Success Message & Redirect to Detail Page
-            msg = f'Vehicle updated! {len(new_images)} new photo(s) added.'
-            messages.success(request, msg)
+            count = len(new_images)
+            if count > 0:
+                messages.success(request, f'Changes saved! {count} new photo(s) added successfully.')
+            else:
+                messages.success(request, 'Vehicle details updated successfully!')
+            
             return redirect('car_detail', car_id=car.id)
             
         else:
@@ -279,6 +276,24 @@ def delete_car(request, car_id):
         messages.success(request, 'Vehicle removed.')
         return redirect('dealer_dashboard')
     return render(request, 'dealer/delete_confirm.html', {'car': car})
+
+# --- NEW: SET MAIN IMAGE VIEW ---
+@login_required
+def set_main_image(request, car_id, image_id):
+    car = get_object_or_404(Car, pk=car_id, dealer=request.user)
+    image_to_set = get_object_or_404(CarImage, pk=image_id, car=car)
+
+    if request.method == 'POST':
+        # 1. Reset all images for this car to NOT be main
+        car.images.all().update(is_main=False)
+        
+        # 2. Set the selected image to main
+        image_to_set.is_main = True
+        image_to_set.save()
+        
+        messages.success(request, 'Main photo updated!')
+    
+    return redirect('edit_car', car_id=car.id)
 
 def pricing_page(request):
     return render(request, 'saas/pricing.html')

@@ -29,12 +29,22 @@
                                 <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">1. Manage Photos</h5>
                                 
                                 <label class="fw-bold small text-muted text-uppercase mb-3">Current Gallery</label>
-                                <div class="d-flex gap-2 flex-wrap mb-4">
+                                <div class="d-flex gap-3 flex-wrap mb-4">
                                     {% for img in car.images.all %}
-                                        <div class="position-relative rounded-3 overflow-hidden border shadow-sm" style="width: 100px; height: 100px;">
-                                            <img src="{{ img.image.url }}" class="w-100 h-100 object-fit-cover">
-                                            {% if img.is_main %}
-                                                <span class="position-absolute bottom-0 start-50 translate-middle-x badge bg-danger mb-1" style="font-size: 0.6rem;">MAIN</span>
+                                        <div class="text-center" style="width: 100px;">
+                                            <div class="position-relative rounded-3 overflow-hidden border shadow-sm mb-2" style="height: 100px;">
+                                                <img src="{{ img.image.url }}" class="w-100 h-100 object-fit-cover">
+                                                {% if img.is_main %}
+                                                    <span class="position-absolute top-0 start-0 badge bg-danger m-1">MAIN</span>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            {% if not img.is_main %}
+                                                <button type="submit" formaction="{% url 'set_main_image' car.id img.id %}" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.7rem;">
+                                                    Set Main
+                                                </button>
+                                            {% else %}
+                                                <span class="text-muted small" style="font-size: 0.7rem;">Main Photo</span>
                                             {% endif %}
                                         </div>
                                     {% empty %}
@@ -45,8 +55,7 @@
                                 <label class="fw-bold small text-muted text-uppercase mb-2">Add New Photos</label>
                                 <div class="bg-light border border-2 border-dashed rounded-4 p-4 text-center position-relative hover-scale" style="border-style: dashed !important; border-color: #cbd5e1 !important;">
                                     
-                                    <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mb-3 d-none">
-                                        </div>
+                                    <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mb-3 d-none"></div>
 
                                     <div id="uploadPrompt">
                                         <div class="mb-3">
@@ -136,7 +145,6 @@
 </div>
 
 <script>
-    // Image Preview Logic (Same as Add Car)
     document.addEventListener('DOMContentLoaded', function() {
         const imageInput = document.querySelector('input[type="file"]');
         const previewContainer = document.getElementById('imagePreviewContainer');
@@ -146,8 +154,6 @@
         if (imageInput) {
             imageInput.addEventListener('change', function(e) {
                 const files = e.target.files;
-                
-                // Update Counter
                 photoCounter.innerText = `${files.length} New Selected`;
                 if(files.length > 0) {
                     photoCounter.classList.remove('bg-light', 'text-dark');
@@ -157,7 +163,6 @@
                     photoCounter.classList.remove('bg-success', 'text-white');
                 }
 
-                // Clear previews
                 previewContainer.innerHTML = '';
                 
                 if (files.length > 0) {
