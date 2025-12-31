@@ -10,7 +10,7 @@ from datetime import timedelta
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
-# UPDATED IMPORT: Added SearchTerm
+# UPDATED IMPORTS: Includes 'SearchTerm' for Feature #4
 from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
@@ -115,10 +115,8 @@ def admin_dashboard(request):
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # --- 8. SEARCH ANALYTICS (DEMAND CLOUD) - NEW FEATURE ---
-    # Fetch top 10 most searched terms
+    # 8. SEARCH ANALYTICS (DEMAND CLOUD)
     top_searches = SearchTerm.objects.order_by('-count')[:10]
-    # --------------------------------------------------------
 
     # 9. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
@@ -169,10 +167,7 @@ def admin_dashboard(request):
         'brand_labels': brand_labels,
         'brand_counts': brand_counts,
         'top_dealers': top_dealers,
-        
-        # New Context Variable
         'top_searches': top_searches,
-        
         'recent_users': recent_users,
         'recent_cars': recent_cars,
         'recent_transactions': recent_transactions,
