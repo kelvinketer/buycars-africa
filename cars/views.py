@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count 
+# UPDATED IMPORTS: Added F to increment counts efficiently
+from django.db.models import Q, Count, F
 from django.contrib.auth import get_user_model 
 import re 
 
 from users.models import DealerProfile
-# UPDATED IMPORTS: Using CarView and Lead instead of CarLead
-from .models import Car, CarImage, CarView, Lead 
+# UPDATED IMPORTS: Added SearchTerm
+from .models import Car, CarImage, CarView, Lead, SearchTerm
 from .forms import CarForm 
 
 User = get_user_model() 
@@ -33,7 +34,18 @@ def public_homepage(request):
     max_year = request.GET.get('max_year')   
 
     if q:
+        # --- NEW: SEARCH TRACKING LOGIC ---
+        # Cleanup the query (remove extra spaces, lowercase)
+        clean_q = q.strip().lower()
+        if len(clean_q) > 2: # Only track meaningful searches
+            obj, created = SearchTerm.objects.get_or_create(term=clean_q)
+            if not created:
+                # Increment count efficiently
+                SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
+        # ----------------------------------
+
         cars = cars.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
+    
     if make:
         cars = cars.filter(make__iexact=make)
     if region:
@@ -69,35 +81,25 @@ def public_homepage(request):
 def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
     
-    # --- NEW: Track Page View ---
+    # Track Page View
     ip = request.META.get('REMOTE_ADDR')
     CarView.objects.create(car=car, ip_address=ip)
-    # ----------------------------
 
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
-# --- UPDATED TRACKING VIEW ---
 def track_action(request, car_id, action_type):
-    """
-    Records a 'Call' or 'WhatsApp' click as a Lead.
-    Designed to work with AJAX (fetch) calls from the frontend.
-    """
     car = get_object_or_404(Car, id=car_id)
-    
-    # Normalize action type
     action_type = action_type.upper()
     if action_type not in ['CALL', 'WHATSAPP']:
         return JsonResponse({'status': 'error', 'message': 'Invalid action'}, status=400)
 
-    # Get IP Address
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR')
 
-    # Record the Lead
     Lead.objects.create(
         car=car,
         action_type=action_type,
@@ -132,8 +134,6 @@ def dealer_dashboard(request):
     elif profile.plan_type == 'PRO': limit = 999999
     can_add = car_count < limit or profile.plan_type == 'PRO'
 
-    # --- UPDATED DASHBOARD ANALYTICS (Using Lead model) ---
-    # Note: 'action_type' is the new field name in the Lead model
     leads = Lead.objects.filter(car__dealer=request.user).values('action_type').annotate(total=Count('id'))
     chart_labels = [i['action_type'] for i in leads]
     chart_values = [i['total'] for i in leads]
@@ -200,11 +200,7 @@ def delete_car(request, car_id):
 def pricing_page(request):
     return render(request, 'saas/pricing.html')
 
-# --- REQUIRED FOR '/brands/' LINK TO WORK ---
 def all_brands(request):
-    """
-    Displays a list of all distinct car makes with their inventory count.
-    """
     brands = (
         Car.objects.values('make')
         .annotate(total=Count('id'))

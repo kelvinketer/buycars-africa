@@ -10,7 +10,8 @@ from datetime import timedelta
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import MpesaTransaction
-from cars.models import Car, Lead 
+# UPDATED IMPORT: Added SearchTerm
+from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
 
@@ -108,19 +109,22 @@ def admin_dashboard(request):
         brand_labels.append('Other')
         brand_counts.append(other_count)
 
-    # --- 7. TOP DEALER LEADERBOARD (NEW FEATURE) ---
-    # Rank dealers by Leads Generated (Impact) then Inventory Size (Volume)
+    # 7. TOP DEALER LEADERBOARD
     top_dealers = User.objects.filter(role='DEALER').annotate(
         inventory_count=Count('cars', distinct=True),
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
-    # -----------------------------------------------
 
-    # 8. RECENT ACTIVITY
+    # --- 8. SEARCH ANALYTICS (DEMAND CLOUD) - NEW FEATURE ---
+    # Fetch top 10 most searched terms
+    top_searches = SearchTerm.objects.order_by('-count')[:10]
+    # --------------------------------------------------------
+
+    # 9. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
-    # 9. ENHANCED TRANSACTION HISTORY
+    # 10. ENHANCED TRANSACTION HISTORY
     recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
@@ -130,7 +134,7 @@ def admin_dashboard(request):
         ).first()
         trans.related_user = related_user
 
-    # 10. GROWTH ANALYTICS (Last 30 Days)
+    # 11. GROWTH ANALYTICS (Last 30 Days)
     today = timezone.now().date()
     dates = []
     user_counts = []
@@ -144,7 +148,7 @@ def admin_dashboard(request):
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
-    # 11. MASTER DEALER LIST (SEARCH & MANAGE)
+    # 12. MASTER DEALER LIST (SEARCH & MANAGE)
     all_dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('-date_joined')
     search_query = request.GET.get('q')
     if search_query:
@@ -164,9 +168,10 @@ def admin_dashboard(request):
         'leads_today': leads_today,
         'brand_labels': brand_labels,
         'brand_counts': brand_counts,
+        'top_dealers': top_dealers,
         
         # New Context Variable
-        'top_dealers': top_dealers,
+        'top_searches': top_searches,
         
         'recent_users': recent_users,
         'recent_cars': recent_cars,

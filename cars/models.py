@@ -74,7 +74,7 @@ class CarImage(models.Model):
     def __str__(self):
         return f"Image for {self.car.model}"
 
-# --- NEW ANALYTICS MODELS (Replaces old CarLead) ---
+# --- ANALYTICS MODELS ---
 
 class CarView(models.Model):
     """Tracks simple page views (Traffic)."""
@@ -93,13 +93,19 @@ class Lead(models.Model):
     ]
     
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='leads')
-    # Renamed field from 'action' to 'action_type' to match views.py logic
     action_type = models.CharField(max_length=10, choices=ACTION_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
-    
-    # Optional: Track who clicked if they are logged in
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_action_type_display()} for {self.car} at {self.timestamp}"
+
+# --- NEW: SEARCH ANALYTICS ---
+class SearchTerm(models.Model):
+    term = models.CharField(max_length=100, unique=True)
+    count = models.IntegerField(default=1)
+    last_searched = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.term} ({self.count})"

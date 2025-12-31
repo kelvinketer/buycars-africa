@@ -90,6 +90,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white py-3">
@@ -99,6 +100,7 @@
                         <div style="height: 250px; width: 100%;">
                             <canvas id="brandChart"></canvas>
                         </div>
+                        
                         <div class="position-absolute text-center" style="pointer-events: none;">
                             <h3 class="fw-bold mb-0 text-dark">{{ total_cars }}</h3>
                             <small class="text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Total Cars</small>
@@ -109,8 +111,9 @@
         </div>
 
         <div class="row mb-5">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3 overflow-hidden h-100">
                     <div class="card-header bg-white py-3 bg-gradient" style="background: linear-gradient(45deg, #212529, #343a40);">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold mb-0 text-white"><i class="fas fa-trophy me-2 text-warning"></i>Top Performing Dealers</h5>
@@ -136,14 +139,14 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             {% if dealer.dealer_profile.logo %}
-                                                <img src="{{ dealer.dealer_profile.logo.url }}" class="rounded-circle border me-3" width="40" height="40" style="object-fit: cover;">
+                                                <img src="{{ dealer.dealer_profile.logo.url }}" class="rounded-circle border me-2" width="32" height="32" style="object-fit: cover;">
                                             {% else %}
-                                                <div class="bg-light rounded-circle text-dark d-flex align-items-center justify-content-center border me-3" style="width: 40px; height: 40px;">
-                                                    <span class="fw-bold">{{ dealer.username|slice:":1"|upper }}</span>
+                                                <div class="bg-light rounded-circle text-dark d-flex align-items-center justify-content-center border me-2" style="width: 32px; height: 32px;">
+                                                    <span class="fw-bold small">{{ dealer.username|slice:":1"|upper }}</span>
                                                 </div>
                                             {% endif %}
                                             <div>
-                                                <a href="{% url 'dealer_showroom' dealer.username %}" target="_blank" class="text-dark fw-bold text-decoration-none">
+                                                <a href="{% url 'dealer_showroom' dealer.username %}" target="_blank" class="text-dark fw-bold text-decoration-none small">
                                                     {{ dealer.dealer_profile.business_name|default:dealer.username }}
                                                 </a>
                                                 <div class="small text-muted">{{ dealer.email }}</div>
@@ -151,10 +154,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border">{{ dealer.inventory_count }} Cars</span>
+                                        <span class="badge bg-light text-dark border">{{ dealer.inventory_count }}</span>
                                     </td>
                                     <td>
-                                        <span class="fw-bold text-success">{{ dealer.leads_generated }} Leads</span>
+                                        <span class="fw-bold text-success">{{ dealer.leads_generated }}</span>
                                     </td>
                                     <td>
                                         {% if dealer.inventory_count > 0 %}
@@ -168,11 +171,11 @@
                                     </td>
                                     <td class="text-end pe-4">
                                         {% if dealer.dealer_profile.plan_type == 'PRO' %}
-                                            <span class="badge bg-primary rounded-pill"><i class="fas fa-crown me-1"></i>PRO</span>
+                                            <span class="badge bg-primary rounded-pill" style="font-size: 0.7rem;">PRO</span>
                                         {% elif dealer.dealer_profile.plan_type == 'LITE' %}
-                                            <span class="badge bg-info text-dark rounded-pill">LITE</span>
+                                            <span class="badge bg-info text-dark rounded-pill" style="font-size: 0.7rem;">LITE</span>
                                         {% else %}
-                                            <span class="badge bg-secondary bg-opacity-25 text-dark rounded-pill">FREE</span>
+                                            <span class="badge bg-secondary bg-opacity-25 text-dark rounded-pill" style="font-size: 0.7rem;">FREE</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -186,6 +189,31 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-search me-2 text-info"></i>What Buyers Want</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Most frequent search terms by potential buyers.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for term in top_searches %}
+                                <span class="badge bg-light text-dark border p-2 fw-normal d-flex align-items-center">
+                                    {{ term.term|title }}
+                                    <span class="badge bg-dark text-white ms-2 rounded-pill">{{ term.count }}</span>
+                                </span>
+                            {% empty %}
+                                <div class="text-center text-muted w-100 py-4">
+                                    <i class="fas fa-wind fa-2x mb-2 opacity-50"></i>
+                                    <p class="small">No search data recorded yet.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="card border-0 shadow-sm rounded-3 mb-5">
@@ -361,7 +389,6 @@
 </div>
 
 <script>
-    // --- GROWTH CHART (LINE) ---
     const ctx = document.getElementById('growthChart').getContext('2d');
     const growthChart = new Chart(ctx, {
         type: 'line',
@@ -394,7 +421,6 @@
         }
     });
 
-    // --- MARKET DOMINANCE CHART (DOUGHNUT) ---
     const ctxBrand = document.getElementById('brandChart').getContext('2d');
     const brandChart = new Chart(ctxBrand, {
         type: 'doughnut',
