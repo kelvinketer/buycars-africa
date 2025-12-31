@@ -275,13 +275,13 @@
                         
                         <div class="d-flex text-muted small mb-3">
                             <span class="me-3"><i class="far fa-calendar me-1"></i>{{ car.year }}</span>
-                            <span class="text-uppercase"><i class="fas fa-cog me-1"></i>{{ car.get_transmission_display }}</span>
+                            <span><i class="fas fa-cog me-1"></i>{{ car.get_transmission_display }}</span>
                         </div>
 
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-                            <span class="text-danger fw-bold fs-5">
+                            <h6 class="text-danger fw-bold mb-0">
                                 KES {{ car.price|floatformat:0|intcomma }}
-                            </span>
+                            </h6>
                             <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
                                 View
                             </a>
