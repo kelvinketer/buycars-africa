@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Sum
+from django.utils import timezone  # NEEDED FOR DATES
+from datetime import timedelta     # NEEDED FOR 30-DAY LOOP
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
@@ -93,10 +95,25 @@ def admin_dashboard(request):
     # 5. RECENT ACTIVITY
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
-
-    # 6. TRANSACTION HISTORY (NEW FEATURE)
-    # We fetch the last 10 transactions, ordered by newest first (using 'id' as a proxy for time if created_at is missing)
     recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
+
+    # 6. GROWTH ANALYTICS (Last 30 Days)
+    # We loop through the last 30 days to build the chart data
+    today = timezone.now().date()
+    dates = []
+    user_counts = []
+    car_counts = []
+
+    for i in range(29, -1, -1):
+        target_date = today - timedelta(days=i)
+        dates.append(target_date.strftime('%b %d')) # e.g., "Dec 30"
+        
+        # Count daily signups and uploads
+        daily_users = User.objects.filter(date_joined__date=target_date).count()
+        daily_cars = Car.objects.filter(created_at__date=target_date).count()
+        
+        user_counts.append(daily_users)
+        car_counts.append(daily_cars)
 
     context = {
         'total_revenue': total_revenue,
@@ -105,7 +122,11 @@ def admin_dashboard(request):
         'pending_dealers': pending_dealers,
         'recent_users': recent_users,
         'recent_cars': recent_cars,
-        'recent_transactions': recent_transactions, # Passing the new data
+        'recent_transactions': recent_transactions,
+        # Pass Analytics Data
+        'analytics_dates': dates,
+        'analytics_users': user_counts,
+        'analytics_cars': car_counts,
     }
     return render(request, 'users/admin_dashboard.html', context)
 
