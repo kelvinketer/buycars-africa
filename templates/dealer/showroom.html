@@ -75,16 +75,23 @@
                     <div class="col-md text-center text-md-start">
                         <h1 class="fw-bold mb-1 text-dark">{{ profile.business_name|default:dealer.username }}</h1>
                         
-                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-3 mb-4 text-muted mt-2">
-                            <span class="d-flex align-items-center small bg-light px-2 py-1 rounded-pill border">
+                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mb-4 text-muted mt-2">
+                            
+                            <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
                                 <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ profile.get_city_display|default:profile.city|default:"Kenya" }}
                             </span>
+
+                            {% if profile.address %}
+                                <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
+                                    <i class="fas fa-location-dot text-dark me-2"></i>{{ profile.address }}
+                                </span>
+                            {% endif %}
                             
-                            <span class="d-flex align-items-center small bg-light px-2 py-1 rounded-pill border">
+                            <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
                                 <i class="fas fa-shield-alt text-primary me-2"></i>Verified Identity
                             </span>
                             
-                            <span class="d-flex align-items-center small bg-light px-2 py-1 rounded-pill border">
+                            <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
                                 <i class="fas fa-clock text-success me-2"></i>
                                 Replies within 
                                 {% if dealer.id|divisibleby:4 %}1 hour{% elif dealer.id|divisibleby:3 %}2 hours{% else %}few hours{% endif %}
@@ -120,12 +127,6 @@
                                 <i class="fas fa-share-alt text-muted"></i>
                             </button>
                         </div>
-                        
-                        {% if profile.address %}
-                            <div class="mt-3 small text-muted">
-                                <i class="fas fa-location-arrow me-1"></i> {{ profile.address }}
-                            </div>
-                        {% endif %}
                     </div>
 
                     <div class="col-md-auto mt-4 mt-md-0 d-none d-lg-block">
