@@ -3,30 +3,30 @@
 {% load humanize %}
 
 {% block content %}
-<div class="bg-light py-5 min-vh-100">
+<div class="bg-light py-5 min-vh-100 font-sans">
     <div class="container py-lg-5">
         
         <div class="text-center mb-5 mw-800 mx-auto">
-            <h6 class="text-danger fw-bold text-uppercase letter-spacing-2">Manage Subscription</h6>
-            <h1 class="display-5 fw-bold text-dark mb-3">Upgrade or Change Your Plan</h1>
+            <h6 class="text-success fw-bold text-uppercase letter-spacing-2 small">Premium Plans</h6>
+            <h1 class="display-5 fw-bold text-dark mb-3">Choose Your Power</h1>
             <p class="text-muted lead">
-                Payments are processed instantly via M-PESA. Changing plans starts a new 30-day cycle immediately.
+                Unlock exclusive tools to sell faster. Secure payments via M-PESA.
             </p>
         </div>
 
         <div class="row g-4 align-items-center justify-content-center">
             
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift bg-white">
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold small">STARTER</span>
                         </div>
-                        <h2 class="fw-bold mb-0">KES 1,500</h2>
+                        <h2 class="fw-bold mb-0 text-dark">KES 1,500</h2>
                         <span class="text-muted small">/ month</span>
                         <hr class="my-4 opacity-10">
                         
-                        <p class="text-dark fw-bold small mb-3">Get Online</p>
+                        <p class="text-dark fw-bold small mb-3 text-uppercase opacity-75">Features</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
                             <li><i class="fas fa-check-circle text-success me-2"></i> <strong>5</strong> Active Car Listings</li>
                             <li><i class="fas fa-check-circle text-success me-2"></i> <strong>7</strong> Verified Leads/mo</li>
@@ -36,7 +36,7 @@
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'STARTER' %}
-                                    <button class="btn btn-secondary rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
+                                    <button class="btn btn-light rounded-pill py-3 fw-bold disabled border">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% else %}
@@ -53,39 +53,39 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden hover-lift" style="background: #0f172a; color: white; transform: scale(1.02); z-index: 2;">
-                    <div class="position-absolute top-0 end-0 bg-warning text-dark fw-bold px-3 py-1 small rounded-bottom-start">
+                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden hover-lift" style="background: #1e293b; color: white; transform: scale(1.02); z-index: 2;">
+                    <div class="position-absolute top-0 end-0 bg-success text-white fw-bold px-3 py-1 small rounded-bottom-start shadow-sm">
                         MOST POPULAR
                     </div>
 
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
-                            <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-bold small">LITE</span>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold small">LITE</span>
                         </div>
                         <h2 class="fw-bold mb-0">KES 5,000</h2>
                         <span class="text-white-50 ms-2">/ month</span>
-                        <hr class="my-4 border-white opacity-25">
+                        <hr class="my-4 border-white opacity-10">
                         
-                        <p class="text-primary fw-bold small mb-3">Grow Sales</p>
+                        <p class="text-white fw-bold small mb-3 text-uppercase opacity-75">Features</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 small">
-                            <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>15</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>16</strong> Verified Leads/mo</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>15</strong> Active Car Listings</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>16</strong> Verified Leads/mo</li>
                             <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>Verified Dealer Badge</strong></li>
                         </ul>
 
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'LITE' %}
-                                    <button class="btn btn-primary fw-bold rounded-pill py-3 disabled" style="opacity: 1; border: 1px solid #0d6efd;">
+                                    <button class="btn btn-success rounded-pill py-3 fw-bold disabled opacity-100">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% else %}
-                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">
+                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-success fw-bold rounded-pill py-3 shadow-lg hover-scale">
                                         Upgrade to Lite
                                     </button>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-success fw-bold rounded-pill py-3 shadow-lg hover-scale">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
@@ -96,13 +96,13 @@
                 <div class="card h-100 border-0 shadow-sm rounded-4 bg-white position-relative overflow-hidden hover-lift">
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
-                            <span class="badge bg-white border text-dark rounded-pill px-3 py-2 fw-bold small">PRO</span>
+                            <span class="badge bg-dark text-white rounded-pill px-3 py-2 fw-bold small">PRO</span>
                         </div>
-                        <h2 class="fw-bold mb-0">KES 12,000</h2>
+                        <h2 class="fw-bold mb-0 text-dark">KES 12,000</h2>
                         <span class="text-muted ms-2">/ month</span>
                         <hr class="my-4 opacity-10">
                         
-                        <p class="text-dark fw-bold small mb-3">Scale & Dominate</p>
+                        <p class="text-dark fw-bold small mb-3 text-uppercase opacity-75">Features</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
                             <li><i class="fas fa-check-circle text-dark me-2"></i> <strong>50</strong> Active Car Listings</li>
                             <li><i class="fas fa-check-circle text-dark me-2"></i> <strong>30</strong> Verified Leads/mo</li>
@@ -116,7 +116,6 @@
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                     <div class="text-center mt-3">
-                                        <small class="text-muted d-block mb-1" style="font-size: 0.85rem;">Need > 50 cars?</small>
                                         <a href="https://wa.me/254727025050" target="_blank" class="fw-bold text-dark small text-decoration-underline">
                                             Contact Enterprise
                                         </a>
@@ -140,71 +139,108 @@
 
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow-lg">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Complete Payment</h5>
+        <div class="modal-content border-0 rounded-5 shadow-2xl overflow-hidden" style="background: #ffffff;">
+            
+            <div class="modal-header border-0 p-4 bg-light bg-gradient">
+                <div class="d-flex align-items-center">
+                    <div class="bg-white p-2 rounded-3 shadow-sm me-3">
+                        <i class="fas fa-shield-alt text-success fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Secure Checkout</h5>
+                        <small class="text-muted">Pay securely via M-PESA</small>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalBtn"></button>
             </div>
-            <div class="modal-body p-4 text-center">
-                
-                <div id="paymentStep1">
-                    <div class="mb-4">
-                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                            <i class="fas fa-mobile-alt fa-2x"></i>
-                        </div>
-                        <h4 class="fw-bold mb-1">M-PESA Express</h4>
-                        <p class="text-muted small">Enter your M-Pesa number to pay.</p>
-                    </div>
 
-                    <div class="mb-4 bg-light p-3 rounded-3">
-                        <h2 class="fw-bold text-dark mb-0" id="displayAmount">KES 0</h2>
-                        <span class="badge bg-dark text-white small" id="displayPlan">PLAN</span>
+            <div class="modal-body p-0">
+                
+                <div id="paymentStep1" class="p-4 p-md-5">
+                    
+                    <div class="bg-light p-4 rounded-4 mb-4 border border-dashed">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small text-uppercase fw-bold ls-1">Plan</span>
+                            <span class="badge bg-dark text-white px-3 py-1 rounded-pill small" id="displayPlan">LITE</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <span class="text-muted small">Total Due</span>
+                            <h2 class="fw-bold text-dark mb-0" id="displayAmount">KES 5,000</h2>
+                        </div>
                     </div>
 
                     <form onsubmit="initiatePayment(event)">
-                        <div class="form-floating mb-3">
-                            <input type="tel" class="form-control rounded-3" id="phoneNumber" 
-                                   placeholder="0712345678" 
+                        <label class="form-label fw-bold small text-muted text-uppercase ls-1 mb-2">M-Pesa Phone Number</label>
+                        <div class="input-group input-group-lg mb-4 shadow-sm rounded-4 overflow-hidden border">
+                            <span class="input-group-text bg-white border-0 ps-4 pe-2 text-muted">
+                                <i class="fas fa-mobile-alt"></i>
+                            </span>
+                            <input type="tel" class="form-control border-0 py-3 ps-2 fw-bold text-dark" 
+                                   id="phoneNumber" 
+                                   placeholder="0712 345 678" 
+                                   style="font-size: 1.1rem; letter-spacing: 0.5px;"
                                    value="{{ user.dealer_profile.phone_number }}" required>
-                            <label for="phoneNumber">Phone Number (07...)</label>
                         </div>
+
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold" id="payBtn">
-                                Pay Now
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill py-3 fw-bold shadow-lg hover-scale transition-all" id="payBtn" style="background: #00C851; border: none;">
+                                Pay Now <i class="fas fa-arrow-right ms-2 small"></i>
                             </button>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <small class="text-muted opacity-75" style="font-size: 0.75rem;">
+                                <i class="fas fa-lock me-1"></i> Secured by Safaricom M-PESA
+                            </small>
                         </div>
                     </form>
                 </div>
 
-                <div id="paymentStep2" style="display: none;">
-                    <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                    <h5 class="fw-bold">Check your phone!</h5>
-                    <p class="text-muted mb-4">We sent a PIN prompt to <strong id="sentPhone">...</strong></p>
-                    <div class="progress mb-3" style="height: 6px;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
+                <div id="paymentStep2" class="p-5 text-center" style="display: none;">
+                    <div class="my-4 position-relative d-inline-block">
+                        <div class="spinner-grow text-success opacity-25" role="status" style="width: 5rem; height: 5rem;"></div>
+                        <div class="position-absolute top-50 start-50 translate-middle">
+                             <i class="fas fa-mobile-alt fa-2x text-success"></i>
+                        </div>
                     </div>
-                    <small class="text-muted">Waiting for M-PESA confirmation...</small>
+                    
+                    <h4 class="fw-bold mb-2">Check your phone</h4>
+                    <p class="text-muted mb-4 px-4">We sent a PIN prompt to <br><strong id="sentPhone" class="text-dark">...</strong></p>
+                    
+                    <div class="progress rounded-pill bg-light mb-3 mx-auto" style="height: 6px; width: 60%; overflow: hidden;">
+                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                    <small class="text-muted animate-pulse">Waiting for confirmation...</small>
                 </div>
 
-                <div id="paymentStep3" style="display: none;">
-                    <div class="mb-3 text-success">
-                        <i class="fas fa-check-circle fa-5x"></i>
+                <div id="paymentStep3" class="p-5 text-center" style="display: none;">
+                    <div class="mb-4">
+                        <div class="success-checkmark">
+                            <div class="check-icon">
+                                <span class="icon-line line-tip"></span>
+                                <span class="icon-line line-long"></span>
+                                <div class="icon-circle"></div>
+                                <div class="icon-fix"></div>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="fw-bold text-success">Success!</h3>
-                    <p class="text-muted">Your plan has been upgraded.</p>
-                    <div class="d-grid mt-4">
-                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-dark btn-lg rounded-pill">Go to Dashboard</a>
+                    <h3 class="fw-bold text-dark mb-2">Payment Successful!</h3>
+                    <p class="text-muted mb-4">Your subscription is now active.</p>
+                    <div class="d-grid">
+                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-dark btn-lg rounded-pill shadow-lg hover-scale">Go to Dashboard</a>
                     </div>
                 </div>
 
-                <div id="paymentStep4" style="display: none;">
-                    <div class="mb-3 text-danger">
-                        <i class="fas fa-times-circle fa-4x"></i>
+                <div id="paymentStep4" class="p-5 text-center" style="display: none;">
+                    <div class="mb-4 text-danger">
+                        <div class="bg-danger bg-opacity-10 p-4 rounded-circle d-inline-block">
+                            <i class="fas fa-times fa-3x"></i>
+                        </div>
                     </div>
-                    <h4 class="fw-bold text-danger">Payment Failed</h4>
-                    <p class="text-muted" id="errorMessage">Something went wrong.</p>
-                    <div class="d-grid mt-4">
-                        <button onclick="resetModal()" class="btn btn-outline-dark rounded-pill">Try Again</button>
+                    <h4 class="fw-bold text-danger mb-2">Payment Failed</h4>
+                    <p class="text-muted mb-4" id="errorMessage">Something went wrong.</p>
+                    <div class="d-grid w-75 mx-auto">
+                        <button onclick="resetModal()" class="btn btn-outline-dark rounded-pill py-2">Try Again</button>
                     </div>
                 </div>
 
@@ -221,7 +257,7 @@
     function openPaymentModal(plan, amount) {
         selectedPlan = plan;
         document.getElementById('displayAmount').innerText = 'KES ' + amount.toLocaleString();
-        document.getElementById('displayPlan').innerText = plan + ' PLAN';
+        document.getElementById('displayPlan').innerText = plan;
         resetModal();
         new bootstrap.Modal(document.getElementById('paymentModal')).show();
     }
@@ -232,8 +268,11 @@
         document.getElementById('paymentStep2').style.display = 'none';
         document.getElementById('paymentStep3').style.display = 'none';
         document.getElementById('paymentStep4').style.display = 'none';
-        document.getElementById('payBtn').disabled = false;
-        document.getElementById('payBtn').innerHTML = 'Pay Now';
+        
+        const btn = document.getElementById('payBtn');
+        btn.disabled = false;
+        btn.innerHTML = 'Pay Now <i class="fas fa-arrow-right ms-2 small"></i>';
+        
         document.getElementById('closeModalBtn').disabled = false;
     }
 
@@ -245,7 +284,7 @@
         const btn = document.getElementById('payBtn');
         
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
 
         try {
             const response = await fetch("{% url 'initiate_payment' %}", {
@@ -264,8 +303,12 @@
 
             if (data.status === 'success') {
                 document.getElementById('sentPhone').innerText = phone;
-                document.getElementById('paymentStep1').style.display = 'none';
-                document.getElementById('paymentStep2').style.display = 'block';
+                
+                // Smooth transition
+                fadeOut('paymentStep1', () => {
+                    fadeIn('paymentStep2');
+                });
+
                 document.getElementById('closeModalBtn').disabled = true; 
                 startPolling();
             } else {
@@ -275,6 +318,24 @@
         } catch (error) {
             showError("Network error. Please try again.");
         }
+    }
+
+    // Helper for Fade effects
+    function fadeOut(id, callback) {
+        const el = document.getElementById(id);
+        el.style.opacity = 0;
+        setTimeout(() => {
+            el.style.display = 'none';
+            if (callback) callback();
+        }, 300);
+    }
+    function fadeIn(id) {
+        const el = document.getElementById(id);
+        el.style.opacity = 0;
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.opacity = 1;
+        }, 50);
     }
 
     // 4. POLL STATUS
@@ -296,8 +357,7 @@
 
                 if (data.status === 'SUCCESS') {
                     stopPolling();
-                    document.getElementById('paymentStep2').style.display = 'none';
-                    document.getElementById('paymentStep3').style.display = 'block';
+                    fadeOut('paymentStep2', () => { fadeIn('paymentStep3'); });
                 } else if (data.status === 'FAILED') {
                     stopPolling();
                     showError(data.description || "Payment failed.");
@@ -315,21 +375,42 @@
 
     function showError(msg) {
         document.getElementById('errorMessage').innerText = msg;
-        document.getElementById('paymentStep1').style.display = 'none';
-        document.getElementById('paymentStep2').style.display = 'none';
-        document.getElementById('paymentStep4').style.display = 'block';
-        document.getElementById('payBtn').disabled = false;
-        document.getElementById('payBtn').innerHTML = 'Pay Now';
+        fadeOut('paymentStep1', () => fadeIn('paymentStep4'));
+        fadeOut('paymentStep2', () => fadeIn('paymentStep4'));
     }
 </script>
 
 <style>
-    .hover-lift { transition: transform 0.2s, box-shadow 0.2s; }
-    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,.1)!important; }
+    /* Premium Font */
+    .font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .ls-1 { letter-spacing: 1px; }
+
+    /* Custom Modal Styling */
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+    .transition-all { transition: all 0.3s ease; }
     
-    .hover-scale { transition: transform 0.2s; }
-    .hover-scale:hover { transform: scale(1.05); }
-    
-    .letter-spacing-2 { letter-spacing: 2px; }
+    /* Animations */
+    #paymentStep1, #paymentStep2, #paymentStep3, #paymentStep4 { transition: opacity 0.3s ease; }
+
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+    }
+
+    /* Success Checkmark Animation */
+    .success-checkmark { width: 80px; height: 115px; margin: 0 auto; }
+    .check-icon { width: 80px; height: 80px; position: relative; border-radius: 50%; box-sizing: content-box; border: 4px solid #4CAF50; }
+    .check-icon::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: content-box; border: 4px solid rgba(255, 255, 255, 0.2); }
+    .check-icon::after { top: 0; left: 0; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: content-box; border: 4px solid rgba(76, 175, 80, 0.5); z-index: 1; animation: rotate-circle 4.25s ease-in; }
+    .icon-line { height: 5px; background-color: #4CAF50; display: block; border-radius: 2px; position: absolute; z-index: 10; }
+    .line-tip { top: 46px; left: 14px; width: 25px; transform: rotate(45deg); animation: icon-line-tip 0.75s; }
+    .line-long { top: 38px; right: 8px; width: 47px; transform: rotate(-45deg); animation: icon-line-long 0.75s; }
+    .icon-circle { top: -4px; left: -4px; z-index: 10; width: 80px; height: 80px; border-radius: 50%; position: absolute; box-sizing: content-box; border: 4px solid rgba(76, 175, 80, 0.5); }
+    .icon-fix { top: 8px; width: 5px; left: 26px; z-index: 1; height: 85px; position: absolute; transform: rotate(-45deg); background-color: #FFFFFF; }
+
+    @keyframes rotate-circle { 0% { transform: rotate(-45deg); } 5% { transform: rotate(-45deg); } 12% { transform: rotate(-405deg); } 100% { transform: rotate(-405deg); } }
+    @keyframes icon-line-tip { 0% { width: 0; left: 1px; top: 19px; } 54% { width: 0; left: 1px; top: 19px; } 70% { width: 50px; left: -8px; top: 37px; } 84% { width: 17px; left: 21px; top: 48px; } 100% { width: 25px; left: 14px; top: 46px; } }
+    @keyframes icon-line-long { 0% { width: 0; right: 46px; top: 54px; } 65% { width: 0; right: 46px; top: 54px; } 84% { width: 55px; right: 0px; top: 35px; } 100% { width: 47px; right: 8px; top: 38px; } }
 </style>
 {% endblock %}
