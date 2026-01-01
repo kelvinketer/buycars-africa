@@ -260,7 +260,7 @@
                     <a href="{% url 'car_detail' car.id %}" class="d-block">
                         <div style="height: 220px; overflow: hidden;">
                             {% if car.images.first %}
-                                <img src="{{ car.images.first.image.url }}?v={% now "U" %}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
+                                <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;">
                             {% else %}
                                 <div class="d-flex align-items-center justify-content-center h-100 bg-secondary bg-opacity-10 text-muted">
                                     <i class="fas fa-car fa-3x opacity-25"></i>
@@ -324,7 +324,7 @@
                         <a href="{% url 'car_detail' car.id %}">
                             <div style="height: 200px; overflow: hidden;">
                                 {% if car.images.first %}
-                                    <img src="{{ car.images.first.image.url }}?v={% now "U" %}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s;">
+                                    <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s;">
                                 {% else %}
                                     <div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
                                         <i class="fas fa-car fa-2x opacity-25"></i>
