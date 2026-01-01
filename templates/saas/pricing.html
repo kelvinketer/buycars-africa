@@ -38,7 +38,7 @@
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'STARTER' %}
-                                    <button class="btn btn-soft-dark rounded-pill py-3 fw-bold disabled opacity-100">
+                                    <button class="btn btn-soft-dark rounded-pill py-3 fw-bold disabled">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
@@ -84,7 +84,7 @@
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'LITE' %}
-                                    <button class="btn btn-white text-brand-dark rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm">
+                                    <button class="btn btn-white text-brand-dark rounded-pill py-3 fw-bold disabled shadow-sm">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% elif user.dealer_profile.plan_type == 'PRO' %}
@@ -126,7 +126,7 @@
                         <div class="mt-auto d-grid gap-3">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'PRO' %}
-                                    <button class="btn btn-brand-dark rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm d-flex align-items-center justify-content-center">
+                                    <button class="btn btn-brand-dark rounded-pill py-3 fw-bold disabled shadow-sm d-flex align-items-center justify-content-center">
                                         <i class="fas fa-check-circle text-success me-2"></i> Current Plan
                                     </button>
                                     
@@ -164,7 +164,6 @@
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-5 shadow-2xl overflow-hidden" style="background: #ffffff;">
-            
             <div class="modal-header border-0 p-4 bg-brand-dark text-white">
                 <div class="d-flex align-items-center">
                     <div class="bg-white bg-opacity-10 p-2 rounded-3 shadow-sm me-3">
@@ -433,10 +432,12 @@
         transform: translateY(-2px);
     }
 
-    .btn-soft-dark {
-        background-color: #e2e8f0;
-        color: #1e293b;
+    /* Force Soft Dark to stay visible */
+    .btn-soft-dark, .btn-soft-dark.disabled {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
         border: none;
+        opacity: 1 !important;
     }
 
     /* GLASS BUTTON (For Dark Backgrounds) */
@@ -453,11 +454,12 @@
         border-color: rgba(255,255,255,0.4);
     }
     
-    /* White Button (High Contrast) */
-    .btn-white {
-        background-color: #ffffff;
-        color: var(--brand-dark);
-        border: 1px solid white;
+    /* FIX: Force visibility of white button on dark background even when disabled */
+    .btn-white, .btn-white.disabled {
+        background-color: #ffffff !important;
+        color: var(--brand-dark) !important;
+        border: 1px solid white !important;
+        opacity: 1 !important;
     }
     .btn-white:hover {
         background-color: #f8f9fa;
