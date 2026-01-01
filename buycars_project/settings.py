@@ -124,6 +124,12 @@ STORAGES = {
     },
 }
 
+# --- LEGACY SETTING (REQUIRED FOR CLOUDINARY COMPATIBILITY) ---
+# Even though we use 'STORAGES' above, 'django-cloudinary-storage' checks for this setting.
+# Without this line, deployment fails with AttributeError.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 # --- AUTH SETTINGS ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
