@@ -176,6 +176,7 @@ def dealer_dashboard(request):
     if total_leads_30 > 0 and plan_cost > 0:
         cpl = int(plan_cost / total_leads_30)
 
+    # Correct use of 'views' (consistent with model definition)
     inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('views'))
     
     hot_car = inventory_stats.order_by('-view_count').first()
@@ -229,10 +230,12 @@ def download_report(request):
     calls = leads.filter(action_type='CALL').count()
     
     # 4. Calculate Views (Aggregate views across all cars)
+    # FIX: Use 'views' relationship name
     total_views = CarView.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month).count()
     
     # 5. Top 5 Performing Cars
-    top_cars = cars.filter(status='AVAILABLE').annotate(num_views=Count('carview')).order_by('-num_views')[:5]
+    # FIX: Changed 'carview' to 'views' to match the relationship name used in Dealer Dashboard
+    top_cars = cars.filter(status='AVAILABLE').annotate(num_views=Count('views')).order_by('-num_views')[:5]
     
     # 6. Context Data
     context = {
