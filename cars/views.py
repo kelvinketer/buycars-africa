@@ -430,4 +430,4 @@ def all_brands(request):
         .filter(total__gt=0)
         .order_by('make')
     )
-    return render(request, 'cars/all_brands.html', {'brands': brands})
+    return render(request, 'cars/all_brands.html', {'brands': brands})ss
