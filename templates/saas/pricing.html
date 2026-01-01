@@ -3,21 +3,21 @@
 {% load humanize %}
 
 {% block content %}
-<div class="bg-white py-5">
+<div class="bg-light py-5 min-vh-100">
     <div class="container py-lg-5">
         
         <div class="text-center mb-5 mw-800 mx-auto">
             <h6 class="text-danger fw-bold text-uppercase letter-spacing-2">Manage Subscription</h6>
             <h1 class="display-5 fw-bold text-dark mb-3">Upgrade or Change Your Plan</h1>
             <p class="text-muted lead">
-                Payments are processed instantly via M-PESA. Changing plans starts a new 30-day cycle.
+                Payments are processed instantly via M-PESA. Changing plans starts a new 30-day cycle immediately.
             </p>
         </div>
 
         <div class="row g-4 align-items-center justify-content-center">
             
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift">
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold small">STARTER</span>
@@ -39,10 +39,10 @@
                                     <button class="btn btn-secondary rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
-                                {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
-                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Downgrade</a>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'STARTER' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Select Starter</a>
+                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">
+                                        Select Starter
+                                    </button>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Get Started</a>
@@ -53,7 +53,11 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden" style="background: #0f172a; color: white; transform: scale(1.02); z-index: 2;">
+                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden hover-lift" style="background: #0f172a; color: white; transform: scale(1.02); z-index: 2;">
+                    <div class="position-absolute top-0 end-0 bg-warning text-dark fw-bold px-3 py-1 small rounded-bottom-start">
+                        MOST POPULAR
+                    </div>
+
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-bold small">LITE</span>
@@ -66,7 +70,7 @@
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 small">
                             <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>15</strong> Active Car Listings</li>
                             <li><i class="fas fa-check-circle text-primary me-2"></i> <strong>16</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>2</strong> Featured Listings</li>
+                            <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>Verified Dealer Badge</strong></li>
                         </ul>
 
                         <div class="mt-auto d-grid">
@@ -75,10 +79,10 @@
                                     <button class="btn btn-primary fw-bold rounded-pill py-3 disabled" style="opacity: 1; border: 1px solid #0d6efd;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
-                                {% elif user.dealer_profile.plan_type == 'PRO' %}
-                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-outline-light rounded-pill py-3 fw-bold hover-scale">Downgrade</a>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'LITE' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Upgrade to Lite</a>
+                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">
+                                        Upgrade to Lite
+                                    </button>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-primary fw-bold rounded-pill py-3 shadow-sm hover-scale">Get Started</a>
@@ -89,11 +93,7 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 bg-light position-relative overflow-hidden">
-                    <div class="position-absolute top-0 end-0 bg-warning text-dark fw-bold px-3 py-1 small rounded-bottom-start">
-                        BEST VALUE
-                    </div>
-
+                <div class="card h-100 border-0 shadow-sm rounded-4 bg-white position-relative overflow-hidden hover-lift">
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
                             <span class="badge bg-white border text-dark rounded-pill px-3 py-2 fw-bold small">PRO</span>
@@ -112,22 +112,19 @@
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'PRO' %}
-                                    <button class="btn btn-success rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
+                                    <button class="btn btn-dark rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
-                                    
                                     <div class="text-center mt-3">
-                                        <small class="text-muted d-block mb-1" style="font-size: 0.85rem;">Need more than 50 cars?</small>
-                                        <a href="https://wa.me/254727025050?text=Hi,%20I%20am%20a%20PRO%20dealer%20and%20I%20need%20a%20custom%20plan%20for%20more%20than%2050%20cars." 
-                                           target="_blank" 
-                                           class="fw-bold text-dark small text-decoration-underline">
-                                            Contact for Enterprise
+                                        <small class="text-muted d-block mb-1" style="font-size: 0.85rem;">Need > 50 cars?</small>
+                                        <a href="https://wa.me/254727025050" target="_blank" class="fw-bold text-dark small text-decoration-underline">
+                                            Contact Enterprise
                                         </a>
                                     </div>
                                 {% else %}
-                                    <a href="{% url 'initiate_payment' 'PRO' %}" class="btn btn-dark rounded-pill py-2 fw-bold hover-scale">
+                                    <button onclick="openPaymentModal('PRO', 12000)" class="btn btn-dark rounded-pill py-2 fw-bold hover-scale">
                                         Upgrade to Pro
-                                    </a>
+                                    </button>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale">Get Started</a>
@@ -141,9 +138,198 @@
     </div>
 </div>
 
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Complete Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalBtn"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                
+                <div id="paymentStep1">
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-mobile-alt fa-2x"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1">M-PESA Express</h4>
+                        <p class="text-muted small">Enter your M-Pesa number to pay.</p>
+                    </div>
+
+                    <div class="mb-4 bg-light p-3 rounded-3">
+                        <h2 class="fw-bold text-dark mb-0" id="displayAmount">KES 0</h2>
+                        <span class="badge bg-dark text-white small" id="displayPlan">PLAN</span>
+                    </div>
+
+                    <form onsubmit="initiatePayment(event)">
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control rounded-3" id="phoneNumber" 
+                                   placeholder="0712345678" 
+                                   value="{{ user.dealer_profile.phone_number }}" required>
+                            <label for="phoneNumber">Phone Number (07...)</label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold" id="payBtn">
+                                Pay Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="paymentStep2" style="display: none;">
+                    <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <h5 class="fw-bold">Check your phone!</h5>
+                    <p class="text-muted mb-4">We sent a PIN prompt to <strong id="sentPhone">...</strong></p>
+                    <div class="progress mb-3" style="height: 6px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
+                    </div>
+                    <small class="text-muted">Waiting for M-PESA confirmation...</small>
+                </div>
+
+                <div id="paymentStep3" style="display: none;">
+                    <div class="mb-3 text-success">
+                        <i class="fas fa-check-circle fa-5x"></i>
+                    </div>
+                    <h3 class="fw-bold text-success">Success!</h3>
+                    <p class="text-muted">Your plan has been upgraded.</p>
+                    <div class="d-grid mt-4">
+                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-dark btn-lg rounded-pill">Go to Dashboard</a>
+                    </div>
+                </div>
+
+                <div id="paymentStep4" style="display: none;">
+                    <div class="mb-3 text-danger">
+                        <i class="fas fa-times-circle fa-4x"></i>
+                    </div>
+                    <h4 class="fw-bold text-danger">Payment Failed</h4>
+                    <p class="text-muted" id="errorMessage">Something went wrong.</p>
+                    <div class="d-grid mt-4">
+                        <button onclick="resetModal()" class="btn btn-outline-dark rounded-pill">Try Again</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedPlan = '';
+    let pollInterval = null;
+
+    // 1. OPEN MODAL
+    function openPaymentModal(plan, amount) {
+        selectedPlan = plan;
+        document.getElementById('displayAmount').innerText = 'KES ' + amount.toLocaleString();
+        document.getElementById('displayPlan').innerText = plan + ' PLAN';
+        resetModal();
+        new bootstrap.Modal(document.getElementById('paymentModal')).show();
+    }
+
+    // 2. RESET UI
+    function resetModal() {
+        document.getElementById('paymentStep1').style.display = 'block';
+        document.getElementById('paymentStep2').style.display = 'none';
+        document.getElementById('paymentStep3').style.display = 'none';
+        document.getElementById('paymentStep4').style.display = 'none';
+        document.getElementById('payBtn').disabled = false;
+        document.getElementById('payBtn').innerHTML = 'Pay Now';
+        document.getElementById('closeModalBtn').disabled = false;
+    }
+
+    // 3. SEND REQUEST (AJAX)
+    async function initiatePayment(e) {
+        e.preventDefault();
+        
+        const phone = document.getElementById('phoneNumber').value;
+        const btn = document.getElementById('payBtn');
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+
+        try {
+            const response = await fetch("{% url 'initiate_payment' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    plan_type: selectedPlan,
+                    phone_number: phone
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                document.getElementById('sentPhone').innerText = phone;
+                document.getElementById('paymentStep1').style.display = 'none';
+                document.getElementById('paymentStep2').style.display = 'block';
+                document.getElementById('closeModalBtn').disabled = true; 
+                startPolling();
+            } else {
+                showError(data.message);
+            }
+
+        } catch (error) {
+            showError("Network error. Please try again.");
+        }
+    }
+
+    // 4. POLL STATUS
+    function startPolling() {
+        let attempts = 0;
+        const maxAttempts = 60; // 2 minutes
+
+        pollInterval = setInterval(async () => {
+            attempts++;
+            if (attempts >= maxAttempts) {
+                stopPolling();
+                showError("Payment timed out. Did you enter your PIN?");
+                return;
+            }
+
+            try {
+                const response = await fetch("{% url 'check_payment_status' %}");
+                const data = await response.json();
+
+                if (data.status === 'SUCCESS') {
+                    stopPolling();
+                    document.getElementById('paymentStep2').style.display = 'none';
+                    document.getElementById('paymentStep3').style.display = 'block';
+                } else if (data.status === 'FAILED') {
+                    stopPolling();
+                    showError(data.description || "Payment failed.");
+                }
+            } catch (err) {
+                console.log("Polling error", err);
+            }
+        }, 2000); 
+    }
+
+    function stopPolling() {
+        if (pollInterval) clearInterval(pollInterval);
+        document.getElementById('closeModalBtn').disabled = false;
+    }
+
+    function showError(msg) {
+        document.getElementById('errorMessage').innerText = msg;
+        document.getElementById('paymentStep1').style.display = 'none';
+        document.getElementById('paymentStep2').style.display = 'none';
+        document.getElementById('paymentStep4').style.display = 'block';
+        document.getElementById('payBtn').disabled = false;
+        document.getElementById('payBtn').innerHTML = 'Pay Now';
+    }
+</script>
+
 <style>
+    .hover-lift { transition: transform 0.2s, box-shadow 0.2s; }
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,.1)!important; }
+    
     .hover-scale { transition: transform 0.2s; }
     .hover-scale:hover { transform: scale(1.05); }
+    
     .letter-spacing-2 { letter-spacing: 2px; }
 </style>
 {% endblock %}
