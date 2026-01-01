@@ -93,12 +93,13 @@ class DealerProfile(models.Model):
     @property
     def plan_limits(self):
         """Return limits dictionary based on the current plan"""
-        # Define limits for each tier
+        # Define limits for each tier (Cars, Featured Slots, Lead Views)
+        # IMAGES are unlimited for all paid plans.
         LIMITS = {
-            'FREE': {'cars': 0, 'featured': 0, 'leads': 0},
-            'STARTER': {'cars': 5, 'featured': 0, 'leads': 7},
-            'LITE': {'cars': 15, 'featured': 2, 'leads': 16},
-            'PRO': {'cars': 50, 'featured': 5, 'leads': 30},
+            'FREE':    {'cars': 0,  'featured': 0, 'leads': 0},
+            'STARTER': {'cars': 5,  'featured': 0, 'leads': 7},
+            'LITE':    {'cars': 15, 'featured': 2, 'leads': 16},
+            'PRO':     {'cars': 50, 'featured': 5, 'leads': 30},
         }
         
         # If plan is expired or Free, return restricted limits
