@@ -114,9 +114,10 @@ CLOUDINARY_STORAGE = {
 
 # --- STORAGE CONFIGURATION (Django 5.0+ Standard) ---
 STORAGES = {
-    # UPDATED: Use CompressedStaticFilesStorage to ignore missing file errors
+    # UPDATED: Use Standard Django Storage (SAFE MODE)
+    # This disables WhiteNoise compression during build to prevent crashes.
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
     # Images stored on Cloudinary
     "default": {
@@ -125,8 +126,8 @@ STORAGES = {
 }
 
 # --- LEGACY SETTING (CRITICAL FIX) ---
-# Must match the backend above. This ensures compatibility.
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Must match the backend above.
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
 # --- AUTH SETTINGS ---
