@@ -39,6 +39,10 @@
                                     <button class="btn btn-light rounded-pill py-3 fw-bold disabled border">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
+                                {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
+                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">
+                                        Downgrade to Starter
+                                    </button>
                                 {% else %}
                                     <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">
                                         Select Starter
@@ -78,6 +82,10 @@
                                 {% if user.dealer_profile.plan_type == 'LITE' %}
                                     <button class="btn btn-success rounded-pill py-3 fw-bold disabled opacity-100">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
+                                    </button>
+                                {% elif user.dealer_profile.plan_type == 'PRO' %}
+                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-outline-light fw-bold rounded-pill py-3 hover-scale">
+                                        Downgrade to Lite
                                     </button>
                                 {% else %}
                                     <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-success fw-bold rounded-pill py-3 shadow-lg hover-scale">
