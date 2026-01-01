@@ -36,20 +36,20 @@
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'STARTER' %}
-                                    <button class="btn btn-light rounded-pill py-3 fw-bold disabled border">
+                                    <button class="btn btn-soft-dark rounded-pill py-3 fw-bold disabled opacity-100">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
-                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">
+                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-soft-secondary rounded-pill py-3 fw-bold hover-scale transition-all">
                                         Downgrade to Starter
                                     </button>
                                 {% else %}
-                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">
+                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">
                                         Select Starter
                                     </button>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill py-3 fw-bold hover-scale">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
@@ -80,11 +80,11 @@
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'LITE' %}
-                                    <button class="btn btn-success rounded-pill py-3 fw-bold disabled opacity-100">
+                                    <button class="btn btn-success rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% elif user.dealer_profile.plan_type == 'PRO' %}
-                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-outline-light fw-bold rounded-pill py-3 hover-scale">
+                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-soft-light rounded-pill py-3 fw-bold hover-scale">
                                         Downgrade to Lite
                                     </button>
                                 {% else %}
@@ -126,7 +126,7 @@
                                     
                                     <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20a%20Pro%20dealer%20and%20I%20need%20Enterprise%20support." 
                                        target="_blank" 
-                                       class="btn btn-outline-dark rounded-pill py-3 fw-bold small text-nowrap d-flex align-items-center justify-content-center hover-scale shadow-sm transition-all">
+                                       class="btn btn-white border-2 border-dark text-dark rounded-pill py-3 fw-bold small text-nowrap d-flex align-items-center justify-content-center hover-scale shadow-sm transition-all">
                                         <i class="fab fa-whatsapp text-success me-2 fa-lg"></i> Contact Enterprise Support
                                     </a>
 
@@ -173,9 +173,7 @@
             </div>
 
             <div class="modal-body p-0">
-                
                 <div id="paymentStep1" class="p-4 p-md-5">
-                    
                     <div class="bg-light p-4 rounded-4 mb-4 border border-dashed">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted small text-uppercase fw-bold ls-1">Plan</span>
@@ -205,7 +203,6 @@
                                 Pay Now <i class="fas fa-arrow-right ms-2 small"></i>
                             </button>
                         </div>
-                        
                         <div class="text-center mt-4">
                             <small class="text-muted opacity-75" style="font-size: 0.75rem;">
                                 <i class="fas fa-lock me-1"></i> Secured by Safaricom M-PESA
@@ -221,10 +218,8 @@
                              <i class="fas fa-mobile-alt fa-2x text-success"></i>
                         </div>
                     </div>
-                    
                     <h4 class="fw-bold mb-2">Check your phone</h4>
                     <p class="text-muted mb-4 px-4">We sent a PIN prompt to <br><strong id="sentPhone" class="text-dark">...</strong></p>
-                    
                     <div class="progress rounded-pill bg-light mb-3 mx-auto" style="height: 6px; width: 60%; overflow: hidden;">
                         <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div>
                     </div>
@@ -261,7 +256,6 @@
                         <button onclick="resetModal()" class="btn btn-outline-dark rounded-pill py-2">Try Again</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -271,7 +265,6 @@
     let selectedPlan = '';
     let pollInterval = null;
 
-    // 1. OPEN MODAL
     function openPaymentModal(plan, amount) {
         selectedPlan = plan;
         document.getElementById('displayAmount').innerText = 'KES ' + amount.toLocaleString();
@@ -280,27 +273,21 @@
         new bootstrap.Modal(document.getElementById('paymentModal')).show();
     }
 
-    // 2. RESET UI
     function resetModal() {
         document.getElementById('paymentStep1').style.display = 'block';
         document.getElementById('paymentStep2').style.display = 'none';
         document.getElementById('paymentStep3').style.display = 'none';
         document.getElementById('paymentStep4').style.display = 'none';
-        
         const btn = document.getElementById('payBtn');
         btn.disabled = false;
         btn.innerHTML = 'Pay Now <i class="fas fa-arrow-right ms-2 small"></i>';
-        
         document.getElementById('closeModalBtn').disabled = false;
     }
 
-    // 3. SEND REQUEST (AJAX)
     async function initiatePayment(e) {
         e.preventDefault();
-        
         const phone = document.getElementById('phoneNumber').value;
         const btn = document.getElementById('payBtn');
-        
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
 
@@ -318,27 +305,19 @@
             });
 
             const data = await response.json();
-
             if (data.status === 'success') {
                 document.getElementById('sentPhone').innerText = phone;
-                
-                // Smooth transition
-                fadeOut('paymentStep1', () => {
-                    fadeIn('paymentStep2');
-                });
-
+                fadeOut('paymentStep1', () => { fadeIn('paymentStep2'); });
                 document.getElementById('closeModalBtn').disabled = true; 
                 startPolling();
             } else {
                 showError(data.message);
             }
-
         } catch (error) {
             showError("Network error. Please try again.");
         }
     }
 
-    // Helper for Fade effects
     function fadeOut(id, callback) {
         const el = document.getElementById(id);
         el.style.opacity = 0;
@@ -356,11 +335,9 @@
         }, 50);
     }
 
-    // 4. POLL STATUS
     function startPolling() {
         let attempts = 0;
-        const maxAttempts = 60; // 2 minutes
-
+        const maxAttempts = 60;
         pollInterval = setInterval(async () => {
             attempts++;
             if (attempts >= maxAttempts) {
@@ -368,11 +345,9 @@
                 showError("Payment timed out. Did you enter your PIN?");
                 return;
             }
-
             try {
                 const response = await fetch("{% url 'check_payment_status' %}");
                 const data = await response.json();
-
                 if (data.status === 'SUCCESS') {
                     stopPolling();
                     fadeOut('paymentStep2', () => { fadeIn('paymentStep3'); });
@@ -407,16 +382,46 @@
     .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
     .transition-all { transition: all 0.3s ease; }
     
+    /* NEW PREMIUM BUTTON STYLES */
+    .btn-soft-secondary {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid transparent;
+    }
+    .btn-soft-secondary:hover {
+        background-color: #e5e7eb;
+        color: #1f2937;
+        transform: translateY(-2px);
+    }
+
+    .btn-soft-light {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-soft-light:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    .btn-soft-dark {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        border: none;
+    }
+
+    .border-2 { border-width: 2px !important; }
+
     /* Animations */
     #paymentStep1, #paymentStep2, #paymentStep3, #paymentStep4 { transition: opacity 0.3s ease; }
-
     .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     @keyframes pulse {
         0%, 100% { opacity: 1; }
         50% { opacity: .5; }
     }
 
-    /* Success Checkmark Animation */
+    /* Checkmark Animation (Same as before) */
     .success-checkmark { width: 80px; height: 115px; margin: 0 auto; }
     .check-icon { width: 80px; height: 80px; position: relative; border-radius: 50%; box-sizing: content-box; border: 4px solid #4CAF50; }
     .check-icon::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: content-box; border: 4px solid rgba(255, 255, 255, 0.2); }
@@ -426,7 +431,7 @@
     .line-long { top: 38px; right: 8px; width: 47px; transform: rotate(-45deg); animation: icon-line-long 0.75s; }
     .icon-circle { top: -4px; left: -4px; z-index: 10; width: 80px; height: 80px; border-radius: 50%; position: absolute; box-sizing: content-box; border: 4px solid rgba(76, 175, 80, 0.5); }
     .icon-fix { top: 8px; width: 5px; left: 26px; z-index: 1; height: 85px; position: absolute; transform: rotate(-45deg); background-color: #FFFFFF; }
-
+    
     @keyframes rotate-circle { 0% { transform: rotate(-45deg); } 5% { transform: rotate(-45deg); } 12% { transform: rotate(-405deg); } 100% { transform: rotate(-405deg); } }
     @keyframes icon-line-tip { 0% { width: 0; left: 1px; top: 19px; } 54% { width: 0; left: 1px; top: 19px; } 70% { width: 50px; left: -8px; top: 37px; } 84% { width: 17px; left: 21px; top: 48px; } 100% { width: 25px; left: 14px; top: 46px; } }
     @keyframes icon-line-long { 0% { width: 0; right: 46px; top: 54px; } 65% { width: 0; right: 46px; top: 54px; } 84% { width: 55px; right: 0px; top: 35px; } 100% { width: 47px; right: 8px; top: 38px; } }
