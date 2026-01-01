@@ -1,87 +1,236 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<style>
-    body { font-family: Helvetica, sans-serif; color: #333; }
-    .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e60000; padding-bottom: 10px; }
-    .logo { font-size: 24px; font-weight: bold; color: #e60000; }
-    .meta { font-size: 12px; color: #666; margin-top: 5px; }
-    
-    .summary-box { 
-        width: 100%; margin-bottom: 30px; 
-    }
-    .stat-card {
-        width: 30%; float: left; text-align: center; 
-        background-color: #f8f9fa; padding: 15px; margin-right: 3%;
-        border: 1px solid #ddd;
-    }
-    .stat-value { font-size: 24px; font-weight: bold; color: #222; }
-    .stat-label { font-size: 12px; color: #777; text-transform: uppercase; }
-    
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th { background-color: #333; color: #fff; padding: 8px; text-align: left; font-size: 12px; }
-    td { border-bottom: 1px solid #eee; padding: 8px; font-size: 12px; }
-    .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #aaa; }
-</style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Monthly Report</title>
+    <style type="text/css">
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333333;
+            line-height: 1.4;
+        }
+        
+        /* BRAND COLORS */
+        /* Red: #E31E24 | Dark Blue: #0B132B */
+
+        /* HEADER */
+        .header-table {
+            width: 100%;
+            background-color: #0B132B; /* Brand Dark */
+            color: #ffffff;
+            padding: 20px;
+            border-bottom: 5px solid #E31E24; /* Brand Red Accent */
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .logo-red { color: #E31E24; }
+        .report-title {
+            font-size: 16px;
+            text-align: right;
+            font-weight: normal;
+            color: #cccccc;
+        }
+        .dealer-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        /* SUMMARY CARDS (Using Table for Layout) */
+        .summary-table {
+            width: 100%;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .card-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0B132B;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .card-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #666666;
+            letter-spacing: 1px;
+        }
+
+        /* MAIN DATA TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .data-table th {
+            background-color: #0B132B;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            font-size: 11px;
+            border-bottom: 3px solid #E31E24;
+        }
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eeeeee;
+            font-size: 11px;
+            color: #444;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+        
+        /* STATUS BADGES */
+        .status-available { color: #28a745; font-weight: bold; }
+        .status-reserved { color: #ffc107; font-weight: bold; }
+        .status-sold { color: #E31E24; font-weight: bold; }
+
+        /* FOOTER */
+        .footer {
+            position: fixed;
+            bottom: -30px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+            text-align: center;
+            font-size: 9px;
+            color: #999999;
+            border-top: 1px solid #eeeeee;
+            padding-top: 10px;
+        }
+        
+        /* SECTIONS */
+        h3 {
+            color: #0B132B;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        /* LEAD BREAKDOWN */
+        .lead-table td {
+            padding: 5px;
+            font-size: 12px;
+        }
+        .lead-icon {
+            color: #E31E24;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">BuyCars.Africa</div>
-        <div class="meta">Monthly Performance Report • {{ month_name }}</div>
-        <div class="meta">Prepared for: {{ profile.business_name }}</div>
-    </div>
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="50%">
+                <div class="logo-text">BuyCars<span class="logo-red">.Africa</span></div>
+            </td>
+            <td width="50%" align="right">
+                <div class="report-title">Performance Report • {{ month_name }}</div>
+                <div class="dealer-name">{{ profile.business_name }}</div>
+            </td>
+        </tr>
+    </table>
 
-    <div style="clear:both;"></div>
-
-    <div class="summary-box">
-        <div class="stat-card">
-            <div class="stat-value">{{ total_views }}</div>
-            <div class="stat-label">Total Views</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ total_leads }}</div>
-            <div class="stat-label">Total Leads</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">{{ cars.count }}</div>
-            <div class="stat-label">Cars Listed</div>
-        </div>
-    </div>
-
-    <div style="clear:both; margin-bottom: 30px;"></div>
+    <table class="summary-table" cellpadding="10" cellspacing="0">
+        <tr>
+            <td width="33%">
+                <div class="card">
+                    <span class="card-value">{{ total_cars }}</span>
+                    <span class="card-label">Active Inventory</span>
+                </div>
+            </td>
+            <td width="33%">
+                <div class="card">
+                    <span class="card-value">{{ total_views }}</span>
+                    <span class="card-label">Total Views</span>
+                </div>
+            </td>
+            <td width="33%">
+                <div class="card">
+                    <span class="card-value" style="color: #E31E24;">{{ total_leads }}</span>
+                    <span class="card-label">Total Leads</span>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <h3>Lead Breakdown</h3>
-    <p>Leads represent high-intent actions (Calls & WhatsApp clicks).</p>
-    <ul>
-        <li><strong>WhatsApp Inquiries:</strong> {{ whatsapp_clicks }}</li>
-        <li><strong>Phone Calls:</strong> {{ calls }}</li>
-    </ul>
+    <p style="color: #666; font-size: 11px; margin-bottom: 15px;">
+        Leads represent high-intent actions where buyers engaged directly with your contact details.
+    </p>
+    
+    <table class="lead-table" width="100%">
+        <tr>
+            <td width="50%">
+                <span class="lead-icon">📱</span> WhatsApp Inquiries: <strong>{{ whatsapp_clicks }}</strong>
+            </td>
+            <td width="50%">
+                <span class="lead-icon">📞</span> Phone Calls: <strong>{{ calls }}</strong>
+            </td>
+        </tr>
+    </table>
 
-    <h3>Top Performing Vehicles</h3>
-    <table>
+    <h3>Top Performing Inventory</h3>
+    <table class="data-table">
         <thead>
             <tr>
-                <th>Vehicle</th>
-                <th>Price (KES)</th>
-                <th>Views</th>
-                <th>Status</th>
+                <th width="45%">Vehicle Details</th>
+                <th width="20%">Price (KES)</th>
+                <th width="15%" align="center">Views</th>
+                <th width="20%" align="right">Status</th>
             </tr>
         </thead>
         <tbody>
             {% for car in top_cars %}
             <tr>
-                <td>{{ car.year }} {{ car.make }} {{ car.model }}</td>
-                <td>{{ car.price }}</td>
-                <td>{{ car.views }}</td>
-                <td>{{ car.status }}</td>
+                <td>
+                    <strong>{{ car.year }} {{ car.make }} {{ car.model }}</strong><br>
+                    <span style="color: #888; font-size: 10px;">Added: {{ car.created_at|date:"M d, Y" }}</span>
+                </td>
+                <td>{{ car.price|intcomma }}</td>
+                <td align="center"><strong>{{ car.num_views }}</strong></td>
+                <td align="right">
+                    {% if car.status == 'AVAILABLE' %}
+                        <span class="status-available">Available</span>
+                    {% elif car.status == 'RESERVED' %}
+                        <span class="status-reserved">Reserved</span>
+                    {% else %}
+                        <span class="status-sold">Sold</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" align="center" style="padding: 20px; color: #999;">
+                    No available inventory data for this month.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <div class="footer">
-        Generated by BuyCars.Africa System on {{ date|date:"Y-m-d" }}
+        Generated by <strong>BuyCars.Africa</strong> Dealer System &bull; {{ date|date:"Y-m-d H:i" }} &bull; Page <pdf:pagenumber>
     </div>
 
 </body>
