@@ -12,9 +12,16 @@ import re
 from users.models import DealerProfile
 from .models import Car, CarImage, CarView, Lead, SearchTerm
 from .forms import CarForm 
-from .utils import render_to_pdf  # Make sure cars/utils.py exists
+from .utils import render_to_pdf 
 
 User = get_user_model() 
+
+# --- CONFIGURATION: PLAN LIMITS (Source of Truth) ---
+PLAN_LIMITS = {
+    'STARTER': {'cars': 5, 'images': 6},   # Free Tier
+    'LITE':    {'cars': 15, 'images': 10}, # Paid Tier 1
+    'PRO':     {'cars': 50, 'images': 15}  # Paid Tier 2
+}
 
 def sanitize_phone(phone):
     if not phone: return None
@@ -127,19 +134,19 @@ def dealer_dashboard(request):
     car_count = my_cars.count()
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
-    limit = 3
-    plan_cost = 0 
+    # --- LOGIC UPDATE: Use PLAN_LIMITS ---
+    user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
+    limit = user_plan['cars']
     
+    plan_cost = 0 
     if profile.plan_type == 'LITE': 
-        limit = 15
         plan_cost = 5000
     elif profile.plan_type == 'PRO': 
-        limit = 999999
         plan_cost = 12000
     elif profile.plan_type == 'STARTER':
         plan_cost = 1500
         
-    can_add = car_count < limit or profile.plan_type == 'PRO'
+    can_add = car_count < limit
 
     thirty_days_ago = timezone.now() - timedelta(days=30)
     daily_leads = Lead.objects.filter(
@@ -222,11 +229,9 @@ def download_report(request):
     calls = leads.filter(action_type='CALL').count()
     
     # 4. Calculate Views (Aggregate views across all cars)
-    # Using 'carview_set' reverse relationship if CarView model has FK to Car
     total_views = CarView.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month).count()
     
     # 5. Top 5 Performing Cars
-    # Annotate cars with view count to order them
     top_cars = cars.filter(status='AVAILABLE').annotate(num_views=Count('carview')).order_by('-num_views')[:5]
     
     # 6. Context Data
@@ -254,14 +259,14 @@ def download_report(request):
 
 @login_required
 def add_car(request):
-    try:
-        profile = request.user.dealer_profile
-        car_count = Car.objects.filter(dealer=request.user).count()
-        LIMITS = {'FREE': 3, 'LITE': 15, 'PRO': 999999}
-        if car_count >= LIMITS.get(profile.plan_type, 3):
-            messages.warning(request, "Limit reached. Upgrade to add more.")
-            return redirect('dealer_dashboard')
-    except: pass 
+    profile = request.user.dealer_profile
+    car_count = Car.objects.filter(dealer=request.user).count()
+    
+    # --- LOGIC UPDATE: Enforce Car Limit from PLAN_LIMITS ---
+    user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
+    if car_count >= user_plan['cars']:
+        messages.warning(request, f"Plan limit reached ({user_plan['cars']} cars). Upgrade to add more.")
+        return redirect('dealer_dashboard')
 
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES)
@@ -271,13 +276,23 @@ def add_car(request):
             car.status = 'AVAILABLE'
             car.save()
             
-            images = request.FILES.getlist('image') 
+            # --- LOGIC UPDATE: Enforce Image Limit ---
+            image_limit = user_plan['images']
+            raw_images = request.FILES.getlist('image') 
             
-            for index, img in enumerate(images):
+            # Slice the list to the allowed limit (Discard excess images)
+            images_to_save = raw_images[:image_limit]
+            
+            for index, img in enumerate(images_to_save):
                 is_main = (index == 0)
                 CarImage.objects.create(car=car, image=img, is_main=is_main)
 
-            messages.success(request, 'Vehicle uploaded successfully!')
+            # Show warning if user tried to upload too many
+            if len(raw_images) > image_limit:
+                messages.warning(request, f"Vehicle saved, but we only uploaded the first {image_limit} photos (Plan Limit).")
+            else:
+                messages.success(request, 'Vehicle uploaded successfully!')
+                
             return redirect('dealer_dashboard')
         else:
             print("Form Errors:", form.errors)
@@ -288,6 +303,7 @@ def add_car(request):
 @login_required
 def edit_car(request, car_id):
     car = get_object_or_404(Car, pk=car_id, dealer=request.user)
+    profile = request.user.dealer_profile
     
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES, instance=car)
@@ -300,17 +316,34 @@ def edit_car(request, car_id):
             
             car.save()
             
-            new_images = request.FILES.getlist('image')
-            if new_images:
-                for img in new_images:
-                    # If car has no images, make the first new one the main image
-                    has_main = car.images.filter(is_main=True).exists()
-                    is_first_new = (img == new_images[0] and not has_main)
-                    CarImage.objects.create(car=car, image=img, is_main=is_first_new)
+            # --- LOGIC UPDATE: Enforce Image Limit on Edit ---
+            user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
+            image_limit = user_plan['images']
+            current_count = car.images.count()
             
-            count = len(new_images)
-            if count > 0:
-                messages.success(request, f'Changes saved! {count} new photo(s) added successfully.')
+            # Calculate remaining slots
+            slots_left = image_limit - current_count
+            
+            new_images = request.FILES.getlist('image')
+            
+            if new_images:
+                if slots_left > 0:
+                    # Take only as many as fit
+                    accepted_images = new_images[:slots_left]
+                    
+                    for img in accepted_images:
+                        # If car has no images, make the first new one the main image
+                        has_main = car.images.filter(is_main=True).exists()
+                        is_first_new = (img == accepted_images[0] and not has_main)
+                        CarImage.objects.create(car=car, image=img, is_main=is_first_new)
+                    
+                    # Feedback
+                    if len(new_images) > slots_left:
+                        messages.warning(request, f"Added {slots_left} photos. {len(new_images) - slots_left} were skipped (Limit: {image_limit} photos).")
+                    else:
+                        messages.success(request, f"Changes saved! {len(accepted_images)} new photo(s) added.")
+                else:
+                    messages.error(request, f"Cannot add photos. You have reached your limit of {image_limit} images for this car.")
             else:
                 messages.success(request, 'Vehicle details updated successfully!')
             
