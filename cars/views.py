@@ -250,7 +250,10 @@ def edit_car(request, car_id):
             new_images = request.FILES.getlist('image')
             if new_images:
                 for img in new_images:
-                    CarImage.objects.create(car=car, image=img, is_main=False)
+                    # If car has no images, make the first new one the main image
+                    has_main = car.images.filter(is_main=True).exists()
+                    is_first_new = (img == new_images[0] and not has_main)
+                    CarImage.objects.create(car=car, image=img, is_main=is_first_new)
             
             count = len(new_images)
             if count > 0:
@@ -277,7 +280,7 @@ def delete_car(request, car_id):
         return redirect('dealer_dashboard')
     return render(request, 'dealer/delete_confirm.html', {'car': car})
 
-# --- NEW: SET MAIN IMAGE VIEW ---
+# --- SET MAIN IMAGE VIEW ---
 @login_required
 def set_main_image(request, car_id, image_id):
     car = get_object_or_404(Car, pk=car_id, dealer=request.user)
@@ -294,6 +297,39 @@ def set_main_image(request, car_id, image_id):
         messages.success(request, 'Main photo updated!')
     
     return redirect('edit_car', car_id=car.id)
+
+# --- NEW: DELETE IMAGE VIEW ---
+@login_required
+def delete_car_image(request, image_id):
+    # 1. Get the image safely
+    image = get_object_or_404(CarImage, id=image_id)
+    
+    # 2. Security: Ensure the logged-in user owns the car
+    if image.car.dealer != request.user:
+        messages.error(request, "You do not have permission to delete this image.")
+        return redirect('dealer_dashboard')
+
+    car_id = image.car.id
+    was_main = image.is_main
+    
+    # 3. Delete the image
+    image.delete()
+    
+    # 4. If the deleted image was the 'Main' image, assign a new one
+    if was_main:
+        remaining_images = CarImage.objects.filter(car_id=car_id)
+        if remaining_images.exists():
+            new_main = remaining_images.first()
+            new_main.is_main = True
+            new_main.save()
+            messages.info(request, "Main image deleted. A new main image was automatically assigned.")
+        else:
+            messages.warning(request, "You deleted the main image. Please upload a new one.")
+    else:
+        messages.success(request, "Image deleted successfully.")
+    
+    # 5. Redirect back to the edit page
+    return redirect('edit_car', car_id=car_id)
 
 def pricing_page(request):
     return render(request, 'saas/pricing.html')

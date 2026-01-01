@@ -206,8 +206,17 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label fw-bold">Physical Address / Location</label>
-                                    {{ p_form.physical_address }}
+                                    <label class="form-label fw-bold">Detailed Address</label>
+                                    {{ p_form.address }}
+                                    <div class="form-text text-muted">E.g. "Kiambu Road, next to AAR Hospital". This helps buyers find you.</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Google Maps Link</label>
+                                    {{ p_form.google_map_link }}
+                                    <div class="form-text text-muted">
+                                        <i class="fas fa-map-marker-alt me-1"></i> Paste a direct link from Google Maps (e.g. <code>https://maps.app.goo.gl/...</code>) to show a "Get Directions" button on your profile.
+                                    </div>
                                 </div>
                             </div>
 

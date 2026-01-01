@@ -63,9 +63,11 @@ urlpatterns = [
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
 
-    # --- [NEW] SET MAIN IMAGE ROUTE ---
-    # This was the missing line causing the error!
+    # --- IMAGE MANAGEMENT ---
     path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', car_views.set_main_image, name='set_main_image'),
+    
+    # [NEW] DELETE IMAGE ROUTE
+    path('dashboard/image/delete/<int:image_id>/', car_views.delete_car_image, name='delete_car_image'),
 
     # --- PAYMENTS (M-PESA) ---
     path('payments/', include('payments.urls')), 

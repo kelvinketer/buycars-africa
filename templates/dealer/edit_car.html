@@ -50,16 +50,27 @@
                                         <div class="text-center" style="width: 100px;">
                                             <div class="position-relative rounded-3 overflow-hidden border shadow-sm mb-2" style="height: 100px;">
                                                 <img src="{{ img.image.url }}" class="w-100 h-100 object-fit-cover">
+                                                
                                                 {% if img.is_main %}
-                                                    <span class="position-absolute top-0 start-0 badge bg-danger m-1">MAIN</span>
+                                                    <span class="position-absolute top-0 start-0 badge bg-success m-1" style="font-size: 0.6rem;">MAIN</span>
                                                 {% endif %}
+
+                                                <button type="submit" 
+                                                        formaction="{% url 'delete_car_image' img.id %}" 
+                                                        onclick="return confirm('Are you sure you want to delete this photo?')"
+                                                        class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle d-flex align-items-center justify-content-center p-0" 
+                                                        style="width: 22px; height: 22px; z-index: 10;"
+                                                        title="Delete Photo">
+                                                    <i class="fas fa-times" style="font-size: 12px;"></i>
+                                                </button>
                                             </div>
+                                            
                                             {% if not img.is_main %}
                                                 <button type="submit" formaction="{% url 'set_main_image' car.id img.id %}" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.7rem;">
                                                     Set Main
                                                 </button>
                                             {% else %}
-                                                <span class="text-muted small" style="font-size: 0.7rem;">Main Photo</span>
+                                                <span class="text-success fw-bold small" style="font-size: 0.7rem;"><i class="fas fa-check-circle me-1"></i>Main Photo</span>
                                             {% endif %}
                                         </div>
                                     {% empty %}
