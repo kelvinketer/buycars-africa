@@ -1,4 +1,37 @@
-def stk_push(self, phone_number, amount, account_reference="BuyCars Subscription"):
+import requests
+import json
+import base64
+from datetime import datetime
+from django.conf import settings
+
+class MpesaClient:
+    def __init__(self):
+        self.consumer_key = settings.MPESA_CONSUMER_KEY
+        self.consumer_secret = settings.MPESA_CONSUMER_SECRET
+        self.shortcode = settings.MPESA_SHORTCODE
+        self.passkey = settings.MPESA_PASSKEY
+        self.access_token_url = settings.MPESA_ACCESS_TOKEN_URL
+        self.stk_push_url = settings.MPESA_EXPRESS_URL
+        self.callback_url = settings.MPESA_CALLBACK_URL
+        self.transaction_type = settings.MPESA_TRANSACTION_TYPE
+
+    def get_access_token(self):
+        """
+        Authenticates with Safaricom and returns an Access Token.
+        """
+        try:
+            response = requests.get(
+                self.access_token_url, 
+                auth=(self.consumer_key, self.consumer_secret)
+            )
+            response.raise_for_status() # Raise error for 400/500 codes
+            json_response = response.json()
+            return json_response['access_token']
+        except Exception as e:
+            print(f"Error generating Access Token: {str(e)}")
+            return None
+
+    def stk_push(self, phone_number, amount, account_reference="BuyCars Subscription"):
         """
         Trigger the M-PESA pin prompt on the user's phone.
         """
@@ -34,7 +67,7 @@ def stk_push(self, phone_number, amount, account_reference="BuyCars Subscription
             "BusinessShortCode": self.shortcode,
             "Password": password,
             "Timestamp": timestamp,
-            "TransactionType": "CustomerPayBillOnline",
+            "TransactionType": self.transaction_type, # Uses settings.py config
             "Amount": int(amount), 
             "PartyA": phone_number,
             "PartyB": self.shortcode,
@@ -45,7 +78,8 @@ def stk_push(self, phone_number, amount, account_reference="BuyCars Subscription
         }
 
         try:
-            response = requests.post(self.api_url, json=payload, headers=headers)
+            response = requests.post(self.stk_push_url, json=payload, headers=headers)
             return response.json()
         except Exception as e:
+            print(f"STK Push Error: {str(e)}")
             return {"error": str(e)}

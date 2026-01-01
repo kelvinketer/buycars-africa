@@ -112,14 +112,13 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
 }
 
-# --- STORAGE CONFIGURATION ---
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
+# --- STORAGE CONFIGURATION (Django 5.0+ Standard) ---
 STORAGES = {
+    # Optimized for Render (Compression + Caching)
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
+    # Images stored on Cloudinary
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
@@ -145,27 +144,19 @@ DEFAULT_FROM_EMAIL = 'BuyCars Africa <noreply@buycars.africa>'
 # ========================================================
 #             M-PESA DARAJA API CONFIGURATION
 # ========================================================
-# 1. SWITCH TO PRODUCTION
-MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT', default='production')
+# 1. ENVIRONMENT (Set to 'sandbox' for testing, 'production' for live)
+MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT', default='sandbox')
 
-# 2. YOUR LIVE PRODUCTION KEYS (Get these from the new App you created)
-MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='PASTE_YOUR_LIVE_CONSUMER_KEY_HERE')
-MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='PASTE_YOUR_LIVE_CONSUMER_SECRET_HERE')
+# 2. API KEYS (Get these from Daraja Portal)
+MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='')
+MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
 
-# 3. LIVE TILL & STORE CONFIGURATION
-# Store Number (9424318) is used for Authentication & Password Generation
-MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='9424318')      
+# 3. PAYBILL / TILL CONFIGURATION
+MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379')       # Business Shortcode (Paybill/Till)
+MPESA_PASSKEY = config('MPESA_PASSKEY', default='')                 # Lipa na M-Pesa Online Passkey
+MPESA_TRANSACTION_TYPE = config('MPESA_TRANSACTION_TYPE', default='CustomerPayBillOnline') # or 'CustomerBuyGoodsOnline' for Till
 
-# Till Number (7155131) is where the money actually goes (PartyB)
-MPESA_TILL_NUMBER = config('MPESA_TILL_NUMBER', default='7155131')  
-
-# Live Passkey (Sent to email/portal when you went live)
-MPESA_PASSKEY = config('MPESA_PASSKEY', default='PASTE_YOUR_LIVE_PASSKEY_HERE') 
-
-# 4. TRANSACTION TYPE (Must be 'CustomerBuyGoodsOnline' for Till Numbers)
-MPESA_TRANSACTION_TYPE = config('MPESA_TRANSACTION_TYPE', default='CustomerBuyGoodsOnline')
-
-# 5. URLS
+# 4. URLS
 if MPESA_ENVIRONMENT == 'production':
     MPESA_ACCESS_TOKEN_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     MPESA_EXPRESS_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
@@ -173,9 +164,8 @@ else:
     MPESA_ACCESS_TOKEN_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     MPESA_EXPRESS_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
 
-# 6. CALLBACK URL (Must be live/public)
+# 5. CALLBACK URL (Must be your LIVE Render URL)
 MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://buycars-africa.onrender.com/payments/callback/')
-
 
 # --- AFRICA'S TALKING SMS CONFIGURATION ---
 AFRICASTALKING_USERNAME = config('AFRICASTALKING_USERNAME', default='sandbox')
