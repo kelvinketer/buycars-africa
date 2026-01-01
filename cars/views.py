@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count, F
+from django.db.models import Q, Count, F, Sum
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from datetime import timedelta
@@ -12,6 +12,7 @@ import re
 from users.models import DealerProfile
 from .models import Car, CarImage, CarView, Lead, SearchTerm
 from .forms import CarForm 
+from .utils import render_to_pdf  # Make sure cars/utils.py exists
 
 User = get_user_model() 
 
@@ -198,6 +199,58 @@ def dealer_dashboard(request):
         'cpl': cpl,
     }
     return render(request, 'dealer/dashboard.html', context)
+
+@login_required
+def download_report(request):
+    """
+    Generates a PDF report for the dealer's monthly performance.
+    """
+    dealer = request.user
+    profile = request.user.dealer_profile
+    
+    # 1. Define Date Range (Current Month)
+    today = timezone.now()
+    start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    # 2. Get Dealer's Cars
+    cars = Car.objects.filter(dealer=dealer)
+    
+    # 3. Calculate Leads (Calls + WhatsApp)
+    leads = Lead.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month)
+    total_leads = leads.count()
+    whatsapp_clicks = leads.filter(action_type='WHATSAPP').count()
+    calls = leads.filter(action_type='CALL').count()
+    
+    # 4. Calculate Views (Aggregate views across all cars)
+    # Using 'carview_set' reverse relationship if CarView model has FK to Car
+    total_views = CarView.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month).count()
+    
+    # 5. Top 5 Performing Cars
+    # Annotate cars with view count to order them
+    top_cars = cars.filter(status='AVAILABLE').annotate(num_views=Count('carview')).order_by('-num_views')[:5]
+    
+    # 6. Context Data
+    context = {
+        'dealer': dealer,
+        'profile': profile,
+        'date': today,
+        'total_cars': cars.count(),
+        'total_views': total_views,
+        'total_leads': total_leads,
+        'whatsapp_clicks': whatsapp_clicks,
+        'calls': calls,
+        'top_cars': top_cars,
+        'month_name': today.strftime('%B %Y')
+    }
+    
+    # 7. Generate PDF
+    pdf = render_to_pdf('dealer/monthly_report.html', context)
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = f"Monthly_Report_{profile.business_name}_{today.strftime('%b_%Y')}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    return HttpResponse("Error Generating PDF", status=400)
 
 @login_required
 def add_car(request):

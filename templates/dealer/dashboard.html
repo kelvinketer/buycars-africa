@@ -144,6 +144,9 @@
                         </h2>
                     </div>
                     <div class="d-flex gap-2 align-items-center">
+                        <a href="{% url 'download_report' %}" class="btn btn-white border rounded-pill px-3 fw-bold shadow-sm text-dark hover-scale">
+                            <i class="fas fa-file-pdf text-danger me-2"></i> Report
+                        </a>
                         {% if can_add %}
                             <a href="{% url 'add_car' %}" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">
                                 <i class="fas fa-plus me-lg-2"></i> <span class="d-none d-lg-inline">Add Car</span> <span class="d-inline d-lg-none">Add</span>

@@ -52,6 +52,9 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
+    # [NEW] MONTHLY REPORT PDF ROUTE
+    path('dashboard/report/', car_views.download_report, name='download_report'),
+    
     # --- PRICING PAGE ---
     path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing'),
     
