@@ -439,14 +439,29 @@
         border: none;
     }
 
+    /* GLASS BUTTON (For Dark Backgrounds) */
     .btn-soft-light {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.15);
         color: #ffffff;
-        border: 1px solid rgba(255,255,255,0.3);
+        border: 1px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(5px);
     }
     .btn-soft-light:hover {
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.25);
         color: #ffffff;
+        transform: translateY(-2px);
+        border-color: rgba(255,255,255,0.4);
+    }
+    
+    /* White Button (High Contrast) */
+    .btn-white {
+        background-color: #ffffff;
+        color: var(--brand-dark);
+        border: 1px solid white;
+    }
+    .btn-white:hover {
+        background-color: #f8f9fa;
+        color: black;
         transform: translateY(-2px);
     }
 
