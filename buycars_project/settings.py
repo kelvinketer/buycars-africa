@@ -150,19 +150,31 @@ DEFAULT_FROM_EMAIL = 'BuyCars Africa <noreply@buycars.africa>'
 # ========================================================
 #             M-PESA DARAJA API CONFIGURATION
 # ========================================================
-# 1. ENVIRONMENT (Set to 'sandbox' for testing, 'production' for live)
+# 1. ENVIRONMENT ('sandbox' for testing, 'production' for live)
 MPESA_ENVIRONMENT = config('MPESA_ENVIRONMENT', default='sandbox')
 
 # 2. API KEYS (Get these from Daraja Portal)
-MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='')
-MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='')
+MPESA_CONSUMER_KEY = config('MPESA_CONSUMER_KEY', default='YOUR_SANDBOX_KEY')
+MPESA_CONSUMER_SECRET = config('MPESA_CONSUMER_SECRET', default='YOUR_SANDBOX_SECRET')
 
-# 3. PAYBILL / TILL CONFIGURATION
-MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379')       # Business Shortcode (Paybill/Till)
-MPESA_PASSKEY = config('MPESA_PASSKEY', default='')                 # Lipa na M-Pesa Online Passkey
-MPESA_TRANSACTION_TYPE = config('MPESA_TRANSACTION_TYPE', default='CustomerPayBillOnline') # or 'CustomerBuyGoodsOnline' for Till
+# 3. IDENTIFIERS (Till vs Store Number)
+# MPESA_SHORTCODE = Your 'Store Number' (Used for Password Generation & Auth)
+# Sandbox Default: 174379. Live: 9424318
+MPESA_SHORTCODE = config('MPESA_SHORTCODE', default='174379')
 
-# 4. URLS
+# MPESA_TILL_NUMBER = Your 'Till Number' (Where money is sent - PartyB)
+# Sandbox Default: 174379. Live: 7155132
+MPESA_TILL_NUMBER = config('MPESA_TILL_NUMBER', default='174379')
+
+# Passkey (Sandbox default provided; Production comes via Email)
+MPESA_PASSKEY = config('MPESA_PASSKEY', default='bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919')
+
+# 4. TRANSACTION TYPE (CRITICAL SWITCH)
+# Sandbox Default: 'CustomerPayBillOnline'
+# Live Default (For Till): 'CustomerBuyGoodsOnline'
+MPESA_TRANSACTION_TYPE = config('MPESA_TRANSACTION_TYPE', default='CustomerPayBillOnline')
+
+# 5. URLS
 if MPESA_ENVIRONMENT == 'production':
     MPESA_ACCESS_TOKEN_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     MPESA_EXPRESS_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
@@ -170,7 +182,7 @@ else:
     MPESA_ACCESS_TOKEN_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
     MPESA_EXPRESS_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
 
-# 5. CALLBACK URL (Must be your LIVE Render URL)
+# 6. CALLBACK URL (Must be your LIVE Render URL)
 MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://buycars-africa.onrender.com/payments/callback/')
 
 # --- AFRICA'S TALKING SMS CONFIGURATION ---
