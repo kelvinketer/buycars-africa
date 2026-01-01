@@ -9,7 +9,7 @@ from datetime import timedelta
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
-from payments.models import MpesaTransaction
+from payments.models import Payment  # <--- UPDATED: Imported Payment instead of MpesaTransaction
 from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
@@ -80,8 +80,8 @@ def is_superuser(user):
 @login_required
 @user_passes_test(is_superuser)
 def admin_dashboard(request):
-    # 1. FINANCIALS
-    total_revenue = MpesaTransaction.objects.filter(status='SUCCESS').aggregate(Sum('amount'))['amount__sum'] or 0
+    # 1. FINANCIALS (Updated to use Payment model)
+    total_revenue = Payment.objects.filter(status='SUCCESS').aggregate(Sum('amount'))['amount__sum'] or 0
 
     # 2. USERS & DEALERS
     total_users = User.objects.count()
@@ -117,7 +117,7 @@ def admin_dashboard(request):
     # 8. SEARCH ANALYTICS (DEMAND CLOUD)
     top_searches = SearchTerm.objects.order_by('-count')[:10]
 
-    # --- 9. CHURN FORECAST (EXPIRING SOON) - NEW FEATURE ---
+    # --- 9. CHURN FORECAST (EXPIRING SOON) ---
     # Find paid dealers (LITE/PRO) whose subscription expires in the next 7 days
     seven_days_from_now = timezone.now() + timedelta(days=7)
     
@@ -133,8 +133,8 @@ def admin_dashboard(request):
     recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
-    # 11. ENHANCED TRANSACTION HISTORY
-    recent_transactions = MpesaTransaction.objects.order_by('-id')[:10]
+    # 11. ENHANCED TRANSACTION HISTORY (Updated to use Payment model)
+    recent_transactions = Payment.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
         related_user = User.objects.filter(
@@ -179,7 +179,7 @@ def admin_dashboard(request):
         'brand_counts': brand_counts,
         'top_dealers': top_dealers,
         'top_searches': top_searches,
-        'expiring_dealers': expiring_dealers, # <--- NEW
+        'expiring_dealers': expiring_dealers, 
         'recent_users': recent_users,
         'recent_cars': recent_cars,
         'recent_transactions': recent_transactions,
