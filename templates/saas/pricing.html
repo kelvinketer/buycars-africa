@@ -117,21 +117,31 @@
                             <li><i class="fas fa-check-circle text-success me-2"></i> Homepage Placement</li>
                         </ul>
 
-                        <div class="mt-auto d-grid">
+                        <div class="mt-auto d-grid gap-2">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'PRO' %}
                                     <button class="btn btn-dark rounded-pill py-3 fw-bold disabled" style="opacity: 1;">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
-                                    <div class="text-center mt-3">
-                                        <a href="https://wa.me/254727025050" target="_blank" class="fw-bold text-dark small text-decoration-underline">
-                                            Contact Enterprise
-                                        </a>
-                                    </div>
+                                    
+                                    <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20a%20Pro%20dealer%20and%20I%20need%20Enterprise%20support." 
+                                       target="_blank" 
+                                       class="btn btn-outline-dark rounded-pill py-2 fw-bold small">
+                                        <i class="fab fa-whatsapp me-2"></i> Contact Enterprise Support
+                                    </a>
+
                                 {% else %}
-                                    <button onclick="openPaymentModal('PRO', 12000)" class="btn btn-dark rounded-pill py-2 fw-bold hover-scale">
+                                    <button onclick="openPaymentModal('PRO', 12000)" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale">
                                         Upgrade to Pro
                                     </button>
+                                    
+                                    <div class="text-center">
+                                        <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20interested%20in%20your%20Enterprise%20solutions." 
+                                           target="_blank" 
+                                           class="text-muted text-decoration-none small fw-bold">
+                                            Need a custom Enterprise plan?
+                                        </a>
+                                    </div>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale">Get Started</a>
