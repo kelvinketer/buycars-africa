@@ -7,8 +7,8 @@
     <div class="container py-lg-5">
         
         <div class="text-center mb-5 mw-800 mx-auto">
-            <h6 class="text-success fw-bold text-uppercase letter-spacing-2 small">Premium Plans</h6>
-            <h1 class="display-5 fw-bold text-dark mb-3">Choose Your Power</h1>
+            <h6 class="text-brand-red fw-bold text-uppercase letter-spacing-2 small">Premium Plans</h6>
+            <h1 class="display-5 fw-bold text-brand-dark mb-3">Choose Your Power</h1>
             <p class="text-muted lead">
                 Unlock exclusive tools to sell faster. Secure payments via M-PESA.
             </p>
@@ -22,14 +22,14 @@
                         <div class="mb-4">
                             <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold small">STARTER</span>
                         </div>
-                        <h2 class="fw-bold mb-0 text-dark">KES 1,500</h2>
+                        <h2 class="fw-bold mb-0 text-brand-dark">KES 1,500</h2>
                         <span class="text-muted small">/ month</span>
                         <hr class="my-4 opacity-10">
                         
                         <p class="text-dark fw-bold small mb-3 text-uppercase opacity-75">Features</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
-                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>5</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>7</strong> Verified Leads/mo</li>
+                            <li><i class="fas fa-check-circle text-brand-blue me-2"></i> <strong>5</strong> Active Car Listings</li>
+                            <li><i class="fas fa-check-circle text-brand-blue me-2"></i> <strong>7</strong> Verified Leads/mo</li>
                             <li class="opacity-50 text-decoration-line-through"><i class="fas fa-times-circle me-2"></i> Featured Listings</li>
                         </ul>
 
@@ -57,14 +57,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden hover-lift" style="background: #1e293b; color: white; transform: scale(1.02); z-index: 2;">
-                    <div class="position-absolute top-0 end-0 bg-success text-white fw-bold px-3 py-1 small rounded-bottom-start shadow-sm">
+                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden hover-lift bg-brand-dark text-white" style="transform: scale(1.02); z-index: 2;">
+                    <div class="position-absolute top-0 end-0 bg-brand-red text-white fw-bold px-3 py-1 small rounded-bottom-start shadow-sm">
                         MOST POPULAR
                     </div>
 
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
-                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold small">LITE</span>
+                            <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 rounded-pill px-3 py-2 fw-bold small">LITE</span>
                         </div>
                         <h2 class="fw-bold mb-0">KES 5,000</h2>
                         <span class="text-white-50 ms-2">/ month</span>
@@ -72,15 +72,15 @@
                         
                         <p class="text-white fw-bold small mb-3 text-uppercase opacity-75">Features</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 small">
-                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>15</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> <strong>16</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-check-circle text-warning me-2"></i> <strong>Verified Dealer Badge</strong></li>
+                            <li><i class="fas fa-check-circle text-brand-red me-2"></i> <strong>15</strong> Active Car Listings</li>
+                            <li><i class="fas fa-check-circle text-brand-red me-2"></i> <strong>16</strong> Verified Leads/mo</li>
+                            <li><i class="fas fa-certificate text-warning me-2"></i> <strong>Verified Dealer Badge</strong></li>
                         </ul>
 
                         <div class="mt-auto d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'LITE' %}
-                                    <button class="btn btn-success rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm">
+                                    <button class="btn btn-white text-brand-dark rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
                                 {% elif user.dealer_profile.plan_type == 'PRO' %}
@@ -88,12 +88,12 @@
                                         Downgrade to Lite
                                     </button>
                                 {% else %}
-                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-success fw-bold rounded-pill py-3 shadow-lg hover-scale">
+                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">
                                         Upgrade to Lite
                                     </button>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-success fw-bold rounded-pill py-3 shadow-lg hover-scale">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
@@ -101,37 +101,37 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 bg-white position-relative overflow-hidden hover-lift">
+                <div class="card h-100 border-0 shadow-sm rounded-4 bg-white position-relative overflow-hidden hover-lift border-top-pro">
                     <div class="card-body p-4 p-lg-5 d-flex flex-column">
                         <div class="mb-4">
-                            <span class="badge bg-dark text-white rounded-pill px-3 py-2 fw-bold small">PRO</span>
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 fw-bold small">PRO</span>
                         </div>
-                        <h2 class="fw-bold mb-0 text-dark">KES 12,000</h2>
+                        <h2 class="fw-bold mb-0 text-brand-dark">KES 12,000</h2>
                         <span class="text-muted ms-2">/ month</span>
                         <hr class="my-4 opacity-10">
                         
                         <p class="text-dark fw-bold small mb-3 text-uppercase opacity-75">Features</p>
                         <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
-                            <li><i class="fas fa-check-circle text-dark me-2"></i> <strong>50</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-dark me-2"></i> <strong>30</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-check-circle text-success me-2"></i> Homepage Placement</li>
+                            <li><i class="fas fa-check-circle text-brand-dark me-2"></i> <strong>50</strong> Active Car Listings</li>
+                            <li><i class="fas fa-check-circle text-brand-dark me-2"></i> <strong>30</strong> Verified Leads/mo</li>
+                            <li><i class="fas fa-crown text-warning me-2"></i> Homepage Placement</li>
                         </ul>
 
                         <div class="mt-auto d-grid gap-3">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'PRO' %}
-                                    <button class="btn btn-dark rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm d-flex align-items-center justify-content-center">
+                                    <button class="btn btn-brand-dark rounded-pill py-3 fw-bold disabled opacity-100 shadow-sm d-flex align-items-center justify-content-center">
                                         <i class="fas fa-check-circle text-success me-2"></i> Current Plan
                                     </button>
                                     
                                     <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20a%20Pro%20dealer%20and%20I%20need%20Enterprise%20support." 
                                        target="_blank" 
-                                       class="btn btn-white border-2 border-dark text-dark rounded-pill py-3 fw-bold small text-nowrap d-flex align-items-center justify-content-center hover-scale shadow-sm transition-all">
+                                       class="btn btn-white border-2 border-dark text-brand-dark rounded-pill py-3 fw-bold small text-nowrap d-flex align-items-center justify-content-center hover-scale shadow-sm transition-all">
                                         <i class="fab fa-whatsapp text-success me-2 fa-lg"></i> Contact Enterprise Support
                                     </a>
 
                                 {% else %}
-                                    <button onclick="openPaymentModal('PRO', 12000)" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">
+                                    <button onclick="openPaymentModal('PRO', 12000)" class="btn btn-brand-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">
                                         Upgrade to Pro
                                     </button>
                                     
@@ -144,7 +144,7 @@
                                     </div>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-brand-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
@@ -159,17 +159,17 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-5 shadow-2xl overflow-hidden" style="background: #ffffff;">
             
-            <div class="modal-header border-0 p-4 bg-light bg-gradient">
+            <div class="modal-header border-0 p-4 bg-brand-dark text-white">
                 <div class="d-flex align-items-center">
-                    <div class="bg-white p-2 rounded-3 shadow-sm me-3">
-                        <i class="fas fa-shield-alt text-success fa-lg"></i>
+                    <div class="bg-white bg-opacity-10 p-2 rounded-3 shadow-sm me-3">
+                        <i class="fas fa-shield-alt text-white fa-lg"></i>
                     </div>
                     <div>
-                        <h5 class="fw-bold mb-0 text-dark">Secure Checkout</h5>
-                        <small class="text-muted">Pay securely via M-PESA</small>
+                        <h5 class="fw-bold mb-0">Secure Checkout</h5>
+                        <small class="opacity-75">Pay securely via M-PESA</small>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalBtn"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="closeModalBtn"></button>
             </div>
 
             <div class="modal-body p-0">
@@ -177,11 +177,11 @@
                     <div class="bg-light p-4 rounded-4 mb-4 border border-dashed">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-muted small text-uppercase fw-bold ls-1">Plan</span>
-                            <span class="badge bg-dark text-white px-3 py-1 rounded-pill small" id="displayPlan">LITE</span>
+                            <span class="badge bg-brand-dark text-white px-3 py-1 rounded-pill small" id="displayPlan">LITE</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-end">
                             <span class="text-muted small">Total Due</span>
-                            <h2 class="fw-bold text-dark mb-0" id="displayAmount">KES 5,000</h2>
+                            <h2 class="fw-bold text-brand-dark mb-0" id="displayAmount">KES 5,000</h2>
                         </div>
                     </div>
 
@@ -199,7 +199,7 @@
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg rounded-pill py-3 fw-bold shadow-lg hover-scale transition-all" id="payBtn" style="background: #00C851; border: none;">
+                            <button type="submit" class="btn btn-brand-red btn-lg rounded-pill py-3 fw-bold shadow-lg hover-scale transition-all" id="payBtn">
                                 Pay Now <i class="fas fa-arrow-right ms-2 small"></i>
                             </button>
                         </div>
@@ -213,15 +213,15 @@
 
                 <div id="paymentStep2" class="p-5 text-center" style="display: none;">
                     <div class="my-4 position-relative d-inline-block">
-                        <div class="spinner-grow text-success opacity-25" role="status" style="width: 5rem; height: 5rem;"></div>
+                        <div class="spinner-grow text-brand-red opacity-25" role="status" style="width: 5rem; height: 5rem;"></div>
                         <div class="position-absolute top-50 start-50 translate-middle">
-                             <i class="fas fa-mobile-alt fa-2x text-success"></i>
+                             <i class="fas fa-mobile-alt fa-2x text-brand-red"></i>
                         </div>
                     </div>
                     <h4 class="fw-bold mb-2">Check your phone</h4>
                     <p class="text-muted mb-4 px-4">We sent a PIN prompt to <br><strong id="sentPhone" class="text-dark">...</strong></p>
                     <div class="progress rounded-pill bg-light mb-3 mx-auto" style="height: 6px; width: 60%; overflow: hidden;">
-                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                        <div class="progress-bar bg-brand-red progress-bar-striped progress-bar-animated" style="width: 100%"></div>
                     </div>
                     <small class="text-muted animate-pulse">Waiting for confirmation...</small>
                 </div>
@@ -240,7 +240,7 @@
                     <h3 class="fw-bold text-dark mb-2">Payment Successful!</h3>
                     <p class="text-muted mb-4">Your subscription is now active.</p>
                     <div class="d-grid">
-                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-dark btn-lg rounded-pill shadow-lg hover-scale">Go to Dashboard</a>
+                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-brand-dark btn-lg rounded-pill shadow-lg hover-scale">Go to Dashboard</a>
                     </div>
                 </div>
 
@@ -374,15 +374,48 @@
 </script>
 
 <style>
-    /* Premium Font */
+    /* BRAND COLORS (Derived from Logo & Dashboard) */
+    :root {
+        --brand-red: #E31E24;  /* BuyCars Red */
+        --brand-dark: #0B132B; /* Deep Blue from Logo/Lite Card */
+        --brand-blue: #0d6efd; /* Dashboard Blue */
+        --brand-gold: #ffc107; /* Pro Crown Gold */
+    }
+
     .font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
     .ls-1 { letter-spacing: 1px; }
 
-    /* Custom Modal Styling */
-    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-    .transition-all { transition: all 0.3s ease; }
-    
-    /* NEW PREMIUM BUTTON STYLES */
+    /* Custom Colors */
+    .text-brand-red { color: var(--brand-red) !important; }
+    .text-brand-dark { color: var(--brand-dark) !important; }
+    .text-brand-blue { color: var(--brand-blue) !important; }
+    .bg-brand-dark { background-color: var(--brand-dark) !important; }
+    .bg-brand-red { background-color: var(--brand-red) !important; }
+
+    /* Brand Buttons */
+    .btn-brand-red {
+        background-color: var(--brand-red);
+        color: white;
+        border: none;
+    }
+    .btn-brand-red:hover {
+        background-color: #c4191f; /* Darker red */
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-brand-dark {
+        background-color: var(--brand-dark);
+        color: white;
+        border: none;
+    }
+    .btn-brand-dark:hover {
+        background-color: #162247; 
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Soft Buttons */
     .btn-soft-secondary {
         background-color: #f3f4f6;
         color: #4b5563;
@@ -392,6 +425,12 @@
         background-color: #e5e7eb;
         color: #1f2937;
         transform: translateY(-2px);
+    }
+
+    .btn-soft-dark {
+        background-color: #e2e8f0;
+        color: #1e293b;
+        border: none;
     }
 
     .btn-soft-light {
@@ -405,13 +444,13 @@
         transform: translateY(-2px);
     }
 
-    .btn-soft-dark {
-        background-color: #e2e8f0;
-        color: #1e293b;
-        border: none;
-    }
-
+    /* Card Details */
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+    .transition-all { transition: all 0.3s ease; }
     .border-2 { border-width: 2px !important; }
+    
+    /* Pro Card Accent */
+    .border-top-pro { border-top: 5px solid var(--brand-gold) !important; }
 
     /* Animations */
     #paymentStep1, #paymentStep2, #paymentStep3, #paymentStep4 { transition: opacity 0.3s ease; }
@@ -421,7 +460,7 @@
         50% { opacity: .5; }
     }
 
-    /* Checkmark Animation (Same as before) */
+    /* Success Checkmark */
     .success-checkmark { width: 80px; height: 115px; margin: 0 auto; }
     .check-icon { width: 80px; height: 80px; position: relative; border-radius: 50%; box-sizing: content-box; border: 4px solid #4CAF50; }
     .check-icon::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: content-box; border: 4px solid rgba(255, 255, 255, 0.2); }
