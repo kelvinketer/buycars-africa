@@ -114,9 +114,9 @@ CLOUDINARY_STORAGE = {
 
 # --- STORAGE CONFIGURATION (Django 5.0+ Standard) ---
 STORAGES = {
-    # Optimized for Render (Compression + Caching)
+    # Custom Backend: Ignores missing files instead of crashing
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "buycars_project.storage.WhiteNoiseStaticFilesStorage",
     },
     # Images stored on Cloudinary
     "default": {
@@ -124,10 +124,9 @@ STORAGES = {
     },
 }
 
-# --- LEGACY SETTING (REQUIRED FOR CLOUDINARY COMPATIBILITY) ---
-# Even though we use 'STORAGES' above, 'django-cloudinary-storage' checks for this setting.
-# Without this line, deployment fails with AttributeError.
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# --- LEGACY SETTING (CRITICAL FIX) ---
+# Must point to our custom storage class that sets manifest_strict = False
+STATICFILES_STORAGE = 'buycars_project.storage.WhiteNoiseStaticFilesStorage'
 
 
 # --- AUTH SETTINGS ---
