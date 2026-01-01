@@ -78,12 +78,16 @@
                         <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mb-4 text-muted mt-2">
                             
                             <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
-                                <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ profile.get_city_display|default:profile.city|default:"Kenya" }}
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                <span class="text-muted me-1">City:</span> 
+                                <span class="fw-bold text-dark">{{ profile.get_city_display|default:profile.city|default:"Kenya" }}</span>
                             </span>
 
                             {% if profile.address %}
                                 <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
-                                    <i class="fas fa-location-dot text-dark me-2"></i>{{ profile.address }}
+                                    <i class="fas fa-location-dot text-dark me-2"></i>
+                                    <span class="text-muted me-1">Location:</span>
+                                    <span class="fw-bold text-dark">{{ profile.address }}</span>
                                 </span>
                             {% endif %}
                             
