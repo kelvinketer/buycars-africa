@@ -7,110 +7,98 @@
     <style type="text/css">
         @page {
             size: A4;
-            margin: 0.5cm; /* Smaller margin for the full-width header effect */
-            margin-bottom: 2cm;
+            margin: 0.5cm;
+            margin-bottom: 1.5cm;
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
             font-size: 11px;
-            color: #333333;
+            color: #333;
             line-height: 1.4;
-            padding: 20px; /* Padding for content inside the page margins */
         }
         
         /* BRAND COLORS */
-        /* Red: #E31E24 | Dark Blue: #0B132B */
+        /* Dark Blue: #0B132B | Red: #E31E24 */
 
-        /* HEADER BANNER (The "Bold" Look) */
-        .header-container {
+        /* 1. HEADER BANNER (Table Layout for Stability) */
+        .header-bg {
             background-color: #0B132B;
             color: #ffffff;
-            padding: 30px;
-            border-bottom: 6px solid #E31E24; /* The Red Line */
-            margin: -25px -25px 20px -25px; /* Negative margin to stretch full width */
+            padding-top: 25px;
+            padding-bottom: 25px;
+            padding-left: 30px;
+            padding-right: 30px;
+            border-bottom: 8px solid #E31E24;
         }
         
-        .header-table { width: 100%; }
-        
-        .logo-text {
-            font-size: 32px;
-            font-weight: bold;
+        .header-logo {
+            font-size: 36px; 
+            font-weight: bold; 
             color: #ffffff;
         }
-        .logo-red { color: #E31E24; }
+        .header-logo span { color: #E31E24; }
         
-        .report-meta {
+        .header-meta {
             text-align: right;
-            color: #ffffff;
+            color: #eeeeee;
         }
-        .report-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-        .report-date {
-            font-size: 18px;
-            font-weight: bold;
+        .meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        .meta-value { font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #ffffff; }
+        .dealer-name { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #ffc107; /* Gold/Yellow pop */
             margin-top: 5px;
-        }
-        .dealer-name {
-            font-size: 14px;
-            margin-top: 5px;
-            color: #ffc107; /* Gold accent for dealer name */
-            font-weight: bold;
         }
 
-        /* CORPORATE INFO STRIP */
+        /* 2. INFO STRIP (Contact Details) */
         .info-strip {
+            text-align: right;
             color: #666;
             font-size: 9px;
+            padding-top: 10px;
+            padding-bottom: 20px;
             border-bottom: 1px solid #ddd;
-            padding-bottom: 15px;
             margin-bottom: 25px;
-            text-align: right;
         }
 
-        /* METRIC BOXES */
+        /* 3. METRIC CARDS (Using Tables) */
         .metrics-table { width: 100%; margin-bottom: 30px; }
-        .metric-box {
-            border: 1px solid #e0e0e0;
-            background-color: #fcfcfc;
-            padding: 20px;
+        .metric-cell {
+            width: 31%; /* 3 columns */
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            padding: 15px;
             text-align: center;
             border-radius: 4px;
         }
         .metric-value {
-            font-size: 32px; /* Large, visible numbers */
+            font-size: 32px;
             font-weight: bold;
             color: #0B132B;
             display: block;
-            margin-bottom: 5px;
         }
         .metric-label {
             font-size: 10px;
             text-transform: uppercase;
             color: #777;
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            margin-top: 5px;
+            display: block;
         }
         .metric-red { color: #E31E24; }
 
-        /* SECTIONS */
+        /* 4. SECTIONS */
         .section-header {
             font-size: 14px;
             font-weight: bold;
             color: #0B132B;
-            border-left: 5px solid #E31E24;
-            padding-left: 10px;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            background-color: #f4f4f4;
-            padding-top: 5px;
+            border-bottom: 2px solid #0B132B;
             padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 10px;
         }
-
-        /* DATA TABLE */
+        
+        /* 5. DATA TABLE */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -118,45 +106,28 @@
         .data-table th {
             background-color: #0B132B;
             color: #ffffff;
-            font-weight: bold;
-            text-align: left;
-            padding: 10px;
+            padding: 8px;
             font-size: 10px;
-            text-transform: uppercase;
+            text-align: left;
+            border-bottom: 3px solid #E31E24;
         }
         .data-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eeeeee;
-            font-size: 11px;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 10px;
             color: #333;
         }
-        .data-table tr:nth-child(even) { background-color: #f9f9f9; }
-        .row-highlight { color: #E31E24; font-weight: bold; }
-
-        /* LEAD BREAKDOWN TABLE */
-        .lead-summary-table { width: 100%; margin-bottom: 20px; border: 1px solid #eee; }
-        .lead-summary-table td { padding: 15px; background: #fff; }
+        .data-table tr:nth-child(even) { background-color: #fcfcfc; }
         
-        /* NOTES */
-        .notes-section {
-            background-color: #fffbf2;
-            border: 1px solid #ffeeba;
-            padding: 15px;
-            margin-top: 30px;
-            border-radius: 4px;
-        }
-        .notes-header { font-weight: bold; color: #856404; margin-bottom: 5px; }
-        .notes-list { margin: 0; padding-left: 15px; color: #555; font-size: 10px; }
-        .notes-list li { margin-bottom: 3px; }
-
         /* FOOTER */
         .footer {
             position: fixed;
-            bottom: -30px;
-            left: 0px;
-            right: 0px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
             text-align: center;
-            font-size: 8px;
+            font-size: 9px;
             color: #999;
             border-top: 1px solid #eee;
             padding-top: 10px;
@@ -165,84 +136,61 @@
 </head>
 <body>
 
-    <div class="header-container">
-        <table class="header-table">
-            <tr>
-                <td width="50%" valign="middle">
-                    <div class="logo-text">BuyCars<span class="logo-red">.Africa</span></div>
-                </td>
-                <td width="50%" valign="middle" align="right">
-                    <div class="report-meta">
-                        <div class="report-title">Monthly Performance Report</div>
-                        <div class="report-date">{{ month_name }}</div>
-                        <div class="dealer-name">{{ profile.business_name }}</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <table class="header-bg" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="50%" valign="middle">
+                <div class="header-logo">BuyCars<span>.Africa</span></div>
+            </td>
+            <td width="50%" valign="middle" align="right">
+                <div class="header-meta">
+                    <div class="meta-label">Performance Report</div>
+                    <div class="meta-value">{{ month_name }}</div>
+                    <div class="dealer-name">{{ profile.business_name }}</div>
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <div class="info-strip">
-        <strong>BuyCars Africa Ltd.</strong> | Ngong Road, Nairobi | Support: +254 727 025 050 | help@buycars.africa
+        <strong>BuyCars Africa Ltd.</strong> &nbsp;|&nbsp; Ngong Road, Nairobi &nbsp;|&nbsp; +254 727 025 050 &nbsp;|&nbsp; support@buycars.africa
     </div>
 
-    <table class="metrics-table" cellspacing="10">
+    <table class="metrics-table" cellpadding="0" cellspacing="10">
         <tr>
-            <td width="33%">
-                <div class="metric-box">
-                    <span class="metric-value">{{ total_cars }}</span>
-                    <span class="metric-label">Active Inventory</span>
-                </div>
+            <td class="metric-cell">
+                <span class="metric-value">{{ total_cars }}</span>
+                <span class="metric-label">Total Inventory</span>
             </td>
-            <td width="33%">
-                <div class="metric-box">
-                    <span class="metric-value">{{ total_views }}</span>
-                    <span class="metric-label">Total Views</span>
-                </div>
+            <td class="metric-cell">
+                <span class="metric-value">{{ total_views }}</span>
+                <span class="metric-label">Total Views</span>
             </td>
-            <td width="33%">
-                <div class="metric-box">
-                    <span class="metric-value metric-red">{{ total_leads }}</span>
-                    <span class="metric-label">Total Leads</span>
-                </div>
+            <td class="metric-cell">
+                <span class="metric-value metric-red">{{ total_leads }}</span>
+                <span class="metric-label">Total Leads</span>
             </td>
         </tr>
     </table>
 
-    <div class="section-header">Lead & Traffic Analysis</div>
-    <div style="font-size: 11px; margin-bottom: 15px; color: #444;">
-        <strong>Summary:</strong> Your inventory generated <strong>{{ total_views }} total views</strong> this month. 
-        High-intent buyer actions (Leads) were tracked via WhatsApp clicks and Phone calls from the platform.
-    </div>
-
-    <table class="lead-summary-table">
+    <div class="section-header">Lead Breakdown</div>
+    <table width="100%" cellpadding="10" style="border: 1px solid #eee; margin-bottom: 20px;">
         <tr>
-            <td width="33%" align="center">
-                <div style="font-size: 18px; font-weight: bold; color: #28a745;">{{ whatsapp_clicks }}</div>
-                <div style="font-size: 9px; color: #666; text-transform: uppercase;">WhatsApp Chats</div>
+            <td width="50%" align="center" style="border-right: 1px solid #eee;">
+                <div style="font-size: 24px; font-weight: bold; color: #28a745;">{{ whatsapp_clicks }}</div>
+                <div style="font-size: 10px; color: #666; text-transform: uppercase;">WhatsApp Clicks</div>
             </td>
-            <td width="33%" align="center" style="border-left: 1px solid #eee; border-right: 1px solid #eee;">
-                <div style="font-size: 18px; font-weight: bold; color: #0B132B;">{{ calls }}</div>
-                <div style="font-size: 9px; color: #666; text-transform: uppercase;">Phone Calls</div>
-            </td>
-            <td width="33%" align="center">
-                <div style="font-size: 18px; font-weight: bold; color: #666;">
-                    {% if total_views > 0 %}
-                        {% widthratio total_leads total_views 100 %}%
-                    {% else %}
-                        0%
-                    {% endif %}
-                </div>
-                <div style="font-size: 9px; color: #666; text-transform: uppercase;">Conversion Rate</div>
+            <td width="50%" align="center">
+                <div style="font-size: 24px; font-weight: bold; color: #0B132B;">{{ calls }}</div>
+                <div style="font-size: 10px; color: #666; text-transform: uppercase;">Phone Calls</div>
             </td>
         </tr>
     </table>
 
-    <div class="section-header">Inventory Performance (Top 5)</div>
+    <div class="section-header">Top Performing Inventory</div>
     <table class="data-table">
         <thead>
             <tr>
-                <th width="45%">Vehicle</th>
+                <th width="45%">Vehicle Details</th>
                 <th width="20%">Price (KES)</th>
                 <th width="15%" align="center">Views</th>
                 <th width="20%" align="right">Status</th>
@@ -277,17 +225,17 @@
         </tbody>
     </table>
 
-    <div class="notes-section">
-        <div class="notes-header">💡 Strategic Insights for {{ profile.business_name }}</div>
-        <ul class="notes-list">
-            <li><strong>Visibility:</strong> Vehicles with clear pricing and low mileage get 40% more clicks. Check your "Market Value" in the dashboard.</li>
-            <li><strong>Engagement:</strong> 70% of buyers prefer WhatsApp. Ensure your phone number {{ profile.phone_number }} is active on WhatsApp.</li>
-            <li><strong>Photos:</strong> Top-performing dealers upload at least 15 photos per car (Interior, Exterior, and Engine bay).</li>
+    <div style="margin-top: 30px; background-color: #fffbf2; border: 1px solid #ffeeba; padding: 15px; border-radius: 4px;">
+        <div style="color: #856404; font-weight: bold; margin-bottom: 5px; font-size: 11px;">💡 Strategic Recommendations</div>
+        <ul style="margin: 0; padding-left: 15px; color: #555; font-size: 10px;">
+            <li style="margin-bottom: 3px;"><strong>Conversion Tip:</strong> Dealers who respond to leads within 10 minutes see a 60% higher conversion rate.</li>
+            <li style="margin-bottom: 3px;"><strong>Inventory Mix:</strong> Your top-viewed cars indicate high demand. Consider stocking more similar models.</li>
+            <li><strong>Photo Quality:</strong> Ensure all listings have at least 10 high-resolution photos (Interior, Exterior, Engine) to maximize trust.</li>
         </ul>
     </div>
 
     <div class="footer">
-        BuyCars.Africa Dealer System • Generated on {{ date|date:"F d, Y H:i" }} • Page <pdf:pagenumber>
+        Generated by BuyCars.Africa Dealer System • {{ date|date:"Y-m-d H:i" }} • Page <pdf:pagenumber>
     </div>
 
 </body>
