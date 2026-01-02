@@ -7,7 +7,7 @@
     <style type="text/css">
         @page {
             size: A4;
-            margin: 0.5cm; /* Minimal margins for full-width effect */
+            margin: 0.5cm;
             margin-bottom: 2cm;
         }
         body {
@@ -17,69 +17,78 @@
             line-height: 1.4;
         }
         
-        /* BRAND COLORS */
-        /* Navy: #0B132B | Red: #E31E24 | Gold: #ffc107 | Gray: #f0f2f5 */
+        /* COLORS: Navy: #0B132B | Red: #E31E24 | Gold: #ffc107 */
 
-        /* 1. HEADER (Official Corporate Look) */
-        .header-table {
+        /* 1. CORPORATE HEADER (Dark Block) */
+        .header-bg {
             background-color: #0B132B;
             color: #ffffff;
-            width: 100%;
-            border-bottom: 6px solid #E31E24;
+            padding: 30px 40px;
         }
-        .header-cell-left {
-            padding: 25px 30px;
-            vertical-align: middle;
-        }
-        .header-cell-right {
-            padding: 25px 30px;
-            text-align: right;
-            vertical-align: middle;
-        }
-        .logo-main { font-size: 32px; font-weight: bold; color: #ffffff; }
+        .logo-main { font-size: 36px; font-weight: bold; color: #ffffff; }
         .logo-accent { color: #E31E24; }
-        .report-title { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #ccc; }
-        .report-period { font-size: 18px; font-weight: bold; color: #fff; margin-top: 5px; }
+        
+        /* Keywords from Footer Text */
+        .brand-tagline {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+        .brand-values {
+            font-size: 9px;
+            color: #E31E24;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
 
-        /* 2. DEALER SUMMARY STRIP */
-        .info-strip {
-            background-color: #f0f2f5;
-            padding: 10px 30px;
-            border-bottom: 1px solid #e0e0e0;
+        /* 2. LETTERHEAD STRIP (Contact Details) */
+        .contact-strip {
+            background-color: #ffffff;
+            border-bottom: 4px solid #E31E24;
             color: #555;
+            text-align: center;
+            padding: 10px 0;
             font-size: 9px;
         }
-        .dealer-name { font-weight: bold; color: #0B132B; text-transform: uppercase; font-size: 10px; }
 
-        /* 3. EXECUTIVE FINANCIAL METRICS (The "Bank" View) */
-        .kpi-table {
+        /* 3. REPORT CONTEXT (Gray Area) */
+        .context-table {
             width: 100%;
-            margin-top: 20px;
-            border-spacing: 15px 0; /* Gaps between cards */
+            background-color: #f4f6f9;
+            padding: 15px 40px;
+            border-bottom: 1px solid #ddd;
         }
-        .kpi-card {
-            background-color: #fff;
+        .context-label { font-size: 8px; text-transform: uppercase; color: #888; font-weight: bold; }
+        .context-value { font-size: 12px; font-weight: bold; color: #0B132B; margin-top: 2px; }
+
+        /* 4. FINANCIAL METRICS (Bank Style) */
+        .kpi-table { width: 100%; margin-top: 30px; border-spacing: 20px 0; }
+        .kpi-box {
             border: 1px solid #ddd;
+            background-color: #fff;
             padding: 15px;
             border-radius: 4px;
             text-align: center;
+            box-shadow: 2px 2px 5px #eee; /* Subtle shadow hint */
         }
-        .kpi-value { font-size: 20px; font-weight: bold; color: #0B132B; display: block; margin-bottom: 5px; }
-        .kpi-label { font-size: 8px; text-transform: uppercase; color: #888; font-weight: bold; letter-spacing: 0.5px; }
-        .kpi-highlight { color: #E31E24; }
-        .kpi-green { color: #28a745; }
+        .kpi-num { font-size: 24px; font-weight: bold; color: #0B132B; display: block; margin-bottom: 5px; }
+        .kpi-txt { font-size: 9px; text-transform: uppercase; color: #666; font-weight: bold; }
+        .text-red { color: #E31E24; }
+        .text-green { color: #28a745; }
 
-        /* 4. SECTIONS */
-        .content-wrapper { padding: 10px 30px; }
-        
-        .section-header {
-            font-size: 12px;
+        /* 5. SECTIONS */
+        .content-area { padding: 0 40px; }
+        .section-head {
+            font-size: 14px;
             font-weight: bold;
             color: #0B132B;
             border-bottom: 2px solid #0B132B;
             padding-bottom: 5px;
-            margin-top: 30px;
-            margin-bottom: 10px;
+            margin-top: 35px;
+            margin-bottom: 15px;
             text-transform: uppercase;
         }
 
@@ -88,133 +97,114 @@
         .data-table th {
             background-color: #0B132B;
             color: #fff;
-            padding: 8px;
+            padding: 10px;
             font-size: 9px;
             text-align: left;
             text-transform: uppercase;
         }
         .data-table td {
-            padding: 10px 8px;
+            padding: 10px;
             border-bottom: 1px solid #eee;
             font-size: 10px;
             color: #444;
         }
-        .data-table tr:nth-child(even) { background-color: #f9f9f9; }
-
-        /* INVENTORY HEALTH BOX */
-        .health-box {
-            border: 1px solid #ddd;
-            background-color: #fff;
-            margin-top: 20px;
-        }
-        .health-cell { padding: 15px; text-align: center; width: 33%; border-right: 1px solid #eee; }
-        .health-val { font-size: 16px; font-weight: bold; display: block; }
-        .health-lbl { font-size: 9px; color: #666; margin-top: 5px; display: block; }
+        .data-table tr:nth-child(even) { background-color: #fcfcfc; }
 
         /* FOOTER */
         .footer {
-            position: fixed;
-            bottom: 0px;
-            left: 0px;
-            right: 0px;
-            height: 40px;
-            text-align: center;
-            font-size: 8px;
-            color: #999;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            background-color: #fff;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            text-align: center; font-size: 8px; color: #aaa;
+            padding: 15px; border-top: 1px solid #eee;
         }
     </style>
 </head>
 <body>
 
-    <table class="header-table" cellpadding="0" cellspacing="0">
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-            <td class="header-cell-left" width="50%">
+            <td class="header-bg" width="60%" valign="top">
                 <div class="logo-main">BuyCars<span class="logo-accent">.Africa</span></div>
-                <div style="font-size: 10px; color: #ccc; margin-top: 5px;">Dealer Intelligence Report</div>
+                <div class="brand-tagline">Kenya's Premier Digital Automotive Marketplace</div>
+                <div class="brand-values">Safe &bull; Transparent &bull; Efficient</div>
             </td>
-            <td class="header-cell-right" width="50%">
-                <div class="report-title">Report Period</div>
-                <div class="report-period">{{ month_name }}</div>
+            <td class="header-bg" width="40%" valign="top" align="right">
+                <div style="font-size: 24px; color: #fff; opacity: 0.1; font-weight: bold;">REPORT</div>
             </td>
         </tr>
     </table>
 
-    <table width="100%" cellpadding="0" cellspacing="0" class="info-strip">
+    <div class="contact-strip">
+        <strong>Headquarters:</strong> Ngong Road, Nairobi, Kenya &nbsp;&nbsp;|&nbsp;&nbsp; 
+        <strong>Support:</strong> +254 727 025 050 &nbsp;&nbsp;|&nbsp;&nbsp; 
+        <strong>Email:</strong> support@buycars.africa
+    </div>
+
+    <table class="context-table" cellpadding="0" cellspacing="0">
         <tr>
-            <td align="left">
-                PREPARED FOR: &nbsp; <span class="dealer-name">{{ profile.business_name }}</span>
+            <td width="33%">
+                <div class="context-label">Prepared For</div>
+                <div class="context-value">{{ profile.business_name }}</div>
             </td>
-            <td align="right">
-                GENERATED: &nbsp; <strong>{{ date|date:"d M Y" }}</strong>
+            <td width="33%">
+                <div class="context-label">Account Contact</div>
+                <div class="context-value">{{ dealer.email }}</div>
+            </td>
+            <td width="33%" align="right">
+                <div class="context-label">Report Period</div>
+                <div class="context-value">{{ month_name }}</div>
             </td>
         </tr>
     </table>
 
-    <div class="content-wrapper">
+    <div class="content-area">
 
-        <div style="font-size: 14px; font-weight: bold; color: #0B132B; margin-top: 15px;">Executive Summary</div>
-        
-        <table class="kpi-table" cellpadding="0" cellspacing="0">
+        <table class="kpi-table">
             <tr>
-                <td class="kpi-card" width="25%">
-                    <span class="kpi-value">KES {{ inventory_value|intcomma }}</span>
-                    <span class="kpi-label">Total Inventory Value</span>
+                <td class="kpi-box" width="25%">
+                    <span class="kpi-num">KES {{ inventory_value|intcomma }}</span>
+                    <span class="kpi-txt">Total Asset Value</span>
                 </td>
-                <td class="kpi-card" width="25%">
-                    <span class="kpi-value kpi-highlight">{{ total_leads }}</span>
-                    <span class="kpi-label">Total High-Intent Leads</span>
+                <td class="kpi-box" width="25%">
+                    <span class="kpi-num text-red">{{ total_leads }}</span>
+                    <span class="kpi-txt">High-Intent Leads</span>
                 </td>
-                <td class="kpi-card" width="25%">
-                    <span class="kpi-value kpi-green">
-                        {% if cpl > 0 %}
-                            KES {{ cpl|intcomma }}
-                        {% else %}
-                            N/A
-                        {% endif %}
+                <td class="kpi-box" width="25%">
+                    <span class="kpi-num">
+                        {% if cpl > 0 %}KES {{ cpl|intcomma }}{% else %}N/A{% endif %}
                     </span>
-                    <span class="kpi-label">Cost Per Lead (Est.)</span>
+                    <span class="kpi-txt">Cost Per Lead</span>
                 </td>
-                <td class="kpi-card" width="25%">
-                    <span class="kpi-value">{{ total_views|intcomma }}</span>
-                    <span class="kpi-label">Total Vehicle Views</span>
+                <td class="kpi-box" width="25%">
+                    <span class="kpi-num">{{ total_views|intcomma }}</span>
+                    <span class="kpi-txt">Total Views</span>
                 </td>
             </tr>
         </table>
 
-        <div class="section-header">Inventory Health & Turnover</div>
-        <table width="100%" cellpadding="0" cellspacing="0" class="health-box">
-            <tr>
-                <td class="health-cell">
-                    <span class="health-val" style="color: #0B132B;">{{ total_cars }}</span>
-                    <span class="health-lbl">Active Listings</span>
-                </td>
-                <td class="health-cell">
-                    <span class="health-val" style="color: #28a745;">{{ sold_count }}</span>
-                    <span class="health-lbl">Units Sold (This Month)</span>
-                </td>
-                <td class="health-cell" style="border-right: none;">
-                    <span class="health-val" style="color: #E31E24;">{{ stale_stock_count }}</span>
-                    <span class="health-lbl">Stale Stock (>60 Days)</span>
-                </td>
-            </tr>
-        </table>
+        <div class="section-head">Market Performance</div>
         
-        {% if stale_stock_count > 0 %}
-        <div style="margin-top: 10px; font-size: 9px; color: #E31E24; background-color: #fff5f5; padding: 8px; border-left: 3px solid #E31E24;">
-            <strong>⚠️ Action Required:</strong> You have {{ stale_stock_count }} vehicles listed for over 60 days. Consider refreshing photos or adjusting prices to improve turnover.
-        </div>
-        {% endif %}
+        <table width="100%" cellpadding="10" style="margin-bottom: 20px; border: 1px solid #eee;">
+            <tr>
+                <td width="50%" bgcolor="#f9f9f9">
+                    <strong style="color:#0B132B;">Stock Analysis:</strong> You have <strong>{{ total_cars }}</strong> active vehicles. 
+                    {% if stale_stock_count > 0 %}
+                        <span style="color: #E31E24;">Warning: {{ stale_stock_count }} units are older than 60 days.</span>
+                    {% else %}
+                        <span style="color: #28a745;">Your inventory turnover is healthy.</span>
+                    {% endif %}
+                </td>
+                <td width="50%" align="right" bgcolor="#f9f9f9">
+                    <strong>{{ sold_count }}</strong> Units Sold this period.
+                </td>
+            </tr>
+        </table>
 
-        <div class="section-header">Top Performing Inventory</div>
         <table class="data-table">
             <thead>
                 <tr>
                     <th width="45%">Vehicle Description</th>
-                    <th width="20%">Price</th>
-                    <th width="15%" align="center">Views</th>
+                    <th width="20%">Price (KES)</th>
+                    <th width="15%" align="center">Traffic</th>
                     <th width="20%" align="right">Status</th>
                 </tr>
             </thead>
@@ -223,17 +213,17 @@
                 <tr>
                     <td>
                         <strong style="color: #0B132B;">{{ car.year }} {{ car.make }} {{ car.model }}</strong><br>
-                        <span style="font-size: 8px; color: #888;">Listed: {{ car.created_at|date:"d M Y" }}</span>
+                        <span style="font-size: 9px; color: #888;">Listed: {{ car.created_at|date:"d M Y" }}</span>
                     </td>
-                    <td>KES {{ car.price|intcomma }}</td>
-                    <td align="center"><strong>{{ car.num_views }}</strong></td>
+                    <td>{{ car.price|intcomma }}</td>
+                    <td align="center"><strong>{{ car.num_views }}</strong> Views</td>
                     <td align="right">
                         {% if car.status == 'AVAILABLE' %}
-                            <span style="color: #28a745; font-weight: bold;">Available</span>
+                            <span class="text-green" style="font-weight:bold;">Available</span>
                         {% elif car.status == 'RESERVED' %}
-                            <span style="color: #ffc107; font-weight: bold;">Reserved</span>
+                            <span style="color: #ffc107; font-weight:bold;">Reserved</span>
                         {% else %}
-                            <span style="color: #E31E24; font-weight: bold;">Sold</span>
+                            <span class="text-red" style="font-weight:bold;">Sold</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -248,7 +238,7 @@
     </div>
 
     <div class="footer">
-        BuyCars.Africa &bull; Ngong Road, Nairobi &bull; Support: +254 727 025 050 &bull; Page <pdf:pagenumber>
+        System Generated Report &bull; BuyCars.Africa &bull; Page <pdf:pagenumber>
     </div>
 
 </body>
