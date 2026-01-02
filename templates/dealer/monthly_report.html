@@ -7,131 +7,152 @@
     <style type="text/css">
         @page {
             size: A4;
-            margin: 1cm;
+            margin: 0.5cm; /* Smaller margin for the full-width header effect */
             margin-bottom: 2cm;
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
             font-size: 11px;
             color: #333333;
-            line-height: 1.5;
+            line-height: 1.4;
+            padding: 20px; /* Padding for content inside the page margins */
         }
         
         /* BRAND COLORS */
-        /* Red: #E31E24 | Dark Blue: #0B132B | Light Gray: #f4f6f9 */
+        /* Red: #E31E24 | Dark Blue: #0B132B */
 
-        /* LETTERHEAD */
-        .letterhead-table {
-            width: 100%;
-            border-bottom: 2px solid #E31E24;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+        /* HEADER BANNER (The "Bold" Look) */
+        .header-container {
+            background-color: #0B132B;
+            color: #ffffff;
+            padding: 30px;
+            border-bottom: 6px solid #E31E24; /* The Red Line */
+            margin: -25px -25px 20px -25px; /* Negative margin to stretch full width */
         }
-        .company-name {
-            font-size: 24px;
+        
+        .header-table { width: 100%; }
+        
+        .logo-text {
+            font-size: 32px;
             font-weight: bold;
-            color: #0B132B;
+            color: #ffffff;
         }
-        .company-name span { color: #E31E24; }
-        .company-details {
-            font-size: 9px;
-            color: #666;
+        .logo-red { color: #E31E24; }
+        
+        .report-meta {
             text-align: right;
-            line-height: 1.3;
+            color: #ffffff;
         }
-
-        /* REPORT META */
-        .meta-table {
-            width: 100%;
-            margin-bottom: 25px;
-            background-color: #f8f9fa;
-            padding: 10px;
-            border-left: 4px solid #0B132B;
-        }
-        .meta-label { font-weight: bold; color: #666; font-size: 10px; text-transform: uppercase; }
-        .meta-value { font-weight: bold; color: #333; font-size: 12px; }
-
-        /* EXECUTIVE SUMMARY */
-        .section-title {
+        .report-title {
             font-size: 14px;
-            font-weight: bold;
-            color: #0B132B;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
         }
-        .summary-text {
-            font-size: 11px;
-            color: #444;
-            margin-bottom: 20px;
-            text-align: justify;
+        .report-date {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .dealer-name {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #ffc107; /* Gold accent for dealer name */
+            font-weight: bold;
         }
 
-        /* METRIC CARDS */
-        .metrics-table { width: 100%; margin-bottom: 20px; }
+        /* CORPORATE INFO STRIP */
+        .info-strip {
+            color: #666;
+            font-size: 9px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        /* METRIC BOXES */
+        .metrics-table { width: 100%; margin-bottom: 30px; }
         .metric-box {
-            background-color: #ffffff;
             border: 1px solid #e0e0e0;
-            padding: 12px;
+            background-color: #fcfcfc;
+            padding: 20px;
             text-align: center;
             border-radius: 4px;
         }
         .metric-value {
-            font-size: 20px;
+            font-size: 32px; /* Large, visible numbers */
             font-weight: bold;
             color: #0B132B;
             display: block;
+            margin-bottom: 5px;
         }
         .metric-label {
-            font-size: 9px;
+            font-size: 10px;
             text-transform: uppercase;
-            color: #888;
-            margin-top: 5px;
-            display: block;
+            color: #777;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
-        .metric-highlight { color: #E31E24; }
+        .metric-red { color: #E31E24; }
+
+        /* SECTIONS */
+        .section-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0B132B;
+            border-left: 5px solid #E31E24;
+            padding-left: 10px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            background-color: #f4f4f4;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
 
         /* DATA TABLE */
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
         .data-table th {
             background-color: #0B132B;
             color: #ffffff;
             font-weight: bold;
             text-align: left;
-            padding: 8px;
+            padding: 10px;
             font-size: 10px;
             text-transform: uppercase;
         }
         .data-table td {
-            padding: 8px;
+            padding: 10px;
             border-bottom: 1px solid #eeeeee;
-            font-size: 10px;
-            color: #444;
-            vertical-align: middle;
+            font-size: 11px;
+            color: #333;
         }
-        .data-table tr:nth-child(even) { background-color: #fcfcfc; }
+        .data-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .row-highlight { color: #E31E24; font-weight: bold; }
 
-        /* NOTES SECTION */
-        .notes-box {
-            background-color: #fff8e1;
+        /* LEAD BREAKDOWN TABLE */
+        .lead-summary-table { width: 100%; margin-bottom: 20px; border: 1px solid #eee; }
+        .lead-summary-table td { padding: 15px; background: #fff; }
+        
+        /* NOTES */
+        .notes-section {
+            background-color: #fffbf2;
             border: 1px solid #ffeeba;
-            color: #856404;
             padding: 15px;
             margin-top: 30px;
-            font-size: 10px;
             border-radius: 4px;
         }
-        .notes-title { font-weight: bold; margin-bottom: 5px; display: block; }
+        .notes-header { font-weight: bold; color: #856404; margin-bottom: 5px; }
+        .notes-list { margin: 0; padding-left: 15px; color: #555; font-size: 10px; }
+        .notes-list li { margin-bottom: 3px; }
 
         /* FOOTER */
         .footer {
             position: fixed;
-            bottom: -20px;
+            bottom: -30px;
             left: 0px;
             right: 0px;
             text-align: center;
@@ -144,121 +165,111 @@
 </head>
 <body>
 
-    <table class="letterhead-table">
-        <tr>
-            <td width="50%" valign="top">
-                <div class="company-name">BuyCars<span>.Africa</span></div>
-                <div style="font-size: 10px; color: #666; margin-top: 5px;">
-                    Kenya's Premier Digital Automotive Marketplace
-                </div>
-            </td>
-            <td width="50%" class="company-details">
-                <strong>BuyCars Africa Ltd.</strong><br>
-                Ngong Road, Nairobi, Kenya<br>
-                Support: +254 727 025 050<br>
-                Email: support@buycars.africa<br>
-                Web: www.buycars.africa
-            </td>
-        </tr>
-    </table>
+    <div class="header-container">
+        <table class="header-table">
+            <tr>
+                <td width="50%" valign="middle">
+                    <div class="logo-text">BuyCars<span class="logo-red">.Africa</span></div>
+                </td>
+                <td width="50%" valign="middle" align="right">
+                    <div class="report-meta">
+                        <div class="report-title">Monthly Performance Report</div>
+                        <div class="report-date">{{ month_name }}</div>
+                        <div class="dealer-name">{{ profile.business_name }}</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-    <table class="meta-table">
-        <tr>
-            <td width="33%">
-                <div class="meta-label">Prepared For</div>
-                <div class="meta-value">{{ profile.business_name }}</div>
-                <div style="font-size: 9px; color: #666;">{{ dealer.email }}</div>
-            </td>
-            <td width="33%">
-                <div class="meta-label">Report Period</div>
-                <div class="meta-value">{{ month_name }}</div>
-            </td>
-            <td width="33%">
-                <div class="meta-label">Generated On</div>
-                <div class="meta-value">{{ date|date:"F d, Y" }}</div>
-            </td>
-        </tr>
-    </table>
+    <div class="info-strip">
+        <strong>BuyCars Africa Ltd.</strong> | Ngong Road, Nairobi | Support: +254 727 025 050 | help@buycars.africa
+    </div>
 
-    <div class="section-title">Performance Overview</div>
-    <table class="metrics-table" cellspacing="5">
+    <table class="metrics-table" cellspacing="10">
         <tr>
-            <td width="25%">
+            <td width="33%">
                 <div class="metric-box">
                     <span class="metric-value">{{ total_cars }}</span>
-                    <span class="metric-label">Vehicles Listed</span>
+                    <span class="metric-label">Active Inventory</span>
                 </div>
             </td>
-            <td width="25%">
+            <td width="33%">
                 <div class="metric-box">
                     <span class="metric-value">{{ total_views }}</span>
                     <span class="metric-label">Total Views</span>
                 </div>
             </td>
-            <td width="25%">
+            <td width="33%">
                 <div class="metric-box">
-                    <span class="metric-value metric-highlight">{{ total_leads }}</span>
+                    <span class="metric-value metric-red">{{ total_leads }}</span>
                     <span class="metric-label">Total Leads</span>
-                </div>
-            </td>
-            <td width="25%">
-                <div class="metric-box">
-                    <span class="metric-value">
-                        {% if total_views > 0 %}
-                            {% widthratio total_leads total_views 100 %}%
-                        {% else %}
-                            0%
-                        {% endif %}
-                    </span>
-                    <span class="metric-label">Conversion Rate</span>
                 </div>
             </td>
         </tr>
     </table>
 
-    <div class="summary-text">
-        <strong>Executive Summary:</strong> 
-        This month, your inventory generated a total of <strong>{{ total_views }} views</strong> across the BuyCars Africa platform. 
-        You received <strong>{{ total_leads }} high-intent leads</strong> ({{ whatsapp_clicks }} WhatsApp inquiries and {{ calls }} phone calls). 
-        The top-performing vehicle in your showroom attracted the majority of traffic, suggesting a high demand for that specific model or price point.
+    <div class="section-header">Lead & Traffic Analysis</div>
+    <div style="font-size: 11px; margin-bottom: 15px; color: #444;">
+        <strong>Summary:</strong> Your inventory generated <strong>{{ total_views }} total views</strong> this month. 
+        High-intent buyer actions (Leads) were tracked via WhatsApp clicks and Phone calls from the platform.
     </div>
 
-    <div class="section-title">Top Performing Inventory</div>
+    <table class="lead-summary-table">
+        <tr>
+            <td width="33%" align="center">
+                <div style="font-size: 18px; font-weight: bold; color: #28a745;">{{ whatsapp_clicks }}</div>
+                <div style="font-size: 9px; color: #666; text-transform: uppercase;">WhatsApp Chats</div>
+            </td>
+            <td width="33%" align="center" style="border-left: 1px solid #eee; border-right: 1px solid #eee;">
+                <div style="font-size: 18px; font-weight: bold; color: #0B132B;">{{ calls }}</div>
+                <div style="font-size: 9px; color: #666; text-transform: uppercase;">Phone Calls</div>
+            </td>
+            <td width="33%" align="center">
+                <div style="font-size: 18px; font-weight: bold; color: #666;">
+                    {% if total_views > 0 %}
+                        {% widthratio total_leads total_views 100 %}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </div>
+                <div style="font-size: 9px; color: #666; text-transform: uppercase;">Conversion Rate</div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="section-header">Inventory Performance (Top 5)</div>
     <table class="data-table">
         <thead>
             <tr>
-                <th width="40%">Vehicle Description</th>
+                <th width="45%">Vehicle</th>
                 <th width="20%">Price (KES)</th>
                 <th width="15%" align="center">Views</th>
-                <th width="15%" align="center">Leads</th>
-                <th width="10%" align="right">Status</th>
+                <th width="20%" align="right">Status</th>
             </tr>
         </thead>
         <tbody>
             {% for car in top_cars %}
             <tr>
                 <td>
-                    <strong style="color: #0B132B;">{{ car.year }} {{ car.make }} {{ car.model }}</strong><br>
-                    <span style="color: #888; font-size: 9px;">Listed: {{ car.created_at|date:"M d, Y" }}</span>
+                    <strong>{{ car.year }} {{ car.make }} {{ car.model }}</strong><br>
+                    <span style="color: #888; font-size: 9px;">Listed: {{ car.created_at|date:"d M Y" }}</span>
                 </td>
                 <td>{{ car.price|intcomma }}</td>
-                <td align="center">{{ car.num_views }}</td>
-                <td align="center" style="color: #E31E24; font-weight: bold;">
-                    {% if car.num_views > 10 %}High{% else %}Avg{% endif %}
-                </td>
+                <td align="center"><strong>{{ car.num_views }}</strong></td>
                 <td align="right">
                     {% if car.status == 'AVAILABLE' %}
-                        <span style="color: green;">Available</span>
+                        <span style="color: #28a745; font-weight: bold;">Available</span>
                     {% elif car.status == 'RESERVED' %}
-                        <span style="color: orange;">Reserved</span>
+                        <span style="color: #ffc107; font-weight: bold;">Reserved</span>
                     {% else %}
-                        <span style="color: red;">Sold</span>
+                        <span style="color: #E31E24; font-weight: bold;">Sold</span>
                     {% endif %}
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" align="center" style="padding: 20px; color: #999;">
+                <td colspan="4" align="center" style="padding: 20px; color: #999;">
                     No available inventory data for this period.
                 </td>
             </tr>
@@ -266,17 +277,17 @@
         </tbody>
     </table>
 
-    <div class="notes-box">
-        <span class="notes-title">💡 Strategic Recommendations & Notes</span>
-        <ul>
-            <li><strong>Photo Quality:</strong> Vehicles with 10+ high-quality images receive 3x more leads. Ensure all your listings are fully populated.</li>
-            <li><strong>Pricing Strategy:</strong> Check the "Market Value" in your dashboard to ensure your pricing is competitive.</li>
-            <li><strong>Response Time:</strong> Responding to WhatsApp inquiries within 5 minutes increases conversion probability by 400%.</li>
+    <div class="notes-section">
+        <div class="notes-header">💡 Strategic Insights for {{ profile.business_name }}</div>
+        <ul class="notes-list">
+            <li><strong>Visibility:</strong> Vehicles with clear pricing and low mileage get 40% more clicks. Check your "Market Value" in the dashboard.</li>
+            <li><strong>Engagement:</strong> 70% of buyers prefer WhatsApp. Ensure your phone number {{ profile.phone_number }} is active on WhatsApp.</li>
+            <li><strong>Photos:</strong> Top-performing dealers upload at least 15 photos per car (Interior, Exterior, and Engine bay).</li>
         </ul>
     </div>
 
     <div class="footer">
-        System Generated Report • BuyCars.Africa • {{ date|date:"Y-m-d H:i" }} • Page <pdf:pagenumber>
+        BuyCars.Africa Dealer System • Generated on {{ date|date:"F d, Y H:i" }} • Page <pdf:pagenumber>
     </div>
 
 </body>
