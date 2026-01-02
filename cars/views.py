@@ -229,29 +229,54 @@ def download_report(request):
     whatsapp_clicks = leads.filter(action_type='WHATSAPP').count()
     calls = leads.filter(action_type='CALL').count()
     
-    # 4. Calculate Views (Aggregate views across all cars)
-    # FIX: Use 'views' relationship name
+    # 4. Calculate Views
     total_views = CarView.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month).count()
     
-    # 5. Top 5 Performing Cars
-    # FIX: Changed 'carview' to 'views' to match the relationship name used in Dealer Dashboard
+    # 5. --- NEW ROI & INVENTORY METRICS ---
+    
+    # 5a. Cost Per Lead (CPL)
+    plan_cost = 0
+    if profile.plan_type == 'LITE': plan_cost = 5000
+    elif profile.plan_type == 'PRO': plan_cost = 12000
+    elif profile.plan_type == 'STARTER': plan_cost = 1500
+    
+    cpl = 0
+    if total_leads > 0:
+        cpl = int(plan_cost / total_leads)
+        
+    # 5b. Total Asset Valuation (Available Stock)
+    inventory_value = cars.filter(status='AVAILABLE').aggregate(Sum('price'))['price__sum'] or 0
+    
+    # 5c. Sold Count
+    sold_count = cars.filter(status='SOLD').count()
+    
+    # 5d. Stale Stock (Inventory sitting for > 60 days)
+    sixty_days_ago = today - timedelta(days=60)
+    stale_stock_count = cars.filter(status='AVAILABLE', created_at__lte=sixty_days_ago).count()
+
+    # 6. Top 5 Performing Cars (Annotated with views)
     top_cars = cars.filter(status='AVAILABLE').annotate(num_views=Count('views')).order_by('-num_views')[:5]
     
-    # 6. Context Data
+    # 7. Context Data
     context = {
         'dealer': dealer,
         'profile': profile,
         'date': today,
+        'month_name': today.strftime('%B %Y'),
         'total_cars': cars.count(),
         'total_views': total_views,
         'total_leads': total_leads,
         'whatsapp_clicks': whatsapp_clicks,
         'calls': calls,
         'top_cars': top_cars,
-        'month_name': today.strftime('%B %Y')
+        # New Metrics
+        'cpl': cpl,
+        'inventory_value': inventory_value,
+        'sold_count': sold_count,
+        'stale_stock_count': stale_stock_count
     }
     
-    # 7. Generate PDF
+    # 8. Generate PDF
     pdf = render_to_pdf('dealer/monthly_report.html', context)
     if pdf:
         response = HttpResponse(pdf, content_type='application/pdf')
