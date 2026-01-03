@@ -31,6 +31,9 @@ def sanitize_phone(phone):
 # --- PUBLIC VIEWS ---
 
 def public_homepage(request):
+    """
+    Renders the Homepage. Matches variables expected by home.html
+    """
     featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
     cars = Car.objects.filter(status__in=['AVAILABLE', 'RESERVED', 'SOLD']).order_by('status', '-created_at')
     
@@ -424,6 +427,20 @@ def delete_car(request, car_id):
         messages.success(request, 'Vehicle removed.')
         return redirect('dealer_dashboard')
     return render(request, 'dealer/delete_confirm.html', {'car': car})
+
+# --- ADDED THIS MISSING VIEW ---
+@login_required
+def mark_as_sold(request, car_id):
+    """
+    Quick action to mark a car as SOLD.
+    Restored to ensure the Dashboard 'Mark Sold' button works.
+    """
+    car = get_object_or_404(Car, pk=car_id, dealer=request.user)
+    car.status = 'SOLD'
+    car.save()
+    messages.success(request, "Car marked as SOLD! Good job.")
+    return redirect('dealer_dashboard')
+# -------------------------------
 
 # --- SET MAIN IMAGE VIEW ---
 @login_required
