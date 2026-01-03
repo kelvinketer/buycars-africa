@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Weekly Performance Report</title>
+    <style>
+        /* Base Reset */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        
+        /* Container */
+        .container { 
+            max-width: 600px; 
+            margin: 20px auto; 
+            background-color: #ffffff; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            border: 1px solid #e9ecef;
+        }
+
+        /* Header */
+        .header { 
+            background-color: #212529; 
+            color: #ffffff; 
+            padding: 30px 20px; 
+            text-align: center; 
+        }
+        .brand-name { font-size: 24px; font-weight: bold; margin: 0; letter-spacing: -0.5px; }
+        .brand-highlight { color: #dc3545; }
+        .report-period { font-size: 14px; color: #adb5bd; margin-top: 5px; }
+
+        /* Content */
+        .content { padding: 30px; }
+        .greeting { font-size: 18px; color: #333; margin-bottom: 20px; }
+        .intro-text { color: #666; line-height: 1.6; margin-bottom: 25px; }
+
+        /* Stats Grid */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 30px; 
+        }
+        .stat-card { 
+            background-color: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 10px; 
+            text-align: center; 
+            border: 1px solid #e9ecef;
+        }
+        .stat-number { 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: #212529; 
+            margin-bottom: 5px; 
+            display: block; 
+        }
+        .stat-label { 
+            font-size: 12px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: #6c757d; 
+            font-weight: 600; 
+        }
+        
+        /* Highlight specific stats */
+        .stat-card.highlight .stat-number { color: #dc3545; }
+
+        /* Top Car Section */
+        .top-car-box { 
+            background-color: #fff3cd; 
+            border: 1px solid #ffeeba; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 30px; 
+            color: #856404;
+            display: flex;
+            align-items: center;
+        }
+        .fire-icon { font-size: 20px; margin-right: 10px; }
+
+        /* Button */
+        .cta-container { text-align: center; margin-top: 20px; }
+        .btn { 
+            display: inline-block; 
+            background-color: #dc3545; 
+            color: #ffffff; 
+            text-decoration: none; 
+            padding: 14px 30px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 16px; 
+            box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+        }
+        .btn:hover { background-color: #bb2d3b; }
+
+        /* Footer */
+        .footer { 
+            background-color: #f8f9fa; 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 12px; 
+            color: #adb5bd; 
+            border-top: 1px solid #e9ecef; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="brand-name">BuyCars<span class="brand-highlight">.Africa</span></h1>
+            <div class="report-period">Weekly Report: {{ start_date }} - {{ end_date }}</div>
+        </div>
+
+        <div class="content">
+            <h2 class="greeting">Hi {{ business_name }},</h2>
+            <p class="intro-text">Here is your performance snapshot for the last 7 days. Check out how your inventory is performing.</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td width="48%" style="padding-right: 10px; padding-bottom: 15px;">
+                        <div class="stat-card highlight">
+                            <span class="stat-number">{{ new_leads }}</span>
+                            <span class="stat-label">New Leads</span>
+                        </div>
+                    </td>
+                    <td width="48%" style="padding-left: 10px; padding-bottom: 15px;">
+                        <div class="stat-card">
+                            <span class="stat-number">{{ new_views }}</span>
+                            <span class="stat-label">Car Views</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="48%" style="padding-right: 10px;">
+                        <div class="stat-card">
+                            <span class="stat-number">{{ active_cars }}</span>
+                            <span class="stat-label">Active Cars</span>
+                        </div>
+                    </td>
+                    <td width="48%" style="padding-left: 10px;">
+                        <div class="stat-card">
+                            <span class="stat-number">{{ sold_cars }}</span>
+                            <span class="stat-label">Sold This Week</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            {% if top_car %}
+            <div class="top-car-box">
+                <span class="fire-icon">🔥</span>
+                <div>
+                    <strong>Top Performer of the Week:</strong><br>
+                    {{ top_car.year }} {{ top_car.make }} {{ top_car.model }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="cta-container">
+                <a href="https://buycars-africa.onrender.com/dashboard/" class="btn">Go to My Dashboard</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; {% now "Y" %} BuyCars.Africa. All rights reserved.</p>
+            <p>You received this email because you are a registered dealer on our platform.</p>
+        </div>
+    </div>
+
+</body>
+</html>
