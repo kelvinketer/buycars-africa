@@ -9,7 +9,7 @@ from datetime import timedelta
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
-from payments.models import Payment  # <--- UPDATED: Imported Payment instead of MpesaTransaction
+from payments.models import Payment  
 from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
@@ -21,6 +21,7 @@ def signup_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Ensure we create the profile immediately
             DealerProfile.objects.create(user=user, business_name=f"{user.username}'s Yard")
             login(request, user)
             return redirect('dealer_dashboard')
@@ -80,7 +81,12 @@ def is_superuser(user):
 @login_required
 @user_passes_test(is_superuser)
 def admin_dashboard(request):
-    # 1. FINANCIALS (Updated to use Payment model)
+    """
+    The 'God View' for the SaaS Founder.
+    Tracks all dealers, system-wide inventory, and platform health.
+    """
+    
+    # 1. FINANCIALS
     total_revenue = Payment.objects.filter(status='SUCCESS').aggregate(Sum('amount'))['amount__sum'] or 0
 
     # 2. USERS & DEALERS
@@ -90,14 +96,15 @@ def admin_dashboard(request):
     total_cars = Car.objects.count()
     
     # 4. PENDING ACTIONS
-    pending_dealers = User.objects.filter(role='DEALER', is_verified=False).count()
+    # FIX: Changed filter to look for any unverified user who has a DealerProfile
+    pending_dealers = User.objects.filter(dealer_profile__isnull=False, is_verified=False).count()
 
     # 5. VALUE METER (LEADS)
     total_leads = Lead.objects.count()
     today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     leads_today = Lead.objects.filter(timestamp__gte=today_start).count()
 
-    # 6. MARKET DOMINANCE (PIE CHART DATA)
+    # 6. MARKET DOMINANCE (Chart Data)
     brand_stats = Car.objects.values('make').annotate(count=Count('id')).order_by('-count')[:5]
     brand_labels = [entry['make'] for entry in brand_stats]
     brand_counts = [entry['count'] for entry in brand_stats]
@@ -109,34 +116,36 @@ def admin_dashboard(request):
         brand_counts.append(other_count)
 
     # 7. TOP DEALER LEADERBOARD
-    top_dealers = User.objects.filter(role='DEALER').annotate(
+    # FIX: Removed role='DEALER' to catch all profiles
+    top_dealers = User.objects.filter(dealer_profile__isnull=False).annotate(
         inventory_count=Count('cars', distinct=True),
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # 8. SEARCH ANALYTICS (DEMAND CLOUD)
+    # 8. SEARCH ANALYTICS
     top_searches = SearchTerm.objects.order_by('-count')[:10]
 
-    # --- 9. CHURN FORECAST (EXPIRING SOON) ---
-    # Find paid dealers (LITE/PRO) whose subscription expires in the next 7 days
+    # 9. CHURN FORECAST (EXPIRING SOON)
     seven_days_from_now = timezone.now() + timedelta(days=7)
     
+    # FIX: Removed role='DEALER' constraint
     expiring_dealers = User.objects.filter(
-        role='DEALER',
+        dealer_profile__isnull=False,
         dealer_profile__plan_type__in=['LITE', 'PRO'],
         dealer_profile__subscription_expiry__lte=seven_days_from_now,
         dealer_profile__subscription_expiry__gte=timezone.now()
     ).select_related('dealer_profile').order_by('dealer_profile__subscription_expiry')[:5]
-    # -------------------------------------------------------
 
     # 10. RECENT ACTIVITY
-    recent_users = User.objects.select_related('dealer_profile').order_by('-date_joined')[:5]
+    # FIX: Fetch any user with a profile
+    recent_users = User.objects.filter(dealer_profile__isnull=False).select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
-    # 11. ENHANCED TRANSACTION HISTORY (Updated to use Payment model)
+    # 11. TRANSACTION HISTORY
     recent_transactions = Payment.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
+        # Try to find the user associated with this payment
         related_user = User.objects.filter(
             Q(phone_number=phone) | 
             Q(dealer_profile__phone_number=phone)
@@ -152,13 +161,16 @@ def admin_dashboard(request):
     for i in range(29, -1, -1):
         target_date = today - timedelta(days=i)
         dates.append(target_date.strftime('%b %d'))
-        daily_users = User.objects.filter(date_joined__date=target_date).count()
+        # Track new Dealers specifically
+        daily_users = User.objects.filter(date_joined__date=target_date, dealer_profile__isnull=False).count()
         daily_cars = Car.objects.filter(created_at__date=target_date).count()
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
-    # 13. MASTER DEALER LIST (SEARCH & MANAGE)
-    all_dealers = User.objects.filter(role='DEALER').select_related('dealer_profile').order_by('-date_joined')
+    # 13. MASTER DEALER LIST (The "God View" Table)
+    # FIX: We now filter by `dealer_profile__isnull=False` to ensure EVERY yard shows up
+    all_dealers = User.objects.filter(dealer_profile__isnull=False).select_related('dealer_profile').order_by('-date_joined')
+    
     search_query = request.GET.get('q')
     if search_query:
         all_dealers = all_dealers.filter(
@@ -186,7 +198,7 @@ def admin_dashboard(request):
         'analytics_dates': dates,
         'analytics_users': user_counts,
         'analytics_cars': car_counts,
-        'all_dealers': all_dealers,
+        'all_dealers': all_dealers, # Providing the data for your table
         'search_query': search_query,
     }
     return render(request, 'users/admin_dashboard.html', context)
