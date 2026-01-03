@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.db.models import Q, Count, F, Sum
 from django.db.models.functions import TruncDate
@@ -310,20 +311,17 @@ def add_car(request):
             
             duplicate_found = False
             
-            # 2. Check by Registration Number (If provided) - Most accurate check
+            # 2. Check by Registration Number (If provided in form)
             if reg_number:
-                # Remove spaces for cleaner check
                 clean_reg = str(reg_number).strip().replace(" ", "").upper()
                 if Car.objects.filter(dealer=request.user, registration_number__iexact=clean_reg, status='AVAILABLE').exists():
                     messages.error(request, f"Duplicate: You already have a car with registration {reg_number} listed as available.")
                     duplicate_found = True
 
-            # 3. Check by Make/Model/Year (Fallback) - Prevents spamming generic listings
+            # 3. Check by Make/Model/Year (Fallback)
             if not duplicate_found:
                 if Car.objects.filter(dealer=request.user, make=make, model=model, year=year, status='AVAILABLE').exists():
-                    # Optional: You can make this stricter by adding price check, or softer by allowing it.
-                    # Here we block it to prevent accidental double posts.
-                    messages.error(request, f"Duplicate: You already have a {year} {make} {model} listed. Please check your dashboard.")
+                    messages.error(request, f"Duplicate: You already have a {year} {make} {model} listed. Please check your inventory.")
                     duplicate_found = True
 
             # 4. If duplicate found, return form with errors
@@ -489,3 +487,43 @@ def all_brands(request):
         .order_by('make')
     )
     return render(request, 'cars/all_brands.html', {'brands': brands})
+
+# --- SUPER ADMIN DASHBOARD ---
+
+@staff_member_required
+def platform_dashboard(request):
+    """
+    The 'God View' for the SaaS Founder.
+    Tracks all dealers, system-wide inventory, and platform health.
+    """
+    # 1. Platform-Wide Metrics
+    total_dealers = User.objects.filter(dealer_profile__isnull=False).count()
+    total_cars = Car.objects.count()
+    total_leads = Lead.objects.count()
+    
+    # 2. Financial/Plan Metrics
+    starter_users = DealerProfile.objects.filter(plan_type='STARTER').count()
+    lite_users = DealerProfile.objects.filter(plan_type='LITE').count()
+    pro_users = DealerProfile.objects.filter(plan_type='PRO').count()
+    
+    # Estimate Monthly Recurring Revenue (MRR)
+    mrr = (lite_users * 5000) + (pro_users * 12000)
+
+    # 3. The "Yards" List - Fetches every yard, even newly added ones
+    all_dealers = DealerProfile.objects.select_related('user').annotate(
+        stock_count=Count('user__car_set'),
+    ).order_by('-user__date_joined')
+
+    context = {
+        'total_dealers': total_dealers,
+        'total_cars': total_cars,
+        'total_leads': total_leads,
+        'all_dealers': all_dealers,
+        'mrr': mrr,
+        'plan_breakdown': {
+            'starter': starter_users,
+            'lite': lite_users,
+            'pro': pro_users
+        }
+    }
+    return render(request, 'saas/platform_dashboard.html', context)
