@@ -69,6 +69,28 @@
             </div>
         </div>
 
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1"><i class="fas fa-cogs me-2 text-secondary"></i>Admin Actions</h5>
+                            <p class="text-muted small mb-0">Manually trigger automated system tasks.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'trigger_weekly_report' %}" class="btn btn-outline-primary btn-sm fw-bold shadow-sm">
+                                <i class="fas fa-envelope me-2"></i>Send Weekly Reports
+                            </a>
+                            
+                            <a href="{% url 'trigger_subscription_check' %}" class="btn btn-outline-danger btn-sm fw-bold shadow-sm">
+                                <i class="fas fa-sync-alt me-2"></i>Check Subscriptions
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% if pending_dealers > 0 %}
         <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-5 d-flex align-items-center">
             <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
