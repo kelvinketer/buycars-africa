@@ -37,9 +37,7 @@
         background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
     
-    /* Fix for mobile bottom spacing so content isn't hidden by sticky bar */
-    .inventory-container { padding-bottom: 80px; }
-    @media (min-width: 768px) { .inventory-container { padding-bottom: 40px; } }
+    .inventory-container { padding-bottom: 40px; }
 </style>
 {% endblock %}
 
@@ -80,7 +78,7 @@
                     <div class="col-md text-center text-md-start">
                         <h1 class="fw-bold mb-1 text-dark">{{ profile.business_name|default:dealer.username }}</h1>
                         
-                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mb-4 text-muted mt-2">
+                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mb-3 text-muted mt-2">
                             
                             <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
                                 <i class="fas fa-map-marker-alt text-danger me-2"></i>
@@ -107,15 +105,15 @@
                             </span>
                         </div>
 
-                        <div class="d-none d-md-flex flex-wrap justify-content-center justify-content-md-start gap-2">
+                        <div class="d-flex flex-wrap justify-content-center justify-content-md-start gap-2 mt-4">
                             {% with contact_number=profile.phone_number|default:dealer.phone_number %}
                                 {% if contact_number %}
                                     <a href="https://wa.me/{{ contact_number|whatsapp_format }}?text=Hi, I found your showroom on BuyCars.Africa and I'm interested in your stock." target="_blank" 
-                                       class="btn btn-success rounded-pill px-4 fw-bold shadow-sm hover-lift">
-                                        <i class="fab fa-whatsapp me-2"></i> WhatsApp
+                                       class="btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift flex-grow-1 flex-md-grow-0">
+                                        <i class="fab fa-whatsapp me-2 fa-lg"></i> WhatsApp
                                     </a>
                                     <a href="tel:{{ contact_number|whatsapp_format }}" 
-                                       class="btn btn-outline-dark rounded-pill px-4 fw-bold shadow-sm hover-lift">
+                                       class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold shadow-sm hover-lift flex-grow-1 flex-md-grow-0">
                                         <i class="fas fa-phone-alt me-2"></i> Call
                                     </a>
                                 {% else %}
@@ -124,7 +122,7 @@
                             {% endwith %}
 
                             {% if profile.google_map_link %}
-                                <a href="{{ profile.google_map_link }}" target="_blank" class="btn btn-light border rounded-pill px-3 fw-bold text-primary hover-lift" title="View on Maps">
+                                <a href="{{ profile.google_map_link }}" target="_blank" class="btn btn-light border rounded-pill px-3 py-2 fw-bold text-primary hover-lift" title="View on Maps">
                                     <i class="fas fa-map-marked-alt"></i>
                                 </a>
                             {% endif %}
@@ -230,7 +228,7 @@
                         </div>
 
                         <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
-                            <h5 class="text-danger fw-bold mb-0">
+                            <h5 class="text-success fw-bold mb-0">
                                 KES {{ car.price|floatformat:0|intcomma }}
                             </h5>
                             <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold">View Details</a>
@@ -254,23 +252,6 @@
             </div>
             {% endfor %}
         </div>
-    </div>
-</div>
-
-<div class="d-md-none fixed-bottom bg-white border-top p-3 shadow-lg" style="z-index: 1050;">
-    <div class="d-flex gap-2">
-        {% with contact_number=profile.phone_number|default:dealer.phone_number %}
-            {% if contact_number %}
-                <a href="https://wa.me/{{ contact_number|whatsapp_format }}?text=Hi, I found your showroom on BuyCars.Africa" class="btn btn-success flex-grow-1 rounded-pill fw-bold shadow-sm">
-                    <i class="fab fa-whatsapp me-1"></i> WhatsApp
-                </a>
-                <a href="tel:{{ contact_number|whatsapp_format }}" class="btn btn-dark flex-grow-1 rounded-pill fw-bold shadow-sm">
-                    <i class="fas fa-phone me-1"></i> Call
-                </a>
-            {% else %}
-                <button class="btn btn-secondary flex-grow-1 rounded-pill" disabled>Info Hidden</button>
-            {% endif %}
-        {% endwith %}
     </div>
 </div>
 
