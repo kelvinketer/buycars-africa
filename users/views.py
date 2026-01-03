@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.admin.views.decorators import staff_member_required # <--- NEW IMPORT
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.db.models import Sum, Q, Count
 from django.utils import timezone
 from datetime import timedelta
-from django.core.management import call_command # <--- NEW IMPORT
-from django.http import HttpResponse # <--- NEW IMPORT
+from django.core.management import call_command
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
@@ -99,7 +98,6 @@ def admin_dashboard(request):
     total_cars = Car.objects.count()
     
     # 4. PENDING ACTIONS
-    # FIX: Changed filter to look for any unverified user who has a DealerProfile
     pending_dealers = User.objects.filter(dealer_profile__isnull=False, is_verified=False).count()
 
     # 5. VALUE METER (LEADS)
@@ -119,7 +117,6 @@ def admin_dashboard(request):
         brand_counts.append(other_count)
 
     # 7. TOP DEALER LEADERBOARD
-    # FIX: Removed role='DEALER' to catch all profiles
     top_dealers = User.objects.filter(dealer_profile__isnull=False).annotate(
         inventory_count=Count('cars', distinct=True),
         leads_generated=Count('cars__leads', distinct=True)
@@ -131,7 +128,6 @@ def admin_dashboard(request):
     # 9. CHURN FORECAST (EXPIRING SOON)
     seven_days_from_now = timezone.now() + timedelta(days=7)
     
-    # FIX: Removed role='DEALER' constraint
     expiring_dealers = User.objects.filter(
         dealer_profile__isnull=False,
         dealer_profile__plan_type__in=['LITE', 'PRO'],
@@ -140,7 +136,6 @@ def admin_dashboard(request):
     ).select_related('dealer_profile').order_by('dealer_profile__subscription_expiry')[:5]
 
     # 10. RECENT ACTIVITY
-    # FIX: Fetch any user with a profile
     recent_users = User.objects.filter(dealer_profile__isnull=False).select_related('dealer_profile').order_by('-date_joined')[:5]
     recent_cars = Car.objects.select_related('dealer').order_by('-created_at')[:5]
 
@@ -171,7 +166,6 @@ def admin_dashboard(request):
         car_counts.append(daily_cars)
 
     # 13. MASTER DEALER LIST (The "God View" Table)
-    # FIX: We now filter by `dealer_profile__isnull=False` to ensure EVERY yard shows up
     all_dealers = User.objects.filter(dealer_profile__isnull=False).select_related('dealer_profile').order_by('-date_joined')
     
     search_query = request.GET.get('q')
@@ -201,7 +195,7 @@ def admin_dashboard(request):
         'analytics_dates': dates,
         'analytics_users': user_counts,
         'analytics_cars': car_counts,
-        'all_dealers': all_dealers, # Providing the data for your table
+        'all_dealers': all_dealers,
         'search_query': search_query,
     }
     return render(request, 'users/admin_dashboard.html', context)
@@ -230,13 +224,17 @@ def verify_dealer(request, user_id):
 def trigger_weekly_report(request):
     """
     Manually triggers the weekly email report command.
-    Useful if you don't have paid cron jobs.
     """
     try:
+        # Calls the management command 'users/management/commands/send_weekly_report.py'
         call_command('send_weekly_report')
-        return HttpResponse("✅ SUCCESS: Weekly reports sent to all dealers!", content_type="text/plain")
+        messages.success(request, "✅ SUCCESS: Weekly reports generated and sent to all dealers!")
     except Exception as e:
-        return HttpResponse(f"❌ ERROR: Failed to send reports. {e}", content_type="text/plain")
+        # Shows error in the dashboard alert box instead of crashing
+        messages.error(request, f"❌ ERROR: Failed to send reports. Details: {e}")
+
+    # Redirects back to dashboard instead of a white page
+    return redirect('admin_dashboard')
 
 @staff_member_required
 def trigger_subscription_check(request):
@@ -245,6 +243,8 @@ def trigger_subscription_check(request):
     """
     try:
         call_command('check_expiry')
-        return HttpResponse("✅ SUCCESS: Subscription check complete. Expired users downgraded.", content_type="text/plain")
+        messages.success(request, "✅ SUCCESS: Subscription check complete. Expired users downgraded.")
     except Exception as e:
-        return HttpResponse(f"❌ ERROR: Failed to check subscriptions. {e}", content_type="text/plain")
+        messages.error(request, f"❌ ERROR: Failed to check subscriptions. Details: {e}")
+
+    return redirect('admin_dashboard')
