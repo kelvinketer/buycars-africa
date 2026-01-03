@@ -299,6 +299,39 @@ def add_car(request):
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES)
         if form.is_valid():
+            
+            # --- START DUPLICATE CHECK ---
+            
+            # 1. Get cleaned data from form
+            reg_number = form.cleaned_data.get('registration_number')
+            make = form.cleaned_data.get('make')
+            model = form.cleaned_data.get('model')
+            year = form.cleaned_data.get('year')
+            
+            duplicate_found = False
+            
+            # 2. Check by Registration Number (If provided) - Most accurate check
+            if reg_number:
+                # Remove spaces for cleaner check
+                clean_reg = str(reg_number).strip().replace(" ", "").upper()
+                if Car.objects.filter(dealer=request.user, registration_number__iexact=clean_reg, status='AVAILABLE').exists():
+                    messages.error(request, f"Duplicate: You already have a car with registration {reg_number} listed as available.")
+                    duplicate_found = True
+
+            # 3. Check by Make/Model/Year (Fallback) - Prevents spamming generic listings
+            if not duplicate_found:
+                if Car.objects.filter(dealer=request.user, make=make, model=model, year=year, status='AVAILABLE').exists():
+                    # Optional: You can make this stricter by adding price check, or softer by allowing it.
+                    # Here we block it to prevent accidental double posts.
+                    messages.error(request, f"Duplicate: You already have a {year} {make} {model} listed. Please check your dashboard.")
+                    duplicate_found = True
+
+            # 4. If duplicate found, return form with errors
+            if duplicate_found:
+                return render(request, 'dealer/add_car.html', {'form': form})
+
+            # --- END DUPLICATE CHECK ---
+
             car = form.save(commit=False)
             car.dealer = request.user 
             car.status = 'AVAILABLE'
