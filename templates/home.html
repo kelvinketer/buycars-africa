@@ -83,14 +83,18 @@
         border-color: #dc3545;
         box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
-    .brand-icon {
-        font-size: 2.5rem;
-        color: #dc3545;
-        margin-bottom: 10px;
+    
+    /* LOGO STYLING */
+    .brand-logo {
+        height: 50px;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
         opacity: 0.8;
         transition: all 0.3s;
+        margin-bottom: 10px;
     }
-    .brand-card:hover .brand-icon {
+    .brand-card:hover .brand-logo {
         opacity: 1;
         transform: scale(1.1);
     }
@@ -194,38 +198,38 @@
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
             <div class="col">
                 <a href="{% url 'home' %}?make=Toyota" class="card brand-card text-decoration-none">
-                    <i class="fas fa-car brand-icon"></i>
+                    <img src="{% static 'images/brands/toyota.png' %}" class="brand-logo" alt="Toyota">
                     <div class="small fw-bold text-dark">Toyota</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Subaru" class="card brand-card text-decoration-none">
-                    <i class="fas fa-car-side brand-icon"></i>
+                    <img src="{% static 'images/brands/subaru.png' %}" class="brand-logo" alt="Subaru">
                     <div class="small fw-bold text-dark">Subaru</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Mazda" class="card brand-card text-decoration-none">
-                    <i class="fas fa-car brand-icon"></i>
+                    <img src="{% static 'images/brands/mazda.png' %}" class="brand-logo" alt="Mazda">
                     <div class="small fw-bold text-dark">Mazda</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Nissan" class="card brand-card text-decoration-none">
-                    <i class="fas fa-truck-pickup brand-icon"></i>
+                    <img src="{% static 'images/brands/nissan.png' %}" class="brand-logo" alt="Nissan">
                     <div class="small fw-bold text-dark">Nissan</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Mercedes-Benz" class="card brand-card text-decoration-none">
-                    <i class="fas fa-star brand-icon"></i>
+                    <img src="{% static 'images/brands/mercedes.png' %}" class="brand-logo" alt="Mercedes">
                     <div class="small fw-bold text-dark">Mercedes</div>
                 </a>
             </div>
             <div class="col">
                 <a href="{% url 'home' %}?make=Volkswagen" class="card brand-card text-decoration-none">
-                    <i class="fas fa-car brand-icon"></i>
-                    <div class="small fw-bold text-dark">VW</div>
+                    <img src="{% static 'images/brands/volkswagen.png' %}" class="brand-logo" alt="VW">
+                    <div class="small fw-bold text-dark">Volkswagen</div>
                 </a>
             </div>
         </div>
