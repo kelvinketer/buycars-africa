@@ -71,6 +71,27 @@ class Car(models.Model):
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # --- NEW: AUTO-CLEANUP LOGIC ---
+    def save(self, *args, **kwargs):
+        """
+        Intercepts the save process to standardize Make and Model names.
+        Prevents duplicates like 'Toyota' vs 'TOYOTA'.
+        """
+        # 1. Standardize Make
+        if self.make:
+            self.make = self.make.strip().title() # "toyota" -> "Toyota"
+            
+            # Special Case: Keep BMW uppercase
+            if self.make.lower() == 'bmw':
+                self.make = 'BMW'
+
+        # 2. Standardize Model
+        if self.model:
+            self.model = self.model.strip().title() # "corolla" -> "Corolla"
+
+        # 3. Proceed with normal save
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.year} {self.make} {self.model}"
 
