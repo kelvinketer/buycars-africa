@@ -7,6 +7,7 @@ class Car(models.Model):
         ('AVAILABLE', 'Available'),
         ('SOLD', 'Sold'),
         ('RESERVED', 'Reserved'),
+        ('HIDDEN', 'Hidden (Plan Expired)'), # <--- NEW: For the Subscription Enforcer
     )
     
     CONDITION_CHOICES = [
@@ -42,6 +43,9 @@ class Car(models.Model):
     # --- DATABASE FIELDS ---
     dealer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cars')
     
+    # Identify the car uniquely (Added for Duplicate Checks)
+    registration_number = models.CharField(max_length=20, blank=True, null=True, help_text="e.g. KDA 123X (Hidden from public)")
+
     make = models.CharField(max_length=50) 
     model = models.CharField(max_length=50) 
     year = models.IntegerField()
@@ -101,7 +105,7 @@ class Lead(models.Model):
     def __str__(self):
         return f"{self.get_action_type_display()} for {self.car} at {self.timestamp}"
 
-# --- NEW: SEARCH ANALYTICS ---
+# --- SEARCH ANALYTICS ---
 class SearchTerm(models.Model):
     term = models.CharField(max_length=100, unique=True)
     count = models.IntegerField(default=1)
