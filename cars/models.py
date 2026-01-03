@@ -1,5 +1,9 @@
 from django.db import models
 from django.conf import settings
+from PIL import Image  # Requires: pip install Pillow
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
 
 class Car(models.Model):
     # --- DROPDOWN CHOICES ---
@@ -7,7 +11,7 @@ class Car(models.Model):
         ('AVAILABLE', 'Available'),
         ('SOLD', 'Sold'),
         ('RESERVED', 'Reserved'),
-        ('HIDDEN', 'Hidden (Plan Expired)'), # <--- NEW: For the Subscription Enforcer
+        ('HIDDEN', 'Hidden (Plan Expired)'), 
     )
     
     CONDITION_CHOICES = [
@@ -77,6 +81,44 @@ class CarImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.car.model}"
+
+    def save(self, *args, **kwargs):
+        # 1. Opening the image
+        if self.image:
+            try:
+                img = Image.open(self.image)
+                
+                # 2. Convert to RGB (in case it's PNG/RGBA) to save as JPEG
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+                
+                # 3. Resize if too massive (Max width 1200px is usually enough for web)
+                if img.width > 1200:
+                    output_size = (1200, (1200 * img.height) // img.width)
+                    img.thumbnail(output_size)
+
+                # 4. Compress
+                output = BytesIO()
+                # Saving as JPEG with 75% quality (sweet spot for web)
+                img.save(output, format='JPEG', quality=75, optimize=True)
+                output.seek(0)
+
+                # 5. Replace the file in memory
+                # Note: We rename to .jpg to match the format
+                new_name = f"{self.image.name.split('.')[0]}.jpg"
+                self.image = InMemoryUploadedFile(
+                    output, 
+                    'ImageField', 
+                    new_name, 
+                    'image/jpeg', 
+                    sys.getsizeof(output), 
+                    None
+                )
+            except Exception as e:
+                print(f"Image compression failed: {e}")
+                # Pass silently and save original if compression fails
+
+        super().save(*args, **kwargs)
 
 # --- ANALYTICS MODELS ---
 
