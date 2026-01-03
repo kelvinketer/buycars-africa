@@ -68,14 +68,18 @@ urlpatterns = [
 
     # --- IMAGE MANAGEMENT ---
     path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', car_views.set_main_image, name='set_main_image'),
-    
-    # [NEW] DELETE IMAGE ROUTE
     path('dashboard/image/delete/<int:image_id>/', car_views.delete_car_image, name='delete_car_image'),
 
     # --- PAYMENTS (M-PESA) ---
     path('payments/', include('payments.urls')), 
+
+    # --- NEW: MANUAL ADMIN TOOLS (The Magic Links) ---
+    # These allow you to trigger background tasks manually from the browser
+    path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
+    path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
 ]
 
 # Allow images to load in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

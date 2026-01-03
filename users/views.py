@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required # <--- NEW IMPORT
 from django.contrib import messages
 from django.db.models import Sum, Q, Count
 from django.utils import timezone
 from datetime import timedelta
+from django.core.management import call_command # <--- NEW IMPORT
+from django.http import HttpResponse # <--- NEW IMPORT
 
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
-from payments.models import Payment  
+from payments.models import Payment   
 from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
@@ -218,3 +221,30 @@ def verify_dealer(request, user_id):
         
         user.save()
     return redirect('admin_dashboard')
+
+# ==========================================
+#      MANUAL TRIGGER TOOLS (CEO ONLY)
+# ==========================================
+
+@staff_member_required
+def trigger_weekly_report(request):
+    """
+    Manually triggers the weekly email report command.
+    Useful if you don't have paid cron jobs.
+    """
+    try:
+        call_command('send_weekly_report')
+        return HttpResponse("✅ SUCCESS: Weekly reports sent to all dealers!", content_type="text/plain")
+    except Exception as e:
+        return HttpResponse(f"❌ ERROR: Failed to send reports. {e}", content_type="text/plain")
+
+@staff_member_required
+def trigger_subscription_check(request):
+    """
+    Manually triggers the subscription enforcer.
+    """
+    try:
+        call_command('check_expiry')
+        return HttpResponse("✅ SUCCESS: Subscription check complete. Expired users downgraded.", content_type="text/plain")
+    except Exception as e:
+        return HttpResponse(f"❌ ERROR: Failed to check subscriptions. {e}", content_type="text/plain")
