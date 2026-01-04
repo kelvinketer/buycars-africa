@@ -122,15 +122,23 @@
         <form method="GET" action="{% url 'home' %}">
             <div class="row g-3 align-items-end">
 
-                <div class="col-lg-3">
-                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-tags me-1"></i> Keywords</label>
+                <div class="col-lg-2 col-md-6">
+                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-search me-1"></i> Keywords</label>
                     <div class="position-relative">
-                        <i class="fas fa-search text-muted position-absolute" style="left: 15px; top: 18px;"></i>
-                        <input type="text" name="q" class="form-control custom-search-input fw-bold text-dark" style="padding-left: 40px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
+                        <input type="text" name="q" class="form-control custom-search-input fw-bold text-dark" style="padding-left: 20px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-2 col-md-6">
+                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-exchange-alt me-1"></i> Type</label>
+                    <select name="listing_type" class="form-select custom-search-input fw-bold text-dark">
+                        <option value="">All Types</option>
+                        <option value="SALE" {% if request.GET.listing_type == 'SALE' %}selected{% endif %}>For Sale</option>
+                        <option value="RENT" {% if request.GET.listing_type == 'RENT' %}selected{% endif %}>For Hire</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
                     <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-map-marker-alt me-1"></i> Location</label>
                     <select name="region" class="form-select custom-search-input fw-bold text-dark">
                         <option value="">All Regions</option>

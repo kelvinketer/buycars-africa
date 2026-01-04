@@ -11,15 +11,13 @@ from django.contrib.auth import get_user_model
 import re 
 
 from users.models import DealerProfile
-# 1. UPDATE IMPORTS: Added CarBooking
 from .models import Car, CarImage, CarView, Lead, SearchTerm, CarBooking
-# 2. UPDATE IMPORTS: Added CarBookingForm
 from .forms import CarForm, CarBookingForm
 from .utils import render_to_pdf 
 
 User = get_user_model() 
 
-# --- CONFIGURATION: PLAN LIMITS (Source of Truth) ---
+# --- CONFIGURATION: PLAN LIMITS ---
 PLAN_LIMITS = {
     'STARTER': {'cars': 5, 'images': 6},   # Free Tier
     'LITE':    {'cars': 15, 'images': 10}, # Paid Tier 1
@@ -37,10 +35,13 @@ def public_homepage(request):
     Renders the Homepage. Matches variables expected by home.html
     """
     featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
-    # Show Available, Reserved, Sold cars
+    
+    # Base Query: Show Available, Reserved, Sold cars
     cars = Car.objects.filter(status__in=['AVAILABLE', 'RESERVED', 'SOLD']).order_by('status', '-created_at')
     
+    # --- GET SEARCH PARAMETERS ---
     q = request.GET.get('q')
+    listing_type = request.GET.get('listing_type') # <--- NEW: Get the type (Rent/Sale)
     make = request.GET.get('make')
     region = request.GET.get('region')
     body_type = request.GET.get('body_type') 
@@ -49,6 +50,18 @@ def public_homepage(request):
     min_year = request.GET.get('min_year')   
     max_year = request.GET.get('max_year')   
 
+    # --- APPLY FILTERS ---
+
+    # 1. Filter by Listing Type (Sale vs Rent)
+    if listing_type:
+        if listing_type == 'SALE':
+            # Show cars meant for SALE or BOTH
+            cars = cars.filter(listing_type__in=['SALE', 'BOTH'])
+        elif listing_type == 'RENT':
+            # Show cars meant for RENT or BOTH
+            cars = cars.filter(listing_type__in=['RENT', 'BOTH'])
+
+    # 2. Filter by Keywords
     if q:
         clean_q = q.strip().lower()
         if len(clean_q) > 2: 
@@ -58,14 +71,21 @@ def public_homepage(request):
 
         cars = cars.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
     
+    # 3. Other Filters
     if make:
         cars = cars.filter(make__iexact=make)
     if region:
         cars = cars.filter(dealer__dealer_profile__city=region)
     if body_type: 
         cars = cars.filter(body_type__iexact=body_type)
+    
+    # 4. Price & Year Filters
     if min_price:
-        try: cars = cars.filter(price__gte=min_price)
+        try: 
+            # Note: We filter by 'price' (Selling Price) by default. 
+            # Ideally, if Rent is selected, we should filter by 'rent_price_per_day', 
+            # but for simplicity, we stick to the main price or allow the DB to handle it.
+            cars = cars.filter(price__gte=min_price)
         except: pass 
     if max_price:
         try: cars = cars.filter(price__lte=max_price)
@@ -77,6 +97,7 @@ def public_homepage(request):
         try: cars = cars.filter(year__lte=max_year)
         except: pass
 
+    # --- PREPARE DROPDOWNS ---
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
     regions = DealerProfile.CITY_CHOICES 
@@ -100,7 +121,7 @@ def car_detail(request, car_id):
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
-# --- NEW: BOOKING LOGIC ---
+# --- BOOKING LOGIC ---
 @login_required
 def book_car(request, car_id):
     """
@@ -146,9 +167,8 @@ def book_car(request, car_id):
             booking.status = 'PENDING' # Waiting for payment
             booking.save()
             
-            # 6. Redirect to Payment (Placeholder)
+            # 6. Redirect to Payment
             messages.success(request, f"Booking initialized! Total: KES {booking.total_cost}. Payment integration coming soon.")
-            # Ideally redirect to a payment page or dashboard
             return redirect('dealer_dashboard') 
 
     else:
@@ -197,11 +217,11 @@ def dealer_showroom(request, username):
 @login_required
 def dealer_dashboard(request):
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
-    total_value = sum(car.price for car in my_cars if car.price) # Added check if price is None
+    # Safe sum in case price is None (for rental only cars)
+    total_value = sum(car.price for car in my_cars if car.price) 
     car_count = my_cars.count()
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
-    # --- LOGIC UPDATE: Use PLAN_LIMITS ---
     user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
     limit = user_plan['cars']
     
@@ -243,7 +263,6 @@ def dealer_dashboard(request):
     if total_leads_30 > 0 and plan_cost > 0:
         cpl = int(plan_cost / total_leads_30)
 
-    # Correct use of 'views' (consistent with model definition)
     inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('views'))
     
     hot_car = inventory_stats.order_by('-view_count').first()
@@ -283,25 +302,18 @@ def download_report(request):
     dealer = request.user
     profile = request.user.dealer_profile
     
-    # 1. Define Date Range (Current Month)
     today = timezone.now()
     start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    # 2. Get Dealer's Cars
     cars = Car.objects.filter(dealer=dealer)
     
-    # 3. Calculate Leads (Calls + WhatsApp)
     leads = Lead.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month)
     total_leads = leads.count()
     whatsapp_clicks = leads.filter(action_type='WHATSAPP').count()
     calls = leads.filter(action_type='CALL').count()
     
-    # 4. Calculate Views
     total_views = CarView.objects.filter(car__dealer=dealer, timestamp__gte=start_of_month).count()
     
-    # 5. --- NEW ROI & INVENTORY METRICS ---
-    
-    # 5a. Cost Per Lead (CPL)
     plan_cost = 0
     if profile.plan_type == 'LITE': plan_cost = 5000
     elif profile.plan_type == 'PRO': plan_cost = 12000
@@ -311,20 +323,14 @@ def download_report(request):
     if total_leads > 0:
         cpl = int(plan_cost / total_leads)
         
-    # 5b. Total Asset Valuation (Available Stock)
     inventory_value = cars.filter(status='AVAILABLE').aggregate(Sum('price'))['price__sum'] or 0
-    
-    # 5c. Sold Count
     sold_count = cars.filter(status='SOLD').count()
     
-    # 5d. Stale Stock (Inventory sitting for > 60 days)
     sixty_days_ago = today - timedelta(days=60)
     stale_stock_count = cars.filter(status='AVAILABLE', created_at__lte=sixty_days_ago).count()
 
-    # 6. Top 5 Performing Cars (Annotated with views)
     top_cars = cars.filter(status='AVAILABLE').annotate(num_views=Count('views')).order_by('-num_views')[:5]
     
-    # 7. Context Data
     context = {
         'dealer': dealer,
         'profile': profile,
@@ -336,14 +342,12 @@ def download_report(request):
         'whatsapp_clicks': whatsapp_clicks,
         'calls': calls,
         'top_cars': top_cars,
-        # New Metrics
         'cpl': cpl,
         'inventory_value': inventory_value,
         'sold_count': sold_count,
         'stale_stock_count': stale_stock_count
     }
     
-    # 8. Generate PDF
     pdf = render_to_pdf('dealer/monthly_report.html', context)
     if pdf:
         response = HttpResponse(pdf, content_type='application/pdf')
@@ -357,7 +361,6 @@ def add_car(request):
     profile = request.user.dealer_profile
     car_count = Car.objects.filter(dealer=request.user).count()
     
-    # --- LOGIC UPDATE: Enforce Car Limit from PLAN_LIMITS ---
     user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
     if car_count >= user_plan['cars']:
         messages.warning(request, f"Plan limit reached ({user_plan['cars']} cars). Upgrade to add more.")
@@ -367,9 +370,7 @@ def add_car(request):
         form = CarForm(request.POST, request.FILES)
         if form.is_valid():
             
-            # --- START DUPLICATE CHECK ---
-            
-            # 1. Get cleaned data from form
+            # --- DUPLICATE CHECK ---
             reg_number = form.cleaned_data.get('registration_number')
             make = form.cleaned_data.get('make')
             model = form.cleaned_data.get('model')
@@ -377,42 +378,34 @@ def add_car(request):
             
             duplicate_found = False
             
-            # 2. Check by Registration Number (If provided in form)
             if reg_number:
                 clean_reg = str(reg_number).strip().replace(" ", "").upper()
                 if Car.objects.filter(dealer=request.user, registration_number__iexact=clean_reg, status='AVAILABLE').exists():
                     messages.error(request, f"Duplicate: You already have a car with registration {reg_number} listed as available.")
                     duplicate_found = True
 
-            # 3. Check by Make/Model/Year (Fallback)
             if not duplicate_found:
                 if Car.objects.filter(dealer=request.user, make=make, model=model, year=year, status='AVAILABLE').exists():
                     messages.error(request, f"Duplicate: You already have a {year} {make} {model} listed. Please check your inventory.")
                     duplicate_found = True
 
-            # 4. If duplicate found, return form with errors
             if duplicate_found:
                 return render(request, 'dealer/add_car.html', {'form': form})
-
-            # --- END DUPLICATE CHECK ---
+            # -----------------------
 
             car = form.save(commit=False)
             car.dealer = request.user 
             car.status = 'AVAILABLE'
             car.save()
             
-            # --- LOGIC UPDATE: Enforce Image Limit ---
             image_limit = user_plan['images']
             raw_images = request.FILES.getlist('image') 
-            
-            # Slice the list to the allowed limit (Discard excess images)
             images_to_save = raw_images[:image_limit]
             
             for index, img in enumerate(images_to_save):
                 is_main = (index == 0)
                 CarImage.objects.create(car=car, image=img, is_main=is_main)
 
-            # Show warning if user tried to upload too many
             if len(raw_images) > image_limit:
                 messages.warning(request, f"Vehicle saved, but we only uploaded the first {image_limit} photos (Plan Limit).")
             else:
@@ -441,41 +434,32 @@ def edit_car(request, car_id):
             
             car.save()
             
-            # --- LOGIC UPDATE: Enforce Image Limit on Edit ---
             user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
             image_limit = user_plan['images']
             current_count = car.images.count()
-            
-            # Calculate remaining slots
             slots_left = image_limit - current_count
             
             new_images = request.FILES.getlist('image')
             
             if new_images:
                 if slots_left > 0:
-                    # Take only as many as fit
                     accepted_images = new_images[:slots_left]
-                    
                     for img in accepted_images:
-                        # If car has no images, make the first new one the main image
                         has_main = car.images.filter(is_main=True).exists()
                         is_first_new = (img == accepted_images[0] and not has_main)
                         CarImage.objects.create(car=car, image=img, is_main=is_first_new)
                     
-                    # Feedback
                     if len(new_images) > slots_left:
-                        messages.warning(request, f"Added {slots_left} photos. {len(new_images) - slots_left} were skipped (Limit: {image_limit} photos).")
+                        messages.warning(request, f"Added {slots_left} photos. {len(new_images) - slots_left} were skipped.")
                     else:
                         messages.success(request, f"Changes saved! {len(accepted_images)} new photo(s) added.")
                 else:
-                    messages.error(request, f"Cannot add photos. You have reached your limit of {image_limit} images for this car.")
+                    messages.error(request, f"Cannot add photos. Limit of {image_limit} reached.")
             else:
                 messages.success(request, 'Vehicle details updated successfully!')
             
             return redirect('car_detail', car_id=car.id)
-            
         else:
-            print("Form Errors:", form.errors)
             messages.error(request, "Please correct the errors below.")
     else:
         form = CarForm(instance=car)
@@ -491,69 +475,50 @@ def delete_car(request, car_id):
         return redirect('dealer_dashboard')
     return render(request, 'dealer/delete_confirm.html', {'car': car})
 
-# --- ADDED THIS MISSING VIEW ---
 @login_required
 def mark_as_sold(request, car_id):
-    """
-    Quick action to mark a car as SOLD.
-    Restored to ensure the Dashboard 'Mark Sold' button works.
-    """
     car = get_object_or_404(Car, pk=car_id, dealer=request.user)
     car.status = 'SOLD'
     car.save()
-    messages.success(request, "Car marked as SOLD! Good job.")
+    messages.success(request, "Car marked as SOLD!")
     return redirect('dealer_dashboard')
-# -------------------------------
 
-# --- SET MAIN IMAGE VIEW ---
 @login_required
 def set_main_image(request, car_id, image_id):
     car = get_object_or_404(Car, pk=car_id, dealer=request.user)
     image_to_set = get_object_or_404(CarImage, pk=image_id, car=car)
 
     if request.method == 'POST':
-        # 1. Reset all images for this car to NOT be main
         car.images.all().update(is_main=False)
-        
-        # 2. Set the selected image to main
         image_to_set.is_main = True
         image_to_set.save()
-        
         messages.success(request, 'Main photo updated!')
     
     return redirect('edit_car', car_id=car.id)
 
-# --- NEW: DELETE IMAGE VIEW ---
 @login_required
 def delete_car_image(request, image_id):
-    # 1. Get the image safely
     image = get_object_or_404(CarImage, id=image_id)
-    
-    # 2. Security: Ensure the logged-in user owns the car
     if image.car.dealer != request.user:
-        messages.error(request, "You do not have permission to delete this image.")
+        messages.error(request, "Permission denied.")
         return redirect('dealer_dashboard')
 
     car_id = image.car.id
     was_main = image.is_main
-    
-    # 3. Delete the image
     image.delete()
     
-    # 4. If the deleted image was the 'Main' image, assign a new one
     if was_main:
         remaining_images = CarImage.objects.filter(car_id=car_id)
         if remaining_images.exists():
             new_main = remaining_images.first()
             new_main.is_main = True
             new_main.save()
-            messages.info(request, "Main image deleted. A new main image was automatically assigned.")
+            messages.info(request, "Main image deleted. New main assigned.")
         else:
-            messages.warning(request, "You deleted the main image. Please upload a new one.")
+            messages.warning(request, "Main image deleted. Please upload a new one.")
     else:
-        messages.success(request, "Image deleted successfully.")
+        messages.success(request, "Image deleted.")
     
-    # 5. Redirect back to the edit page
     return redirect('edit_car', car_id=car_id)
 
 def pricing_page(request):
@@ -568,28 +533,18 @@ def all_brands(request):
     )
     return render(request, 'cars/all_brands.html', {'brands': brands})
 
-# --- SUPER ADMIN DASHBOARD ---
-
 @staff_member_required
 def platform_dashboard(request):
-    """
-    The 'God View' for the SaaS Founder.
-    Tracks all dealers, system-wide inventory, and platform health.
-    """
-    # 1. Platform-Wide Metrics
     total_dealers = User.objects.filter(dealer_profile__isnull=False).count()
     total_cars = Car.objects.count()
     total_leads = Lead.objects.count()
     
-    # 2. Financial/Plan Metrics
     starter_users = DealerProfile.objects.filter(plan_type='STARTER').count()
     lite_users = DealerProfile.objects.filter(plan_type='LITE').count()
     pro_users = DealerProfile.objects.filter(plan_type='PRO').count()
     
-    # Estimate Monthly Recurring Revenue (MRR)
     mrr = (lite_users * 5000) + (pro_users * 12000)
 
-    # 3. The "Yards" List - Fetches every yard, even newly added ones
     all_dealers = DealerProfile.objects.select_related('user').annotate(
         stock_count=Count('user__car_set'),
     ).order_by('-user__date_joined')
@@ -606,4 +561,4 @@ def platform_dashboard(request):
             'pro': pro_users
         }
     }
-    return rendser(request, 'saas/platform_dashboard.html', context)
+    return render(request, 'saas/platform_dashboard.html', context)
