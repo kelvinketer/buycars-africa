@@ -28,6 +28,47 @@
         border: none;
         border-radius: 20px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden; /* Keeps tabs inside */
+    }
+
+    /* --- NEW: TAB STYLING --- */
+    .search-tabs {
+        display: flex;
+        border-bottom: 1px solid #eee;
+        background: #f8f9fa;
+        margin: -3rem -3rem 2rem -3rem; /* Negative margins to stretch full width */
+        padding: 0 1rem;
+    }
+    
+    @media (max-width: 991px) {
+        .search-tabs { margin: -1.5rem -1.5rem 1.5rem -1.5rem; }
+    }
+
+    .search-tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1.2rem 2rem;
+        font-weight: 600;
+        color: #6c757d;
+        border-bottom: 4px solid transparent;
+        transition: all 0.2s;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .search-tab-btn:hover {
+        color: #0f172a;
+        background: rgba(0,0,0,0.02);
+    }
+
+    .search-tab-btn.active {
+        color: #dc3545; /* Brand Red */
+        border-bottom-color: #dc3545;
+        background: white;
+    }
+
+    .search-tab-btn i {
+        margin-right: 8px;
     }
 
     /* 3. INPUT STYLING */
@@ -119,26 +160,29 @@
 
 <div class="container search-card-container">
     <div class="search-card p-4 p-lg-5 mx-auto shadow-lg" style="max-width: 1100px;">
-        <form method="GET" action="{% url 'home' %}">
+        
+        <div class="search-tabs">
+            <button type="button" class="search-tab-btn {% if request.GET.listing_type != 'RENT' %}active{% endif %}" onclick="setSearchMode('SALE', this)">
+                <i class="fas fa-car"></i> Buy a Car
+            </button>
+            <button type="button" class="search-tab-btn {% if request.GET.listing_type == 'RENT' %}active{% endif %}" onclick="setSearchMode('RENT', this)">
+                <i class="fas fa-key"></i> Rent a Car
+            </button>
+        </div>
+
+        <form method="GET" action="{% url 'home' %}" id="searchForm">
+            <input type="hidden" name="listing_type" id="listing_type_input" value="{{ request.GET.listing_type|default:'SALE' }}">
+
             <div class="row g-3 align-items-end">
 
-                <div class="col-lg-2 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-search me-1"></i> Keywords</label>
                     <div class="position-relative">
                         <input type="text" name="q" class="form-control custom-search-input fw-bold text-dark" style="padding-left: 20px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
                     </div>
                 </div>
 
-                <div class="col-lg-2 col-md-6">
-                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-exchange-alt me-1"></i> Type</label>
-                    <select name="listing_type" class="form-select custom-search-input fw-bold text-dark">
-                        <option value="">All Types</option>
-                        <option value="SALE" {% if request.GET.listing_type == 'SALE' %}selected{% endif %}>For Sale</option>
-                        <option value="RENT" {% if request.GET.listing_type == 'RENT' %}selected{% endif %}>For Hire</option>
-                    </select>
-                </div>
-
-                <div class="col-lg-2 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-map-marker-alt me-1"></i> Location</label>
                     <select name="region" class="form-select custom-search-input fw-bold text-dark">
                         <option value="">All Regions</option>
@@ -429,6 +473,19 @@
 <script>
     function trackLead(carId, action) {
         fetch(`/track/${carId}/${action}/`, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    }
+
+    // --- NEW: SCRIPT FOR SEARCH TABS ---
+    function setSearchMode(mode, btnElement) {
+        // 1. Update the hidden input
+        document.getElementById('listing_type_input').value = mode;
+        
+        // 2. Remove 'active' class from all buttons
+        let buttons = document.querySelectorAll('.search-tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        // 3. Add 'active' class to the clicked button
+        btnElement.classList.add('active');
     }
 </script>
 
