@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Car, CarImage, CarView, Lead, CarBooking
+from .models import Car, CarImage, CarView, Lead, Booking, SearchTerm
 
 class CarImageInline(admin.TabularInline):
     model = CarImage
@@ -9,7 +9,6 @@ class CarImageInline(admin.TabularInline):
 class CarAdmin(admin.ModelAdmin):
     inlines = [CarImageInline]
     
-    # 1. FIXED: Added 'is_available_for_rent' to this list
     list_display = (
         'id', 
         'make', 
@@ -18,13 +17,12 @@ class CarAdmin(admin.ModelAdmin):
         'listing_type',       
         'price',              
         'rent_price_per_day', 
-        'is_available_for_rent', # <--- THIS WAS MISSING
+        'is_available_for_rent',
         'status', 
         'dealer', 
         'is_featured'
     )
     
-    # 2. This works now because the field is in the list above
     list_editable = ('status', 'is_featured', 'listing_type', 'is_available_for_rent')
     
     list_filter = ('listing_type', 'status', 'is_featured', 'make', 'transmission', 'is_available_for_rent')
@@ -46,12 +44,13 @@ class CarAdmin(admin.ModelAdmin):
         }),
     )
 
-@admin.register(CarBooking)
-class CarBookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'car', 'customer', 'start_date', 'end_date', 'total_cost', 'status')
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    # Updated to match the new Booking model fields
+    list_display = ('id', 'car', 'renter', 'start_date', 'end_date', 'total_price', 'status', 'created_at')
     list_filter = ('status', 'start_date', 'created_at')
-    search_fields = ('car__make', 'car__model', 'customer__username', 'customer__email')
-    readonly_fields = ('created_at', 'updated_at')
+    search_fields = ('car__make', 'car__model', 'renter__username', 'renter__email')
+    readonly_fields = ('total_price', 'created_at', 'updated_at')
 
 # --- ANALYTICS ---
 
@@ -66,3 +65,8 @@ class LeadAdmin(admin.ModelAdmin):
     list_filter = ('action_type', 'timestamp')
     search_fields = ('car__make', 'car__model')
     readonly_fields = ('timestamp', 'ip_address', 'action_type', 'car')
+
+@admin.register(SearchTerm)
+class SearchTermAdmin(admin.ModelAdmin):
+    list_display = ('term', 'count', 'last_searched')
+    ordering = ('-count',)

@@ -4,7 +4,8 @@ from PIL import Image  # Requires: pip install Pillow
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
-from django.utils import timezone # Added this import
+from django.utils import timezone
+from django.contrib.humanize.templatetags.humanize import intcomma
 
 class Car(models.Model):
     # --- DROPDOWN CHOICES ---
@@ -175,42 +176,40 @@ class CarImage(models.Model):
 
 # --- RENTAL BOOKING MODEL ---
 
-class CarBooking(models.Model):
-    """
-    Tracks rental reservations.
-    """
-    STATUS_CHOICES = [
+class Booking(models.Model):
+    STATUS_CHOICES = (
         ('PENDING', 'Pending Approval'),
-        ('CONFIRMED', 'Confirmed (Awaiting Payment)'),
+        ('APPROVED', 'Approved (Awaiting Payment)'),
         ('PAID', 'Paid & Active'),
-        ('COMPLETED', 'Returned & Completed'),
+        ('COMPLETED', 'Completed'),
         ('CANCELLED', 'Cancelled'),
-    ]
+        ('REJECTED', 'Rejected'),
+    )
 
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='bookings')
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='car_bookings')
+    renter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rentals')
     
     start_date = models.DateField()
     end_date = models.DateField()
     
-    total_cost = models.DecimalField(max_digits=12, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    # We store the calculated price so if the dealer changes the daily rate later,
+    # the old booking history remains accurate.
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     
-    # Track when the booking was made
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    message = models.TextField(blank=True, null=True) # Optional note from renter
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        ordering = ['-created_at']
-
     def __str__(self):
-        return f"{self.customer.username} - {self.car} ({self.start_date} to {self.end_date})"
+        return f"Booking: {self.car.make} {self.car.model} - {self.renter.username}"
 
     @property
-    def duration_days(self):
-        """Calculates how many days the rental is for"""
+    def total_days(self):
+        """Calculate duration for display"""
         delta = self.end_date - self.start_date
-        return delta.days if delta.days > 0 else 1
+        return delta.days + 1  # +1 because if you rent 1st to 1st, it's 1 day
 
 # --- ANALYTICS MODELS ---
 
