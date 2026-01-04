@@ -27,13 +27,19 @@ class CarForm(forms.ModelForm):
 
     class Meta:
         model = Car
-        exclude = ['dealer', 'status', 'is_featured', 'created_at']
+        # We exclude fields the dealer shouldn't touch manually
+        exclude = ['dealer', 'status', 'is_featured', 'created_at', 'views', 'leads']
         
         widgets = {
+            # --- EXISTING FIELDS ---
             'make': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Toyota'}),
             'model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Harrier'}),
             'year': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2017'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2500000'}),
+            'registration_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. KDA 123X (Private)'}),
+            
+            # Note: We add an ID to 'price' so we can hide it if "For Rent" is selected
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2500000', 'id': 'id_selling_price'}),
+            
             'condition': forms.Select(attrs={'class': 'form-select'}),
             'transmission': forms.Select(attrs={'class': 'form-select'}),
             'fuel_type': forms.Select(attrs={'class': 'form-select'}),
@@ -43,4 +49,11 @@ class CarForm(forms.ModelForm):
             'body_type': forms.Select(attrs={'class': 'form-select'}),
             'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Nairobi, Kiambu Road'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe the car...'}),
+
+            # --- NEW RENTAL FIELDS ---
+            # We add IDs here to control them with JavaScript (Show/Hide logic)
+            'listing_type': forms.Select(attrs={'class': 'form-select', 'id': 'id_listing_type'}),
+            'rent_price_per_day': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 3500', 'id': 'id_rent_price'}),
+            'min_hire_days': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1', 'id': 'id_min_days'}),
+            'is_available_for_rent': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
