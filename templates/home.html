@@ -111,7 +111,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <h1 class="display-3 fw-bold mb-3">Find Your <span class="text-danger">Dream Car.</span></h1>
-                <p class="lead text-white-50 fs-5 mb-0">Browse thousands of verified vehicles from Kenya's top trusted dealers.</p>
+                <p class="lead text-white-50 fs-5 mb-0">Browse verified vehicles for Sale and Rent from Kenya's top trusted dealers.</p>
             </div>
         </div>
     </div>
@@ -257,6 +257,16 @@
                     <span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark shadow-sm fw-bold z-2 rounded-2">
                         <i class="fas fa-star me-1"></i> Featured
                     </span>
+                    
+                    <span class="position-absolute top-0 end-0 m-2 z-2">
+                        {% if car.listing_type == 'RENT' %}
+                             <span class="badge bg-primary shadow-sm fw-bold">FOR HIRE</span>
+                        {% elif car.listing_type == 'BOTH' %}
+                             <span class="badge bg-info text-dark shadow-sm fw-bold">SALE & HIRE</span>
+                        {% else %}
+                             <span class="badge bg-success shadow-sm fw-bold">FOR SALE</span>
+                        {% endif %}
+                    </span>
 
                     <a href="{% url 'car_detail' car.id %}" class="d-block">
                         <div style="height: 220px; overflow: hidden;">
@@ -279,12 +289,20 @@
                         </div>
 
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-                            <h6 class="text-success fw-bold mb-0 fs-5">
-                                KES {{ car.price|floatformat:0|intcomma }}
-                            </h6>
-                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
-                                View
-                            </a>
+                            
+                            {% if car.listing_type == 'RENT' %}
+                                <div>
+                                    <h6 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
+                                </div>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Book</a>
+
+                            {% else %}
+                                <h6 class="text-success fw-bold mb-0 fs-5">
+                                    KES {{ car.price|floatformat:0|intcomma }}
+                                </h6>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">View</a>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>
@@ -314,11 +332,17 @@
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden hover-lift">
                     <div class="car-image-container position-relative">
-                        {% if car.status != 'AVAILABLE' %}
-                            <div class="position-absolute top-0 end-0 m-2 z-3">
+                        
+                        <div class="position-absolute top-0 end-0 m-2 z-3">
+                            {% if car.status != 'AVAILABLE' %}
                                 <span class="badge {% if car.status == 'SOLD' %}bg-danger{% else %}bg-warning text-dark{% endif %} fw-bold shadow-sm">{{ car.status }}</span>
-                            </div>
-                        {% endif %}
+                            {% elif car.listing_type == 'RENT' %}
+                                <span class="badge bg-primary fw-bold shadow-sm">FOR HIRE</span>
+                            {% elif car.listing_type == 'BOTH' %}
+                                <span class="badge bg-info text-dark fw-bold shadow-sm">SALE & HIRE</span>
+                            {% endif %}
+                        </div>
+
                         <a href="{% url 'car_detail' car.id %}">
                             <div style="height: 200px; overflow: hidden;">
                                 {% if car.images.first %}
@@ -357,8 +381,25 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-auto">
-                            <h6 class="text-success fw-bold mb-0 fs-5">KES {{ car.price|floatformat:0|intcomma }}</h6>
-                            <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
+                            
+                            {% if car.listing_type == 'RENT' %}
+                                <div>
+                                    <h6 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
+                                </div>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
+                            
+                            {% elif car.listing_type == 'BOTH' %}
+                                <div>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {{ car.price|floatformat:0|intcomma }}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {{ car.rent_price_per_day|floatformat:0|intcomma }}/day</small>
+                                </div>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
+
+                            {% else %}
+                                <h6 class="text-success fw-bold mb-0 fs-5">KES {{ car.price|floatformat:0|intcomma }}</h6>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>
