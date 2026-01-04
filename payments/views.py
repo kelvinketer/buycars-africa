@@ -1,6 +1,7 @@
 import json
 import africastalking
 from datetime import timedelta
+from decimal import Decimal # <--- Added for money math
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,7 +13,8 @@ from .models import Payment
 from .forms import PaymentForm
 from .mpesa import MpesaClient
 from users.models import DealerProfile
-from cars.models import CarBooking  # <--- CRITICAL IMPORT
+from cars.models import CarBooking
+from wallet.models import Wallet, Transaction # <--- Added Wallet Imports
 
 # --- HELPER: SEND SMS ---
 def send_sms_notification(phone_number, message):
@@ -125,7 +127,7 @@ def initiate_payment(request):
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
-# --- API: M-PESA CALLBACK ---
+# --- API: M-PESA CALLBACK (UPDATED WITH WALLET LOGIC) ---
 @csrf_exempt
 def mpesa_callback(request):
     if request.method == 'POST':
@@ -162,13 +164,50 @@ def mpesa_callback(request):
                             send_sms_notification(payment.phone_number, f"Plan Active! Receipt: {payment.mpesa_receipt_number}")
                         except: pass
 
-                    # LOGIC 2: Handle Car Booking
+                    # LOGIC 2: Handle Car Booking & Wallet Credit
                     if payment.booking:
                         payment.booking.status = 'PAID'
                         payment.booking.save()
                         
+                        # --- WALLET LOGIC STARTS HERE ---
+                        try:
+                            car = payment.booking.car
+                            dealer = car.dealer
+                            
+                            # 1. Get or Create Wallet for Dealer
+                            wallet, created = Wallet.objects.get_or_create(user=dealer)
+                            
+                            # 2. Calculate Commission (e.g., 10%)
+                            total_amount = Decimal(payment.amount)
+                            commission_rate = Decimal('0.10') 
+                            commission = total_amount * commission_rate
+                            dealer_share = total_amount - commission
+                            
+                            # 3. Credit Wallet
+                            wallet.balance += dealer_share
+                            wallet.total_earned += dealer_share
+                            wallet.save()
+                            
+                            # 4. Record Transaction
+                            Transaction.objects.create(
+                                wallet=wallet,
+                                amount=dealer_share,
+                                transaction_type='CREDIT',
+                                description=f"Rental Income: {car.year} {car.make} {car.model}",
+                                reference=f"Booking #{payment.booking.id}"
+                            )
+                            
+                            # Notify Dealer
+                            dealer_phone = dealer.dealer_profile.phone_number
+                            msg = f"You earned KES {dealer_share:,.0f} from a new booking! Wallet Bal: KES {wallet.balance:,.0f}"
+                            send_sms_notification(dealer_phone, msg)
+                            
+                        except Exception as w_err:
+                            print(f"Wallet Credit Error: {w_err}")
+                        # --- WALLET LOGIC ENDS HERE ---
+
                         # Notify Customer
-                        send_sms_notification(payment.phone_number, f"Booking Confirmed! You have hired the {payment.booking.car.make} {payment.booking.car.model}. Receipt: {payment.mpesa_receipt_number}")
+                        send_sms_notification(payment.phone_number, f"Booking Confirmed! Receipt: {payment.mpesa_receipt_number}")
 
                 else:
                     # --- FAILED ---

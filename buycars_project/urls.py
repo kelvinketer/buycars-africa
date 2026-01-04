@@ -79,6 +79,9 @@ urlpatterns = [
     # --- PAYMENTS (M-PESA) ---
     path('payments/', include('payments.urls')), 
 
+    # --- WALLET (EARNINGS) ---
+    path('wallet/', include('wallet.urls')), 
+
     # --- MANUAL ADMIN TOOLS ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),

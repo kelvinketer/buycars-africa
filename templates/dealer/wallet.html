@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col">
+                <h2 class="fw-bold text-dark">My Wallet</h2>
+                <p class="text-muted">Manage your earnings and payouts.</p>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-dark rounded-pill fw-bold">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 bg-dark text-white h-100 overflow-hidden position-relative">
+                    <div class="card-body p-4 position-relative z-2">
+                        <small class="text-white-50 text-uppercase fw-bold ls-1">Available Balance</small>
+                        <h1 class="display-4 fw-bold mb-0 mt-2">KES {{ wallet.balance|intcomma }}</h1>
+                        <p class="text-white-50 mt-2 mb-0">Total Earned: KES {{ wallet.total_earned|intcomma }}</p>
+                    </div>
+                    <div class="position-absolute top-0 end-0 bg-white opacity-10 rounded-circle" style="width: 200px; height: 200px; transform: translate(30%, -30%);"></div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Request Payout</h5>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-light border-0 fw-bold">KES</span>
+                                <input type="number" name="amount" class="form-control bg-light border-0" placeholder="Amount" max="{{ wallet.balance }}" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-light border-0"><i class="fas fa-phone"></i></span>
+                                <input type="text" name="phone" class="form-control bg-light border-0" value="{{ user.dealer_profile.phone_number }}" placeholder="M-Pesa Number" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 rounded-pill fw-bold">
+                                Withdraw Funds
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-4">Recent Transactions</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 rounded-start">Date</th>
+                                <th class="border-0">Description</th>
+                                <th class="border-0">Reference</th>
+                                <th class="border-0 text-end rounded-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in transactions %}
+                            <tr>
+                                <td class="text-muted">{{ txn.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ txn.description }}</div>
+                                    {% if txn.transaction_type == 'CREDIT' %}
+                                        <span class="badge bg-success-subtle text-success rounded-pill" style="font-size: 0.7rem;">INCOME</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger rounded-pill" style="font-size: 0.7rem;">PAYOUT</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">{{ txn.reference }}</td>
+                                <td class="text-end fw-bold {% if txn.transaction_type == 'CREDIT' %}text-success{% else %}text-danger{% endif %}">
+                                    {% if txn.transaction_type == 'CREDIT' %}+{% else %}-{% endif %} 
+                                    KES {{ txn.amount|intcomma }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No transactions yet. Start renting out your cars!</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

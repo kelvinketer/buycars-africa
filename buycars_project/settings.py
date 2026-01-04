@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'cars.apps.CarsConfig',     
     'saas.apps.SaasConfig',
     'payments', # Payment App
+    'wallet',   # <--- NEW WALLET APP ADDED HERE
 ]
 
 MIDDLEWARE = [
