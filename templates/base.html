@@ -63,8 +63,8 @@
                                     <li><a class="dropdown-item" href="{% url 'dealer_showroom' user.username %}"><i class="fas fa-store me-2 text-muted"></i> My Showroom</a></li>
                                     <li><a class="dropdown-item" href="{% url 'profile_settings' %}"><i class="fas fa-cog me-2 text-muted"></i> Settings</a></li>
                                 {% else %}
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-history me-2 text-muted"></i> My Rentals</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2 text-muted"></i> Profile</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'renter_dashboard' %}"><i class="fas fa-history me-2 text-muted"></i> My Rentals</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'renter_dashboard' %}"><i class="fas fa-cog me-2 text-muted"></i> Profile</a></li>
                                 {% endif %}
                                 
                                 <li><hr class="dropdown-divider"></li>
