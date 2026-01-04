@@ -1,6 +1,7 @@
 from django import forms
 from django.utils import timezone
-from .models import Car, CarBooking  # Import CarBooking here
+# FIXED: Imported Booking instead of CarBooking
+from .models import Car, Booking  
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -62,7 +63,8 @@ class CarForm(forms.ModelForm):
 # --- NEW: BOOKING FORM ---
 class CarBookingForm(forms.ModelForm):
     class Meta:
-        model = CarBooking
+        # FIXED: Using the new Booking model
+        model = Booking
         fields = ['start_date', 'end_date']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'id': 'startDate'}),
