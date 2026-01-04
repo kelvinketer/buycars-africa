@@ -10,8 +10,13 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model 
 import re 
 
+# --- NEW IMPORTS FOR EMAIL ---
+from django.core.mail import send_mail
+from django.conf import settings
+
 from users.models import DealerProfile
-from .models import Car, CarImage, CarView, Lead, SearchTerm, CarBooking
+# FIXED: Changed CarBooking to Booking
+from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking 
 from .forms import CarForm, CarBookingForm
 from .utils import render_to_pdf 
 
@@ -121,11 +126,11 @@ def car_detail(request, car_id):
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
-# --- BOOKING LOGIC (FIXED) ---
+# --- BOOKING LOGIC (UPDATED WITH EMAIL) ---
 @login_required
 def book_car(request, car_id):
     """
-    Handles the booking process: Validation, Cost Calculation, and Creation.
+    Handles the booking process: Validation, Cost Calculation, Creation, and Notification.
     """
     car = get_object_or_404(Car, id=car_id)
 
@@ -151,9 +156,10 @@ def book_car(request, car_id):
                 return redirect('book_car', car_id=car.id)
 
             # 4. Check Availability (Prevent Double Booking)
-            is_booked = CarBooking.objects.filter(
+            # FIXED: Using 'Booking' model instead of 'CarBooking'
+            is_booked = Booking.objects.filter(
                 car=car,
-                status__in=['CONFIRMED', 'PAID'],
+                status__in=['APPROVED', 'PAID'], # Updated statuses to match new model
                 start_date__lte=booking.end_date,
                 end_date__gte=booking.start_date
             ).exists()
@@ -167,7 +173,38 @@ def book_car(request, car_id):
             booking.status = 'PENDING' # Waiting for payment
             booking.save()
             
-            # 6. Redirect to Payment (FIXED: NOW REDIRECTS TO CHECKOUT)
+            # --- 6. SEND EMAIL NOTIFICATION TO DEALER ---
+            try:
+                dealer_email = car.dealer.email
+                if dealer_email:
+                    subject = f"New Booking Request: {car.make} {car.model}"
+                    message = f"""
+                    Hello {car.dealer.username},
+
+                    You have received a new booking request for your vehicle.
+
+                    Vehicle: {car.year} {car.make} {car.model}
+                    Renter: {request.user.username} ({request.user.email})
+                    Phone: {getattr(request.user, 'phone_number', 'Not provided')}
+                    
+                    Dates: {booking.start_date} to {booking.end_date} ({days} days)
+                    Total Value: KES {booking.total_cost:,}
+
+                    Please log in to your dashboard to review this request.
+                    """
+                    
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [dealer_email],
+                        fail_silently=True, # Don't crash if email fails
+                    )
+            except Exception as e:
+                print(f"Error sending booking email: {e}")
+            # --------------------------------------------
+
+            # 7. Redirect to Payment (FIXED: NOW REDIRECTS TO CHECKOUT)
             return redirect('checkout', booking_id=booking.id)
 
     else:

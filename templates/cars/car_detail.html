@@ -168,11 +168,8 @@
 
                             <div class="d-grid gap-2">
                                 {% if car.listing_type == 'RENT' %}
-                                    <a href="{% url 'book_car' car.id %}" class="btn btn-primary fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;">
+                                    <a href="#bookingCard" class="btn btn-primary fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;">
                                         <i class="far fa-calendar-check me-2"></i> Book Now
-                                    </a>
-                                    <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" class="btn btn-outline-dark fw-bold py-2 rounded-pill" onclick="trackLead({{ car.id }}, 'CALL')">
-                                        <i class="fas fa-phone-alt me-2"></i> Call to Inquire
                                     </a>
                                 {% else %}
                                     {% if car.dealer.dealer_profile.phone_number %}
@@ -222,36 +219,77 @@
                         </div>
                     </div>
 
-                    {% if car.listing_type != 'RENT' %}
-                    <div class="card border-0 shadow-sm bg-light rounded-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-secondary"></i>Loan Estimator</h5>
-                            <div class="mb-3">
-                                <label class="small text-muted fw-bold">Vehicle Price</label>
-                                <input type="text" class="form-control fw-bold border-0" value="KES {{ car.price|floatformat:0|intcomma }}" disabled>
-                            </div>
-                            <div class="row g-2 mb-3">
-                                <div class="col-6">
-                                    <label class="small text-muted fw-bold">Deposit (30%)</label>
-                                    <input type="text" class="form-control border-0" id="deposit" value="0" readonly>
-                                </div>
-                                <div class="col-6">
-                                    <label class="small text-muted fw-bold">Months</label>
-                                    <select class="form-select border-0" id="months" onchange="calculateLoan()">
-                                        <option value="12">12 Months</option>
-                                        <option value="24">24 Months</option>
-                                        <option value="36" selected>36 Months</option>
-                                        <option value="48">48 Months</option>
-                                        <option value="60">60 Months</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="bg-white p-3 rounded-3 text-center border shadow-sm">
-                                <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Estimated Monthly Pay</small>
-                                <h3 class="text-dark fw-bold mb-0" id="monthlyPayment">...</h3>
+                    {% if car.listing_type == 'RENT' %}
+                        <div id="bookingCard" class="card border-0 shadow-sm bg-light rounded-4">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3"><i class="fas fa-calendar-alt me-2 text-primary"></i>Reserve this Car</h5>
+                                
+                                <form method="POST" action="{% url 'book_car' car.id %}">
+                                    {% csrf_token %}
+                                    
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-6">
+                                            <label class="small text-muted fw-bold">Pick-up</label>
+                                            <input type="date" name="start_date" id="start_date" class="form-control border-0 fw-bold" required onchange="calculateRental()">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="small text-muted fw-bold">Return</label>
+                                            <input type="date" name="end_date" id="end_date" class="form-control border-0 fw-bold" required onchange="calculateRental()">
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-white p-3 rounded-3 border shadow-sm">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted small">Daily Rate</span>
+                                            <span class="fw-bold">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted small">Duration</span>
+                                            <span class="fw-bold" id="totalDays">0 days</span>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="d-flex justify-content-between align-items-end">
+                                            <span class="text-dark small fw-bold text-uppercase">Total Cost</span>
+                                            <h4 class="text-primary fw-bold mb-0" id="totalCost">KES 0</h4>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100 rounded-pill mt-3 fw-bold shadow-sm">
+                                        Request Booking
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                    </div>
+                    {% else %}
+                        <div class="card border-0 shadow-sm bg-light rounded-4">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-secondary"></i>Loan Estimator</h5>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-bold">Vehicle Price</label>
+                                    <input type="text" class="form-control fw-bold border-0" value="KES {{ car.price|floatformat:0|intcomma }}" disabled>
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="small text-muted fw-bold">Deposit (30%)</label>
+                                        <input type="text" class="form-control border-0" id="deposit" value="0" readonly>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small text-muted fw-bold">Months</label>
+                                        <select class="form-select border-0" id="months" onchange="calculateLoan()">
+                                            <option value="12">12 Months</option>
+                                            <option value="24">24 Months</option>
+                                            <option value="36" selected>36 Months</option>
+                                            <option value="48">48 Months</option>
+                                            <option value="60">60 Months</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-3 rounded-3 text-center border shadow-sm">
+                                    <small class="text-muted d-block mb-1 text-uppercase fw-bold" style="font-size: 0.7rem;">Estimated Monthly Pay</small>
+                                    <h3 class="text-dark fw-bold mb-0" id="monthlyPayment">...</h3>
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
 
                 </div>
@@ -293,43 +331,6 @@
     </div>
 </div>
 
-<div class="d-block d-lg-none fixed-bottom bg-white border-top shadow-lg p-3" style="z-index: 1050;">
-    <div class="row g-2 align-items-center">
-        <div class="col-4">
-            <small class="text-muted d-block" style="font-size: 0.7rem;">{% if car.listing_type == 'RENT' %}Daily Rate{% else %}Price{% endif %}</small>
-            <div class="fw-bold text-success text-nowrap" style="font-size: 1.1rem;">
-                {% if car.listing_type == 'RENT' %}
-                    {{ car.rent_price_per_day|floatformat:0|intcomma }}
-                {% else %}
-                    {{ car.price|floatformat:0|intcomma }}
-                {% endif %}
-            </div>
-        </div>
-        <div class="col-8">
-            <div class="d-flex gap-2">
-                {% if car.listing_type == 'RENT' %}
-                    <a href="{% url 'book_car' car.id %}" class="btn btn-primary flex-grow-1 rounded-pill fw-bold">
-                        <i class="far fa-calendar-check"></i> Book Now
-                    </a>
-                {% else %}
-                    {% if car.dealer.dealer_profile.phone_number %}
-                        <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi..." 
-                           target="_blank" class="btn btn-success flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'WHATSAPP')">
-                            <i class="fab fa-whatsapp"></i> Chat
-                        </a>
-                        <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" 
-                           class="btn btn-dark flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'CALL')">
-                            <i class="fas fa-phone"></i> Call
-                        </a>
-                    {% else %}
-                        <button class="btn btn-secondary w-100 rounded-pill" disabled>No Contact</button>
-                    {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
     .hover-lift { transition: transform 0.3s ease; }
     .hover-lift:hover { transform: translateY(-5px); }
@@ -343,7 +344,7 @@
 </style>
 
 <script>
-    // 1. Image Gallery Logic (unchanged)
+    // 1. Image Gallery Logic
     let currentImageIndex = 0;
     const thumbnails = document.querySelectorAll('.thumbnail-wrapper');
     const totalImages = thumbnails.length;
@@ -390,10 +391,10 @@
         }).catch(err => console.log('Tracking error:', err));
     }
 
-    // 3. Loan Calculator (Only runs if element exists)
+    // 3. Loan Calculator (Sale Mode)
     function calculateLoan() {
         const monthsInput = document.getElementById('months');
-        if (!monthsInput) return; // Exit if calculator is hidden (Rental Mode)
+        if (!monthsInput) return; 
 
         const price = {{ car.price|default:0 }};
         const deposit = price * 0.30;
@@ -405,6 +406,40 @@
         document.getElementById('deposit').value = "KES " + Math.floor(deposit).toLocaleString();
         document.getElementById('monthlyPayment').innerText = "KES " + Math.floor(monthly).toLocaleString();
     }
-    document.addEventListener('DOMContentLoaded', calculateLoan);
+    
+    // 4. Rental Calculator (Rent Mode) - NEW!
+    function calculateRental() {
+        const startInput = document.getElementById('start_date');
+        const endInput = document.getElementById('end_date');
+        const totalDaysEl = document.getElementById('totalDays');
+        const totalCostEl = document.getElementById('totalCost');
+        
+        if (!startInput || !endInput) return;
+
+        const start = new Date(startInput.value);
+        const end = new Date(endInput.value);
+        const dailyRate = {{ car.rent_price_per_day|default:0 }};
+
+        if (start && end && end >= start) {
+            // Calculate difference in days (add 1 to include start date)
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+            
+            totalDaysEl.innerText = diffDays + (diffDays === 1 ? " day" : " days");
+            totalCostEl.innerText = "KES " + (diffDays * dailyRate).toLocaleString();
+        } else {
+            totalDaysEl.innerText = "0 days";
+            totalCostEl.innerText = "KES 0";
+        }
+    }
+
+    // Initialize logic on load
+    document.addEventListener('DOMContentLoaded', () => {
+        calculateLoan();
+        // Set min date for rental to today
+        const today = new Date().toISOString().split('T')[0];
+        const startInput = document.getElementById('start_date');
+        if (startInput) startInput.min = today;
+    });
 </script>
 {% endblock %}
