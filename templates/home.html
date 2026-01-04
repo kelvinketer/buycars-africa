@@ -10,102 +10,127 @@
                     url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
-        padding-top: 140px;
-        padding-bottom: 160px;
+        padding-top: 160px;
+        padding-bottom: 180px;
         color: white;
         position: relative;
     }
 
-    /* 2. FLOATING SEARCH CARD */
+    /* 2. FLOATING SEARCH CARD CONTAINER */
     .search-card-container {
-        margin-top: -100px;
+        margin-top: -120px;
         position: relative;
         z-index: 20;
     }
 
+    /* MODERN SEARCH CARD DESIGN */
     .search-card {
-        background: white;
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        overflow: hidden; /* Keeps tabs inside */
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px); /* Glass effect */
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        padding: 40px !important;
     }
 
-    /* --- TAB STYLING --- */
-    .search-tabs {
-        display: flex;
-        border-bottom: 1px solid #eee;
-        background: #f8f9fa;
-        margin: -3rem -3rem 2rem -3rem; 
-        padding: 0 1rem;
-    }
-    
-    @media (max-width: 991px) {
-        .search-tabs { margin: -1.5rem -1.5rem 1.5rem -1.5rem; }
+    /* 3. SEGMENTED CONTROL TABS */
+    .search-tabs-container {
+        background-color: #f1f5f9;
+        padding: 6px;
+        border-radius: 16px;
+        display: inline-flex;
+        margin-bottom: 30px;
+        position: relative;
     }
 
     .search-tab-btn {
         background: transparent;
         border: none;
-        padding: 1.2rem 2rem;
+        padding: 12px 32px;
         font-weight: 600;
-        color: #6c757d;
-        border-bottom: 4px solid transparent;
-        transition: all 0.2s;
-        cursor: pointer;
+        color: #64748b;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
     }
 
     .search-tab-btn:hover {
         color: #0f172a;
-        background: rgba(0,0,0,0.02);
     }
 
+    /* Active State - Looks like a floating card */
     .search-tab-btn.active {
-        color: #dc3545; /* Brand Red */
-        border-bottom-color: #dc3545;
         background: white;
+        color: #dc3545; /* Brand Red */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transform: scale(1.02);
     }
 
-    .search-tab-btn i {
-        margin-right: 8px;
-    }
-
-    /* 3. INPUT STYLING */
+    /* 4. PREMIUM INPUT FIELDS */
     .custom-search-input {
-        height: 55px !important;
-        border-radius: 12px !important;
-        border: 1px solid #f0f0f0;
-        background-color: #f8f9fa;
-        font-size: 1rem;
+        height: 60px !important; /* Taller inputs */
+        border-radius: 16px !important;
+        border: 2px solid transparent; 
+        background-color: #f8fafc;
+        font-size: 0.95rem;
         padding-left: 20px;
+        transition: all 0.2s;
+        color: #334155;
+        font-weight: 600;
     }
+
+    .custom-search-input:hover {
+        background-color: #f1f5f9;
+    }
+
     .custom-search-input:focus {
         background-color: white;
         border-color: #dc3545;
-        box-shadow: none;
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1); /* Soft red glow */
     }
     
     .custom-search-input::placeholder {
         font-weight: 400;
-        color: #6c757d;
+        color: #94a3b8;
     }
 
-    .btn-primary-custom {
-        background-color: #dc3545;
-        color: white;
+    /* Labels above inputs */
+    .input-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        margin-left: 4px;
+        display: block;
+    }
+
+    /* 5. MODERN BUTTON */
+    .btn-find-car {
+        height: 60px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+        box-shadow: 0 10px 15px -3px rgba(220, 53, 69, 0.3);
+        font-weight: 700;
+        letter-spacing: 0.5px;
         border: none;
-        border-radius: 12px;
-        height: 55px;
-        font-weight: 600;
+        width: 100%;
+        color: white;
         transition: all 0.3s;
     }
-    .btn-primary-custom:hover {
-        background-color: #bb2d3b;
+    
+    .btn-find-car:hover {
         transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgba(220, 53, 69, 0.4);
+        background: linear-gradient(135deg, #bb2d3b 0%, #a0202d 100%);
     }
 
-    /* 4. BRAND GRID */
+    /* 6. BRAND GRID & LISTINGS (Keep existing styles) */
     .brand-card {
         background: white;
         border: 1px solid rgba(0,0,0,0.03);
@@ -158,32 +183,31 @@
 </section>
 
 <div class="container search-card-container">
-    <div class="search-card p-4 p-lg-5 mx-auto shadow-lg" style="max-width: 1100px;">
+    <div class="search-card mx-auto shadow-lg" style="max-width: 1100px;">
         
-        <div class="search-tabs">
-            <button type="button" class="search-tab-btn {% if request.GET.listing_type != 'RENT' %}active{% endif %}" onclick="setSearchMode('SALE', this)">
-                <i class="fas fa-car"></i> Buy a Car
-            </button>
-            <button type="button" class="search-tab-btn {% if request.GET.listing_type == 'RENT' %}active{% endif %}" onclick="setSearchMode('RENT', this)">
-                <i class="fas fa-key"></i> Rent a Car
-            </button>
+        <div class="d-flex justify-content-center">
+            <div class="search-tabs-container">
+                <button type="button" class="search-tab-btn {% if request.GET.listing_type != 'RENT' %}active{% endif %}" onclick="setSearchMode('SALE', this)">
+                    <i class="fas fa-car"></i> Buy a Car
+                </button>
+                <button type="button" class="search-tab-btn {% if request.GET.listing_type == 'RENT' %}active{% endif %}" onclick="setSearchMode('RENT', this)">
+                    <i class="fas fa-key"></i> Rent a Car
+                </button>
+            </div>
         </div>
 
-        <form method="GET" action="{% url 'home' %}" id="searchForm">
+        <form method="GET" action="{% url 'home' %}" id="searchForm" class="mt-2">
             <input type="hidden" name="listing_type" id="listing_type_input" value="{{ request.GET.listing_type|default:'SALE' }}">
 
-            <div class="row g-3 align-items-end">
-
+            <div class="row g-3">
                 <div class="col-lg-3 col-md-6">
-                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-search me-1"></i> Keywords</label>
-                    <div class="position-relative">
-                        <input type="text" name="q" class="form-control custom-search-input fw-bold text-dark" style="padding-left: 20px;" placeholder="e.g. Subaru" value="{{ request.GET.q|default:'' }}">
-                    </div>
+                    <label class="input-label"><i class="fas fa-search me-2 text-danger"></i>Keywords</label>
+                    <input type="text" name="q" class="form-control custom-search-input" placeholder="e.g. Subaru Impreza" value="{{ request.GET.q|default:'' }}">
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-map-marker-alt me-1"></i> Location</label>
-                    <select name="region" class="form-select custom-search-input fw-bold text-dark">
+                    <label class="input-label"><i class="fas fa-map-marker-alt me-2 text-danger"></i>Location</label>
+                    <select name="region" class="form-select custom-search-input">
                         <option value="">All Regions</option>
                         {% for code, name in regions %}
                             <option value="{{ code }}" {% if request.GET.region == code %}selected{% endif %}>{{ name }}</option>
@@ -192,8 +216,8 @@
                 </div>
 
                 <div class="col-lg-2 col-md-6">
-                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-car me-1"></i> Make</label>
-                    <select name="make" class="form-select custom-search-input fw-bold text-dark">
+                    <label class="input-label"><i class="fas fa-tag me-2 text-danger"></i>Make</label>
+                    <select name="make" class="form-select custom-search-input">
                         <option value="">All Makes</option>
                         {% for make in all_makes %}
                             <option value="{{ make }}" {% if request.GET.make == make %}selected{% endif %}>{{ make|title }}</option>
@@ -202,9 +226,9 @@
                 </div>
 
                 <div class="col-lg-2 col-md-6">
-                    <label class="small fw-bold text-danger mb-2 ms-1"><i class="fas fa-shapes me-1"></i> Body Type</label>
-                    <select name="body_type" class="form-select custom-search-input fw-bold text-dark">
-                        <option value="">Any Type</option>
+                    <label class="input-label"><i class="fas fa-layer-group me-2 text-danger"></i>Type</label>
+                    <select name="body_type" class="form-select custom-search-input">
+                        <option value="">Any Body</option>
                         {% for bt in all_body_types %}
                             <option value="{{ bt }}" {% if request.GET.body_type == bt %}selected{% endif %}>{{ bt|title }}</option>
                         {% endfor %}
@@ -212,24 +236,24 @@
                 </div>
 
                 <div class="col-lg-2">
-                    <button type="submit" class="btn btn-primary-custom w-100 shadow-sm">
-                        Find Car
+                    <label class="input-label">&nbsp;</label> <button type="submit" class="btn-find-car">
+                        Find Car <i class="fas fa-arrow-right ms-2"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="row g-3 mt-1">
+            <div class="row g-3 mt-2">
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="min_price" class="form-control custom-search-input fw-bold text-dark" style="height: 45px !important; font-size: 0.9rem;" placeholder="Min Price (KES)" value="{{ request.GET.min_price }}">
+                    <input type="number" name="min_price" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" placeholder="Min Price (KES)" value="{{ request.GET.min_price }}">
                 </div>
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="max_price" class="form-control custom-search-input fw-bold text-dark" style="height: 45px !important; font-size: 0.9rem;" placeholder="Max Price (KES)" value="{{ request.GET.max_price }}">
+                    <input type="number" name="max_price" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" placeholder="Max Price (KES)" value="{{ request.GET.max_price }}">
                 </div>
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="min_year" class="form-control custom-search-input fw-bold text-dark" style="height: 45px !important; font-size: 0.9rem;" placeholder="Min Year" value="{{ request.GET.min_year }}">
+                    <input type="number" name="min_year" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" placeholder="Min Year" value="{{ request.GET.min_year }}">
                 </div>
                 <div class="col-lg-3 col-6 d-flex align-items-center justify-content-end">
-                    <a href="{% url 'home' %}" class="text-danger small fw-bold text-decoration-none"><i class="fas fa-undo-alt me-1"></i> Reset Filters</a>
+                    <a href="{% url 'home' %}" class="text-danger small fw-bold text-decoration-none hover-lift"><i class="fas fa-undo-alt me-1"></i> Reset Filters</a>
                 </div>
             </div>
         </form>
@@ -474,7 +498,7 @@
         fetch(`/track/${carId}/${action}/`, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
     }
 
-    // --- UPDATED SCRIPT FOR INSTANT TAB SWITCHING ---
+    // --- SCRIPT FOR INSTANT TAB SWITCHING ---
     function setSearchMode(mode, btnElement) {
         // 1. Update the hidden input
         document.getElementById('listing_type_input').value = mode;

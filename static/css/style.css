@@ -218,3 +218,37 @@ select:focus {
 .hover-opacity-100:hover {
     opacity: 1 !important;
 }
+
+/* --- 9. NEW: PREMIUM DROPDOWN STYLING --- */
+.dropdown-menu {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
+    padding: 10px;
+    margin-top: 15px !important; /* Pushes it down slightly */
+    animation: fadeInDropdown 0.2s ease-out;
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-weight: 500;
+    color: #475569;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #fef2f2; /* Very light red */
+    color: #dc3545;
+    transform: translateX(5px); /* Subtle slide effect */
+}
+
+.dropdown-item i {
+    width: 24px;
+    text-align: center;
+}
