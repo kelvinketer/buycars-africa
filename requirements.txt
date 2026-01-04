@@ -6,6 +6,10 @@ certifi==2025.11.12
 cffi==2.0.0
 charset-normalizer==3.4.4
 cloudinary==1.44.1
+# --- ADDED FOR FORMS FIX ---
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.2
+# ---------------------------
 cryptography==46.0.3
 cssselect2==0.8.0
 dj-database-url==3.0.1

@@ -35,6 +35,8 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'rest_framework', 
+    'crispy_forms',        # <--- ADDED: Critical for forms
+    'crispy_bootstrap5',   # <--- ADDED: Critical for forms styling
 
     # Local Apps
     'users.apps.UsersConfig',   
@@ -189,3 +191,7 @@ MPESA_CALLBACK_URL = config('MPESA_CALLBACK_URL', default='https://buycars-afric
 # --- AFRICA'S TALKING SMS CONFIGURATION ---
 AFRICASTALKING_USERNAME = config('AFRICASTALKING_USERNAME', default='sandbox')
 AFRICASTALKING_API_KEY = config('AFRICASTALKING_API_KEY', default='')
+
+# --- CRISPY FORMS CONFIGURATION (ADDED) ---
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
