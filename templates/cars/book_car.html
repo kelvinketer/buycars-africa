@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <img src="{{ car.images.first.image.url }}" class="w-100" style="height: 250px; object-fit: cover;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold">{{ car.year }} {{ car.make }} {{ car.model }}</h5>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="text-muted small">Daily Rate</span>
+                            <h5 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|intcomma }}</h5>
+                        </div>
+                        <hr>
+                        <ul class="list-unstyled text-muted small mb-0">
+                            <li class="mb-2"><i class="fas fa-gas-pump me-2"></i> {{ car.get_fuel_type_display }}</li>
+                            <li class="mb-2"><i class="fas fa-cog me-2"></i> {{ car.get_transmission_display }}</li>
+                            <li><i class="fas fa-clock me-2"></i> Min. Rental: {{ car.min_hire_days }} Days</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-body p-5">
+                        <h3 class="fw-bold mb-4">Secure Booking</h3>
+                        
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="fw-bold small text-muted mb-1">Pick-up Date</label>
+                                    {{ form.start_date }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="fw-bold small text-muted mb-1">Return Date</label>
+                                    {{ form.end_date }}
+                                </div>
+                            </div>
+
+                            <div class="bg-light p-4 rounded-3 mb-4 border">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Duration:</span>
+                                    <span class="fw-bold" id="daysCount">0 Days</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Rate:</span>
+                                    <span>KES {{ car.rent_price_per_day|intcomma }}/day</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 fw-bold">Total Cost:</h5>
+                                    <h4 class="text-success fw-bold mb-0" id="totalCost">KES 0</h4>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill fw-bold shadow-sm">
+                                <i class="fas fa-lock me-2"></i> Proceed to Payment
+                            </button>
+                            <p class="text-center small text-muted mt-3 mb-0">
+                                <i class="fas fa-shield-alt me-1"></i> Payments are secured by M-Pesa
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const startInput = document.getElementById('startDate');
+        const endInput = document.getElementById('endDate');
+        const daysLabel = document.getElementById('daysCount');
+        const totalLabel = document.getElementById('totalCost');
+        
+        const pricePerDay = {{ car.rent_price_per_day }};
+
+        function calculateTotal() {
+            const start = new Date(startInput.value);
+            const end = new Date(endInput.value);
+
+            if (start && end && end > start) {
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                daysLabel.innerText = diffDays + " Days";
+                
+                const total = diffDays * pricePerDay;
+                totalLabel.innerText = "KES " + total.toLocaleString();
+            } else {
+                daysLabel.innerText = "0 Days";
+                totalLabel.innerText = "KES 0";
+            }
+        }
+
+        startInput.addEventListener('change', calculateTotal);
+        endInput.addEventListener('change', calculateTotal);
+    });
+</script>
+{% endblock %}

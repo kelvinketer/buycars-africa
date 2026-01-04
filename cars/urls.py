@@ -9,6 +9,9 @@ urlpatterns = [
     path('brands/', views.all_brands, name='all_brands'),
     path('pricing/', views.pricing_page, name='pricing'),
     
+    # Rental / Booking URL (NEW)
+    path('book/<int:car_id>/', views.book_car, name='book_car'),
+
     # Tracking
     path('cars/track-action/<int:car_id>/<str:action_type>/', views.track_action, name='track_action'),
 
@@ -18,6 +21,10 @@ urlpatterns = [
     path('dashboard/edit/<int:car_id>/', views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', views.delete_car, name='delete_car'),
     
-    # NEW: Set Main Image URL
+    # Image Management
     path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', views.set_main_image, name='set_main_image'),
+    path('dashboard/image/<int:image_id>/delete/', views.delete_car_image, name='delete_car_image'),
+
+    # Quick Actions
+    path('dashboard/car/<int:car_id>/mark-sold/', views.mark_as_sold, name='mark_as_sold'),
 ]

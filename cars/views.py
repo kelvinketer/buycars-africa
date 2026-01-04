@@ -11,8 +11,10 @@ from django.contrib.auth import get_user_model
 import re 
 
 from users.models import DealerProfile
-from .models import Car, CarImage, CarView, Lead, SearchTerm
-from .forms import CarForm 
+# 1. UPDATE IMPORTS: Added CarBooking
+from .models import Car, CarImage, CarView, Lead, SearchTerm, CarBooking
+# 2. UPDATE IMPORTS: Added CarBookingForm
+from .forms import CarForm, CarBookingForm
 from .utils import render_to_pdf 
 
 User = get_user_model() 
@@ -35,6 +37,7 @@ def public_homepage(request):
     Renders the Homepage. Matches variables expected by home.html
     """
     featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
+    # Show Available, Reserved, Sold cars
     cars = Car.objects.filter(status__in=['AVAILABLE', 'RESERVED', 'SOLD']).order_by('status', '-created_at')
     
     q = request.GET.get('q')
@@ -97,6 +100,66 @@ def car_detail(request, car_id):
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
+# --- NEW: BOOKING LOGIC ---
+@login_required
+def book_car(request, car_id):
+    """
+    Handles the booking process: Validation, Cost Calculation, and Creation.
+    """
+    car = get_object_or_404(Car, id=car_id)
+
+    # 1. Security Check: Is this car actually for rent?
+    if car.listing_type == 'SALE':
+        messages.error(request, "This vehicle is not available for hire.")
+        return redirect('car_detail', car_id=car.id)
+
+    if request.method == 'POST':
+        form = CarBookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.car = car
+            booking.customer = request.user
+            
+            # 2. Calculate Duration & Cost
+            delta = booking.end_date - booking.start_date
+            days = delta.days
+            
+            # 3. Validation: Minimum Hire Days
+            if days < car.min_hire_days:
+                messages.error(request, f"Minimum rental period for this car is {car.min_hire_days} days.")
+                return redirect('book_car', car_id=car.id)
+
+            # 4. Check Availability (Prevent Double Booking)
+            is_booked = CarBooking.objects.filter(
+                car=car,
+                status__in=['CONFIRMED', 'PAID'],
+                start_date__lte=booking.end_date,
+                end_date__gte=booking.start_date
+            ).exists()
+
+            if is_booked:
+                messages.error(request, "This car is already booked for those dates. Please choose different dates.")
+                return redirect('book_car', car_id=car.id)
+
+            # 5. Finalize Booking Record
+            booking.total_cost = days * (car.rent_price_per_day or 0)
+            booking.status = 'PENDING' # Waiting for payment
+            booking.save()
+            
+            # 6. Redirect to Payment (Placeholder)
+            messages.success(request, f"Booking initialized! Total: KES {booking.total_cost}. Payment integration coming soon.")
+            # Ideally redirect to a payment page or dashboard
+            return redirect('dealer_dashboard') 
+
+    else:
+        form = CarBookingForm()
+
+    return render(request, 'cars/book_car.html', {
+        'car': car, 
+        'form': form,
+        'min_date': timezone.now().date().isoformat()
+    })
+
 def track_action(request, car_id, action_type):
     car = get_object_or_404(Car, id=car_id)
     action_type = action_type.upper()
@@ -134,7 +197,7 @@ def dealer_showroom(request, username):
 @login_required
 def dealer_dashboard(request):
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
-    total_value = sum(car.price for car in my_cars)
+    total_value = sum(car.price for car in my_cars if car.price) # Added check if price is None
     car_count = my_cars.count()
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     
@@ -543,4 +606,4 @@ def platform_dashboard(request):
             'pro': pro_users
         }
     }
-    return render(request, 'saas/platform_dashboard.html', context)
+    return rendser(request, 'saas/platform_dashboard.html', context)

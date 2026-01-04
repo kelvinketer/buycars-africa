@@ -37,7 +37,10 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
-    # --- DEALER LANDING PAGE (NEW) ---
+    # --- [NEW] BOOKING PAGE ---
+    path('book/<int:car_id>/', car_views.book_car, name='book_car'),
+
+    # --- DEALER LANDING PAGE ---
     path('sell/', TemplateView.as_view(template_name='saas/sell.html'), name='sell_page'),
 
     # --- LEAD TRACKING ---
@@ -52,7 +55,7 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('add-car/', car_views.add_car, name='add_car'),
     
-    # [NEW] MONTHLY REPORT PDF ROUTE
+    # MONTHLY REPORT PDF ROUTE
     path('dashboard/report/', car_views.download_report, name='download_report'),
     
     # --- PRICING PAGE ---
@@ -65,6 +68,9 @@ urlpatterns = [
     # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
+    
+    # --- [NEW] MARK AS SOLD ---
+    path('dashboard/car/<int:car_id>/mark-sold/', car_views.mark_as_sold, name='mark_as_sold'),
 
     # --- IMAGE MANAGEMENT ---
     path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', car_views.set_main_image, name='set_main_image'),
@@ -73,8 +79,7 @@ urlpatterns = [
     # --- PAYMENTS (M-PESA) ---
     path('payments/', include('payments.urls')), 
 
-    # --- NEW: MANUAL ADMIN TOOLS (The Magic Links) ---
-    # These allow you to trigger background tasks manually from the browser
+    # --- MANUAL ADMIN TOOLS ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
 ]

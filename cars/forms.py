@@ -1,5 +1,6 @@
 from django import forms
-from .models import Car
+from django.utils import timezone
+from .models import Car, CarBooking  # Import CarBooking here
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -57,3 +58,29 @@ class CarForm(forms.ModelForm):
             'min_hire_days': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1', 'id': 'id_min_days'}),
             'is_available_for_rent': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+# --- NEW: BOOKING FORM ---
+class CarBookingForm(forms.ModelForm):
+    class Meta:
+        model = CarBooking
+        fields = ['start_date', 'end_date']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'id': 'startDate'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'id': 'endDate'}),
+        }
+
+    def clean(self):
+        """
+        Validates that dates are in the future and end date is after start date.
+        """
+        cleaned_data = super().clean()
+        start = cleaned_data.get("start_date")
+        end = cleaned_data.get("end_date")
+
+        if start and end:
+            if start < timezone.now().date():
+                 raise forms.ValidationError("Start date cannot be in the past.")
+            if end <= start:
+                raise forms.ValidationError("End date must be after start date.")
+        
+        return cleaned_data
