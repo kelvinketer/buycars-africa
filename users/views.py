@@ -9,20 +9,22 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.management import call_command
 
-# --- NEW IMPORTS FOR DEBUGGING ---
+# --- DEBUGGING TOOLS IMPORTS ---
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
 
+# --- LOCAL IMPORTS ---
 from .models import DealerProfile
-# UPDATED: Added CustomerSignUpForm
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CustomerSignUpForm
 from payments.models import Payment   
 from cars.models import Car, Lead, SearchTerm
 
 User = get_user_model()
 
-# --- AUTHENTICATION VIEWS ---
+# ==========================================
+#      AUTHENTICATION & SIGNUP FLOWS
+# ==========================================
 
 def select_account(request):
     """
@@ -32,7 +34,8 @@ def select_account(request):
 
 def customer_signup(request):
     """
-    Handles registration for Renters (Buyers) verifying their ID.
+    Handles registration for Renters (Buyers).
+    Includes UX FIX: Redirects back to the previous page (e.g., Booking) if 'next' is present.
     """
     if request.method == 'POST':
         form = CustomerSignUpForm(request.POST, request.FILES)
@@ -40,6 +43,13 @@ def customer_signup(request):
             user = form.save()
             login(request, user)
             messages.success(request, "Account created successfully! You can now book cars.")
+            
+            # --- UX FIX: Redirect back to the booking page if applicable ---
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+            # -------------------------------------------------------------
+            
             return redirect('home') 
     else:
         form = CustomerSignUpForm()
@@ -48,12 +58,13 @@ def customer_signup(request):
 def signup_view(request):
     """
     Handles registration for Dealers.
+    Redirects to Dealer Dashboard upon success.
     """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Ensure we create the profile immediately
+            # Ensure we create the profile immediately for Dealers
             DealerProfile.objects.create(user=user, business_name=f"{user.username}'s Yard")
             login(request, user)
             return redirect('dealer_dashboard')
@@ -62,18 +73,28 @@ def signup_view(request):
     return render(request, 'auth/signup.html', {'form': form})
 
 def login_view(request):
+    """
+    Smart Login: Redirects users based on their Role (Admin, Dealer, or Renter).
+    """
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            
+            # 1. If there is a 'next' param (e.g. they were trying to book), go there first
             if 'next' in request.GET:
                 return redirect(request.GET.get('next'))
+            
+            # 2. Super Admin -> CEO Dashboard
             if user.is_superuser:
                 return redirect('admin_dashboard')
-            # Redirect Dealers to Dashboard, Renters to Home
+            
+            # 3. Dealer -> Dealer Dashboard
             if hasattr(user, 'dealer_profile'):
                 return redirect('dealer_dashboard')
+            
+            # 4. Renter/Regular User -> Homepage
             return redirect('home')
     else:
         form = AuthenticationForm()
@@ -84,7 +105,10 @@ def logout_view(request):
     messages.info(request, "You have successfully logged out.")
     return redirect('home')
 
-# --- DEALER PROFILE SETTINGS ---
+# ==========================================
+#      DEALER SETTINGS & PROFILE
+# ==========================================
+
 @login_required
 def profile_settings(request):
     # Only allow Dealers to access this

@@ -4,29 +4,42 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-danger text-white text-center py-3">
-                    <h4 class="mb-0">Dealer Login</h4>
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <h4 class="mb-0 fw-bold">Welcome Back</h4>
+                    <p class="small text-white-50 mb-0">Sign in to manage your account</p>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-4 p-md-5">
                     <form method="POST">
                         {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger small py-2">
+                                Invalid username or password.
+                            </div>
+                        {% endif %}
+
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-control" required>
+                            <label class="form-label fw-bold small text-muted">Username</label>
+                            <input type="text" name="username" class="form-control form-control-lg bg-light border-0" placeholder="Enter your username" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted">Password</label>
+                            <input type="password" name="password" class="form-control form-control-lg bg-light border-0" placeholder="••••••••" required>
                         </div>
                         
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-dark btn-lg">Sign In</button>
+                            <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold">Sign In</button>
                         </div>
                     </form>
                 </div>
                 <div class="card-footer text-center bg-white border-top-0 pb-4">
-                    <p class="mb-0">New Dealer? <a href="{% url 'signup' %}" class="text-danger fw-bold">Create Account</a></p>
+                    <p class="mb-0 text-muted">
+                        Don't have an account? 
+                        <a href="{% url 'select_account' %}?next={{ request.GET.next }}" class="text-danger fw-bold text-decoration-none">
+                            Create Account
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
