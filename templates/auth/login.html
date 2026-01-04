@@ -9,7 +9,7 @@
                     
                     <div class="text-center mb-4">
                         <h2 class="fw-bold">Welcome Back</h2>
-                        <p class="text-muted">Sign in to manage your car inventory</p>
+                        <p class="text-muted">Sign in to manage your account</p>
                     </div>
 
                     <form method="POST">
@@ -64,8 +64,8 @@
                         <div class="text-center">
                             <p class="small text-muted mb-0">
                                 Don't have an account? 
-                                <a href="{% url 'signup' %}" class="text-decoration-none fw-bold text-danger">
-                                    Register as a Dealer
+                                <a href="{% url 'select_account' %}?next={{ request.GET.next }}" class="text-decoration-none fw-bold text-danger">
+                                    Create Account
                                 </a>
                             </p>
                         </div>
