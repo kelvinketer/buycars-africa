@@ -9,18 +9,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 from .models import Payment
+from .forms import PaymentForm
 from .mpesa import MpesaClient
 from users.models import DealerProfile
+from cars.models import CarBooking  # <--- CRITICAL IMPORT
 
-# --- HELPER: SEND SMS (AFRICA'S TALKING) ---
+# --- HELPER: SEND SMS ---
 def send_sms_notification(phone_number, message):
     username = settings.AFRICASTALKING_USERNAME
     api_key = settings.AFRICASTALKING_API_KEY
     
     if not api_key or not username or username == 'sandbox':
-        print("Africa's Talking credentials missing or in sandbox mode.")
-        # In production, remove this return to ensure SMS sends
-        if settings.DEBUG: return 
+        if settings.DEBUG: print(f"Mock SMS to {phone_number}: {message}")
+        return 
 
     try:
         africastalking.initialize(username, api_key)
@@ -36,50 +37,84 @@ def send_sms_notification(phone_number, message):
     except Exception as e:
         print(f"Error sending SMS: {str(e)}")
 
-# --- VIEW 1: TRIGGER STK PUSH (AJAX) ---
+# --- VIEW: CHECKOUT PAGE ---
+@login_required
+def checkout(request, booking_id):
+    booking = get_object_or_404(CarBooking, id=booking_id, customer=request.user)
+    
+    if booking.status == 'PAID':
+        messages.info(request, "This booking is already paid for.")
+        return redirect('home')
+
+    form = PaymentForm()
+    return render(request, 'payments/checkout.html', {
+        'booking': booking,
+        'form': form
+    })
+
+# --- API: TRIGGER STK PUSH ---
 @login_required
 @csrf_exempt
 def initiate_payment(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            plan_type = data.get('plan_type') # 'LITE' or 'PRO'
             phone_number = data.get('phone_number')
-
-            # 1. Define Prices (Server-Side Validation)
-            PRICES = {'STARTER': 1500, 'LITE': 5000, 'PRO': 12000}
-            amount = PRICES.get(plan_type)
             
-            if not amount:
-                return JsonResponse({'status': 'error', 'message': 'Invalid Plan Selected'})
+            # Scenario A: Dealer Subscription
+            plan_type = data.get('plan_type') 
+            
+            # Scenario B: Car Booking
+            booking_id = data.get('booking_id')
 
-            # 2. Trigger M-PESA STK Push using our Class
+            amount = 0
+            account_ref = "BuyCars"
+            description = ""
+            booking_obj = None
+
+            if plan_type:
+                # Subscription Logic
+                PRICES = {'STARTER': 1500, 'LITE': 5000, 'PRO': 12000}
+                amount = PRICES.get(plan_type)
+                account_ref = f"Plan {plan_type}"
+                description = f"Upgrade to {plan_type}"
+            
+            elif booking_id:
+                # Booking Logic
+                booking_obj = get_object_or_404(CarBooking, id=booking_id)
+                amount = int(booking_obj.total_cost) # Ensure integer
+                account_ref = f"CarHire {booking_id}"
+                description = f"Rent {booking_obj.car.make} {booking_obj.car.model}"
+            
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid Payment Type'})
+
+            # Trigger M-PESA
             client = MpesaClient()
             response = client.stk_push(
                 phone_number=phone_number,
                 amount=amount, 
-                account_reference=f"BuyCars {plan_type.title()}"
+                account_reference=account_ref
             )
 
-            # 3. Handle M-Pesa Response
             if response.get('ResponseCode') == '0':
-                # Success! Save Pending Payment
+                # Create Payment Record
                 Payment.objects.create(
                     user=request.user,
+                    booking=booking_obj, # Link if it exists
                     phone_number=phone_number,
                     amount=amount,
                     checkout_request_id=response['CheckoutRequestID'],
                     merchant_request_id=response.get('MerchantRequestID'),
-                    plan_type=plan_type,
+                    plan_type=plan_type, # Save if exists
                     status='PENDING',
-                    description=f"Upgrade to {plan_type} Plan"
+                    description=description
                 )
                 return JsonResponse({
                     'status': 'success', 
-                    'message': 'STK Push sent! Check your phone to enter PIN.'
+                    'message': 'STK Push sent! Check your phone.'
                 })
             else:
-                # M-Pesa rejected it (e.g., wrong number format)
                 return JsonResponse({
                     'status': 'error', 
                     'message': response.get('errorMessage', 'Failed to initiate payment.')
@@ -88,14 +123,11 @@ def initiate_payment(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
-# --- VIEW 2: M-PESA CALLBACK (WEBHOOK) ---
+# --- API: M-PESA CALLBACK ---
 @csrf_exempt
 def mpesa_callback(request):
-    """
-    Safaricom hits this URL when the user enters their PIN (or cancels).
-    """
     if request.method == 'POST':
         try:
             body = json.loads(request.body)
@@ -105,43 +137,41 @@ def mpesa_callback(request):
             result_code = stk_callback.get('ResultCode')
             result_desc = stk_callback.get('ResultDesc', 'No description')
             
-            # Find the transaction
             payment = Payment.objects.filter(checkout_request_id=checkout_request_id).first()
             
             if payment:
                 if result_code == 0:
-                    # --- SUCCESSFUL PAYMENT ---
+                    # --- SUCCESS ---
                     payment.status = 'SUCCESS'
                     payment.description = 'Payment confirmed'
                     
-                    # Extract Receipt Number
+                    # Extract Receipt
                     items = stk_callback.get('CallbackMetadata', {}).get('Item', [])
                     for item in items:
                         if item.get('Name') == 'MpesaReceiptNumber':
                             payment.mpesa_receipt_number = item.get('Value')
-                    
                     payment.save()
                     
-                    # --- UPGRADE DEALER LOGIC ---
-                    try:
-                        profile = DealerProfile.objects.get(user=payment.user)
-                        
-                        # Apply Plan Upgrade
-                        profile.plan_type = payment.plan_type
-                        
-                        # Set Expiry to 30 days from NOW
-                        profile.subscription_expiry = timezone.now() + timedelta(days=30)
-                        profile.save()
+                    # LOGIC 1: Handle Dealer Subscription
+                    if payment.plan_type:
+                        try:
+                            profile = DealerProfile.objects.get(user=payment.user)
+                            profile.plan_type = payment.plan_type
+                            profile.subscription_expiry = timezone.now() + timedelta(days=30)
+                            profile.save()
+                            send_sms_notification(payment.phone_number, f"Plan Active! Receipt: {payment.mpesa_receipt_number}")
+                        except: pass
 
-                        # Send SMS
-                        msg = f"Confirmed! Your {payment.plan_type} Plan is active. Receipt: {payment.mpesa_receipt_number}. Happy selling!"
-                        send_sms_notification(payment.phone_number, msg)
+                    # LOGIC 2: Handle Car Booking
+                    if payment.booking:
+                        payment.booking.status = 'PAID'
+                        payment.booking.save()
                         
-                    except DealerProfile.DoesNotExist:
-                        print(f"Error: DealerProfile not found for user {payment.user.id}")
+                        # Notify Customer
+                        send_sms_notification(payment.phone_number, f"Booking Confirmed! You have hired the {payment.booking.car.make} {payment.booking.car.model}. Receipt: {payment.mpesa_receipt_number}")
 
                 else:
-                    # --- FAILED/CANCELLED PAYMENT ---
+                    # --- FAILED ---
                     payment.status = 'FAILED'
                     payment.description = result_desc
                     payment.save()
@@ -154,12 +184,9 @@ def mpesa_callback(request):
             
     return JsonResponse({'error': 'Only POST allowed'}, status=400)
 
-# --- VIEW 3: CHECK STATUS (POLLING) ---
+# --- API: CHECK STATUS (POLLING) ---
 @login_required
 def check_payment_status(request):
-    """
-    Frontend calls this every 2 seconds to check if payment is complete.
-    """
     # Get the most recent transaction for this user
     payment = Payment.objects.filter(user=request.user).order_by('-created_at').first()
     
