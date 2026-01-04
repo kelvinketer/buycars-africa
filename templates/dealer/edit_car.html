@@ -121,11 +121,41 @@
                                     </div>
                                 </div>
                                 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold small text-uppercase text-muted">Selling Price (KES)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text fw-bold bg-light border-end-0 text-muted">KES</span>
-                                        {{ form.price }}
+                                <div class="mb-4 bg-white border rounded-3 p-3">
+                                    <h6 class="fw-bold text-dark mb-3">Pricing & Type</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-uppercase text-muted text-danger">Listing Type</label>
+                                        {{ form.listing_type }}
+                                    </div>
+
+                                    <div class="mb-3" id="sellingPriceContainer">
+                                        <label class="form-label fw-bold small text-uppercase text-muted">Selling Price (KES)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text fw-bold bg-light border-end-0 text-muted">KES</span>
+                                            {{ form.price }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3" id="rentalFieldsContainer" style="display:none;">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small text-uppercase text-muted text-primary">Daily Rate</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text fw-bold bg-light border-end-0 text-muted">KES</span>
+                                                {{ form.rent_price_per_day }}
+                                                <span class="input-group-text bg-light text-muted small">/day</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold small text-uppercase text-muted">Min Days</label>
+                                            {{ form.min_hire_days }}
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-check">
+                                                {{ form.is_available_for_rent }}
+                                                <label class="form-check-label text-muted small">Available for Hire</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -198,7 +228,7 @@
 </div>
 
 <script>
-    // Image Preview Logic
+    // 1. Image Preview Logic
     document.addEventListener('DOMContentLoaded', function() {
         const imageInput = document.querySelector('input[type="file"]');
         const previewContainer = document.getElementById('imagePreviewContainer');
@@ -240,6 +270,37 @@
                     uploadPrompt.classList.remove('d-none');
                 }
             });
+        }
+    });
+
+    // 2. TOGGLE PRICE FIELDS LOGIC (SALE vs RENT)
+    document.addEventListener("DOMContentLoaded", function() {
+        const listingTypeSelect = document.getElementById('id_listing_type');
+        const sellingPriceContainer = document.getElementById('sellingPriceContainer');
+        const rentalFieldsContainer = document.getElementById('rentalFieldsContainer');
+
+        function toggleFields() {
+            const type = listingTypeSelect.value;
+            
+            if (type === 'SALE') {
+                sellingPriceContainer.style.display = 'block';
+                rentalFieldsContainer.style.display = 'none';
+            } 
+            else if (type === 'RENT') {
+                sellingPriceContainer.style.display = 'none';
+                rentalFieldsContainer.style.display = 'flex'; // Ensure flex layout for row
+            } 
+            else { 
+                // BOTH
+                sellingPriceContainer.style.display = 'block';
+                rentalFieldsContainer.style.display = 'flex';
+            }
+        }
+
+        if (listingTypeSelect) {
+            listingTypeSelect.addEventListener('change', toggleFields);
+            // Run on load to set initial state
+            toggleFields();
         }
     });
 </script>

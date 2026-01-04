@@ -3,8 +3,8 @@
 {% load custom_filters %} 
 
 {% block head_extra %}
-    <meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} | KES {{ car.price|floatformat:0|intcomma }}">
-    <meta property="og:description" content="For sale in {{ car.dealer.dealer_profile.get_city_display|default:'Nairobi' }}. {{ car.get_transmission_display }}, {{ car.get_fuel_type_display }}. Click to view full details.">
+    <meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} | {% if car.listing_type == 'RENT' %}KES {{ car.rent_price_per_day|floatformat:0|intcomma }}/day{% else %}KES {{ car.price|floatformat:0|intcomma }}{% endif %}">
+    <meta property="og:description" content="{{ car.listing_type|title }} in {{ car.dealer.dealer_profile.get_city_display|default:'Nairobi' }}. {{ car.get_transmission_display }}, {{ car.get_fuel_type_display }}. Click to view full details.">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="product">
     
@@ -31,19 +31,18 @@
             <div class="col-lg-8">
                 
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 mb-lg-4">
-                    
                     <div class="position-relative d-flex align-items-center justify-content-center" 
                          style="height: 500px; min-height: 350px; background-color: #f1f5f9;">
                         
-                        {% if car.status != 'AVAILABLE' %}
-                            <div class="position-absolute top-0 end-0 m-3 z-3">
-                                {% if car.status == 'SOLD' %}
-                                    <span class="badge bg-danger fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">SOLD OUT</span>
-                                {% elif car.status == 'RESERVED' %}
-                                    <span class="badge bg-warning text-dark fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">RESERVED</span>
-                                {% endif %}
-                            </div>
-                        {% endif %}
+                        <div class="position-absolute top-0 end-0 m-3 z-3">
+                            {% if car.status == 'SOLD' %}
+                                <span class="badge bg-danger fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">SOLD OUT</span>
+                            {% elif car.status == 'RESERVED' %}
+                                <span class="badge bg-warning text-dark fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">RESERVED</span>
+                            {% elif car.listing_type == 'RENT' %}
+                                <span class="badge bg-primary fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">FOR HIRE</span>
+                            {% endif %}
+                        </div>
 
                         {% if car.images.first %}
                             <img id="mainImage" src="{{ car.images.first.image.url }}" 
@@ -89,7 +88,12 @@
                 <div class="d-block d-lg-none mb-4">
                     <h3 class="fw-bold mb-1 text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h3>
                     <div class="text-muted small mb-2"><i class="far fa-clock me-1 text-muted"></i> Listed {{ car.created_at|naturaltime }}</div>
-                    <h2 class="text-success fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
+                    
+                    {% if car.listing_type == 'RENT' %}
+                        <h2 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}<small class="fs-6 text-muted">/day</small></h2>
+                    {% else %}
+                        <h2 class="text-success fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
+                    {% endif %}
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4 mb-4 d-block d-lg-none">
@@ -125,19 +129,11 @@
                         <ul class="list-unstyled text-muted small mb-0" style="line-height: 1.8;">
                             <li class="mb-3 d-flex">
                                 <i class="fas fa-check-circle text-primary me-2 mt-1"></i> 
-                                <div><strong>Meet in a safe public place.</strong> Avoid secluded areas or private homes.</div>
+                                <div><strong>Meet in a safe public place.</strong> Avoid secluded areas.</div>
                             </li>
                             <li class="mb-3 d-flex">
                                 <i class="fas fa-check-circle text-primary me-2 mt-1"></i> 
-                                <div><strong>Inspect before you pay.</strong> Never send money for "booking fees" upfront.</div>
-                            </li>
-                            <li class="mb-3 d-flex">
-                                <i class="fas fa-check-circle text-primary me-2 mt-1"></i> 
-                                <div><strong>Verify the paperwork.</strong> Ensure the logbook details match the seller's ID.</div>
-                            </li>
-                            <li class="d-flex">
-                                <i class="fas fa-check-circle text-primary me-2 mt-1"></i> 
-                                <div><strong>Bring a mechanic.</strong> Have an expert check the engine and condition.</div>
+                                <div><strong>Inspect before you pay.</strong> Never send money upfront.</div>
                             </li>
                         </ul>
                     </div>
@@ -154,21 +150,37 @@
                             <div class="mb-3">
                                 <h2 class="fw-bold mb-1 text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h2>
                                 <div class="text-muted small mb-3"><i class="far fa-clock me-1 text-muted"></i> Listed {{ car.created_at|naturaltime }}</div>
-                                <h2 class="text-success fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
+                                
+                                {% if car.listing_type == 'RENT' %}
+                                    <h2 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}<small class="fs-6 text-muted">/day</small></h2>
+                                {% else %}
+                                    <h2 class="text-success fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
+                                {% endif %}
                             </div>
                             <hr class="text-muted opacity-25">
+                            
                             <div class="row g-2 mb-4">
                                 <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border h-100"><i class="fas fa-gas-pump text-muted mb-2"></i><div class="small fw-bold text-dark">{{ car.get_fuel_type_display }}</div></div></div>
                                 <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border h-100"><i class="fas fa-cog text-muted mb-2"></i><div class="small fw-bold text-dark">{{ car.get_transmission_display }}</div></div></div>
                                 <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border h-100"><i class="fas fa-car-side text-muted mb-2"></i><div class="small fw-bold text-dark">{{ car.body_type }}</div></div></div>
                                 <div class="col-6"><div class="bg-light rounded-3 p-3 text-center border h-100"><i class="fas fa-tachometer-alt text-muted mb-2"></i><div class="small fw-bold text-dark">{{ car.engine_size }} cc</div></div></div>
                             </div>
+
                             <div class="d-grid gap-2">
-                                {% if car.dealer.dealer_profile.phone_number %}
-                                    <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I saw your {{ car.year }} {{ car.make }} {{ car.model }} listed on BuyCars.Africa for KES {{ car.price|floatformat:0|intcomma }}. Is it still available?" target="_blank" class="btn btn-success fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;" onclick="trackLead({{ car.id }}, 'WHATSAPP')"><i class="fab fa-whatsapp fa-lg me-2"></i> Chat on WhatsApp</a>
-                                    <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" class="btn btn-outline-dark fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;" onclick="trackLead({{ car.id }}, 'CALL')"><i class="fas fa-phone-alt me-2"></i> Call Seller</a>
+                                {% if car.listing_type == 'RENT' %}
+                                    <a href="{% url 'book_car' car.id %}" class="btn btn-primary fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;">
+                                        <i class="far fa-calendar-check me-2"></i> Book Now
+                                    </a>
+                                    <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" class="btn btn-outline-dark fw-bold py-2 rounded-pill" onclick="trackLead({{ car.id }}, 'CALL')">
+                                        <i class="fas fa-phone-alt me-2"></i> Call to Inquire
+                                    </a>
                                 {% else %}
-                                    <button class="btn btn-secondary py-2 rounded-pill" disabled>Contact Info Hidden</button>
+                                    {% if car.dealer.dealer_profile.phone_number %}
+                                        <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I saw your {{ car.year }} {{ car.make }} {{ car.model }} listed on BuyCars.Africa. Is it available?" target="_blank" class="btn btn-success fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;" onclick="trackLead({{ car.id }}, 'WHATSAPP')"><i class="fab fa-whatsapp fa-lg me-2"></i> Chat on WhatsApp</a>
+                                        <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" class="btn btn-outline-dark fw-bold py-2 rounded-pill shadow-sm d-flex align-items-center justify-content-center" style="height: 45px;" onclick="trackLead({{ car.id }}, 'CALL')"><i class="fas fa-phone-alt me-2"></i> Call Seller</a>
+                                    {% else %}
+                                        <button class="btn btn-secondary py-2 rounded-pill" disabled>Contact Info Hidden</button>
+                                    {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -210,6 +222,7 @@
                         </div>
                     </div>
 
+                    {% if car.listing_type != 'RENT' %}
                     <div class="card border-0 shadow-sm bg-light rounded-4">
                         <div class="card-body p-4">
                             <h5 class="fw-bold mb-3"><i class="fas fa-calculator me-2 text-secondary"></i>Loan Estimator</h5>
@@ -239,6 +252,7 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
 
                 </div>
             </div>
@@ -252,7 +266,6 @@
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-lift">
                         <div class="position-relative">
-                            <span class="position-absolute top-0 start-0 m-2 badge bg-dark bg-opacity-75 text-white shadow-sm fw-bold z-2 rounded-2">{{ similar.year }}</span>
                             <a href="{% url 'car_detail' similar.id %}">
                                 <div style="height: 180px; overflow: hidden;">
                                     {% if similar.images.first %}
@@ -265,7 +278,6 @@
                         </div>
                         <div class="card-body p-3 d-flex flex-column">
                             <h6 class="fw-bold text-dark mb-2 text-truncate">{{ similar.make }} {{ similar.model }}</h6>
-                            <div class="text-muted small mb-3"><i class="far fa-clock me-1 text-muted"></i> Listed {{ similar.created_at|naturaltime }}</div>
                             <div class="mt-auto d-flex justify-content-between align-items-center">
                                 <h6 class="text-success fw-bold mb-0">KES {{ similar.price|floatformat:0|intcomma }}</h6>
                                 <a href="{% url 'car_detail' similar.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
@@ -284,22 +296,34 @@
 <div class="d-block d-lg-none fixed-bottom bg-white border-top shadow-lg p-3" style="z-index: 1050;">
     <div class="row g-2 align-items-center">
         <div class="col-4">
-            <small class="text-muted d-block" style="font-size: 0.7rem;">Price</small>
-            <div class="fw-bold text-success text-nowrap" style="font-size: 1.1rem;">{{ car.price|floatformat:0|intcomma }}</div>
+            <small class="text-muted d-block" style="font-size: 0.7rem;">{% if car.listing_type == 'RENT' %}Daily Rate{% else %}Price{% endif %}</small>
+            <div class="fw-bold text-success text-nowrap" style="font-size: 1.1rem;">
+                {% if car.listing_type == 'RENT' %}
+                    {{ car.rent_price_per_day|floatformat:0|intcomma }}
+                {% else %}
+                    {{ car.price|floatformat:0|intcomma }}
+                {% endif %}
+            </div>
         </div>
         <div class="col-8">
             <div class="d-flex gap-2">
-                {% if car.dealer.dealer_profile.phone_number %}
-                    <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I saw your {{ car.year }} {{ car.make }} {{ car.model }} listed on BuyCars.Africa for KES {{ car.price|floatformat:0|intcomma }}. Is it still available?" 
-                       target="_blank" class="btn btn-success flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'WHATSAPP')">
-                        <i class="fab fa-whatsapp"></i> Chat
-                    </a>
-                    <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" 
-                       class="btn btn-dark flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'CALL')">
-                        <i class="fas fa-phone"></i> Call
+                {% if car.listing_type == 'RENT' %}
+                    <a href="{% url 'book_car' car.id %}" class="btn btn-primary flex-grow-1 rounded-pill fw-bold">
+                        <i class="far fa-calendar-check"></i> Book Now
                     </a>
                 {% else %}
-                    <button class="btn btn-secondary w-100 rounded-pill" disabled>No Contact</button>
+                    {% if car.dealer.dealer_profile.phone_number %}
+                        <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi..." 
+                           target="_blank" class="btn btn-success flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'WHATSAPP')">
+                            <i class="fab fa-whatsapp"></i> Chat
+                        </a>
+                        <a href="tel:{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}" 
+                           class="btn btn-dark flex-grow-1 rounded-pill fw-bold" onclick="trackLead({{ car.id }}, 'CALL')">
+                            <i class="fas fa-phone"></i> Call
+                        </a>
+                    {% else %}
+                        <button class="btn btn-secondary w-100 rounded-pill" disabled>No Contact</button>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
@@ -313,13 +337,13 @@
         body { padding-bottom: 80px; }
     }
     .transition-opacity { transition: opacity 0.2s ease-in-out; }
-    .active-thumb { border: 2px solid #198754 !important; opacity: 1; } /* Green Thumb Border */
+    .active-thumb { border: 2px solid #198754 !important; opacity: 1; }
     .thumbnail-wrapper:hover { opacity: 0.8; }
     .arrow-btn:hover { background-color: rgba(255, 255, 255, 0.9) !important; transform: scale(1.1); transition: all 0.2s; }
 </style>
 
 <script>
-    // 1. Image Gallery Logic
+    // 1. Image Gallery Logic (unchanged)
     let currentImageIndex = 0;
     const thumbnails = document.querySelectorAll('.thumbnail-wrapper');
     const totalImages = thumbnails.length;
@@ -340,7 +364,6 @@
 
         thumbnails.forEach(el => el.classList.remove('active-thumb'));
         element.classList.add('active-thumb');
-        
         element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
@@ -367,12 +390,15 @@
         }).catch(err => console.log('Tracking error:', err));
     }
 
-    // 3. Loan Calculator
+    // 3. Loan Calculator (Only runs if element exists)
     function calculateLoan() {
-        const price = {{ car.price }};
+        const monthsInput = document.getElementById('months');
+        if (!monthsInput) return; // Exit if calculator is hidden (Rental Mode)
+
+        const price = {{ car.price|default:0 }};
         const deposit = price * 0.30;
         const principal = price - deposit;
-        const months = document.getElementById('months').value;
+        const months = monthsInput.value;
         const rate = 0.18 / 12;
         const x = Math.pow(1 + rate, months);
         const monthly = (principal * x * rate) / (x - 1);
