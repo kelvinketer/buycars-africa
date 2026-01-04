@@ -121,7 +121,7 @@ def car_detail(request, car_id):
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
-# --- BOOKING LOGIC ---
+# --- BOOKING LOGIC (FIXED) ---
 @login_required
 def book_car(request, car_id):
     """
@@ -167,9 +167,8 @@ def book_car(request, car_id):
             booking.status = 'PENDING' # Waiting for payment
             booking.save()
             
-            # 6. Redirect to Payment
-            messages.success(request, f"Booking initialized! Total: KES {booking.total_cost}. Payment integration coming soon.")
-            return redirect('dealer_dashboard') 
+            # 6. Redirect to Payment (FIXED: NOW REDIRECTS TO CHECKOUT)
+            return redirect('checkout', booking_id=booking.id)
 
     else:
         form = CarBookingForm()
