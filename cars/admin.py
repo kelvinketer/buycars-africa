@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Car, CarImage, CarView, Lead  # Updated imports
+from .models import Car, CarImage, CarView, Lead, CarBooking
 
 class CarImageInline(admin.TabularInline):
     model = CarImage
@@ -8,16 +8,52 @@ class CarImageInline(admin.TabularInline):
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
     inlines = [CarImageInline]
-    # Added 'is_featured' so you can see it in the table
-    list_display = ('id', 'make', 'model', 'year', 'price', 'status', 'dealer', 'is_featured')
     
-    # This allows you to toggle "Featured" status directly from the list view!
-    list_editable = ('status', 'is_featured')
+    # 1. FIXED: Added 'is_available_for_rent' to this list
+    list_display = (
+        'id', 
+        'make', 
+        'model', 
+        'year', 
+        'listing_type',       
+        'price',              
+        'rent_price_per_day', 
+        'is_available_for_rent', # <--- THIS WAS MISSING
+        'status', 
+        'dealer', 
+        'is_featured'
+    )
     
-    list_filter = ('status', 'is_featured', 'make', 'transmission')
-    search_fields = ('make', 'model', 'dealer__username')
+    # 2. This works now because the field is in the list above
+    list_editable = ('status', 'is_featured', 'listing_type', 'is_available_for_rent')
+    
+    list_filter = ('listing_type', 'status', 'is_featured', 'make', 'transmission', 'is_available_for_rent')
+    
+    search_fields = ('make', 'model', 'dealer__username', 'registration_number')
 
-# --- NEW: Register the new analytics models ---
+    fieldsets = (
+        ('Basic Info', {
+            'fields': ('dealer', 'registration_number', 'make', 'model', 'year', 'condition', 'color', 'location')
+        }),
+        ('Listing Details', {
+            'fields': ('listing_type', 'price', 'rent_price_per_day', 'min_hire_days', 'is_available_for_rent', 'status', 'is_featured')
+        }),
+        ('Specs', {
+            'fields': ('mileage', 'engine_size', 'transmission', 'fuel_type', 'body_type')
+        }),
+        ('Description', {
+            'fields': ('description',)
+        }),
+    )
+
+@admin.register(CarBooking)
+class CarBookingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'car', 'customer', 'start_date', 'end_date', 'total_cost', 'status')
+    list_filter = ('status', 'start_date', 'created_at')
+    search_fields = ('car__make', 'car__model', 'customer__username', 'customer__email')
+    readonly_fields = ('created_at', 'updated_at')
+
+# --- ANALYTICS ---
 
 @admin.register(CarView)
 class CarViewAdmin(admin.ModelAdmin):
@@ -26,7 +62,6 @@ class CarViewAdmin(admin.ModelAdmin):
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    # Note: 'action_type' is the new field name we created
     list_display = ('action_type', 'car', 'timestamp', 'ip_address')
     list_filter = ('action_type', 'timestamp')
     search_fields = ('car__make', 'car__model')
