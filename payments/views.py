@@ -1,7 +1,7 @@
 import json
 import africastalking
 from datetime import timedelta
-from decimal import Decimal # <--- Added for money math
+from decimal import Decimal 
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -13,8 +13,9 @@ from .models import Payment
 from .forms import PaymentForm
 from .mpesa import MpesaClient
 from users.models import DealerProfile
-from cars.models import CarBooking
-from wallet.models import Wallet, Transaction # <--- Added Wallet Imports
+# FIXED: Imported Booking instead of CarBooking
+from cars.models import Booking 
+from wallet.models import Wallet, Transaction 
 
 # --- HELPER: SEND SMS ---
 def send_sms_notification(phone_number, message):
@@ -42,7 +43,8 @@ def send_sms_notification(phone_number, message):
 # --- VIEW: CHECKOUT PAGE ---
 @login_required
 def checkout(request, booking_id):
-    booking = get_object_or_404(CarBooking, id=booking_id, customer=request.user)
+    # FIXED: Using Booking model
+    booking = get_object_or_404(Booking, id=booking_id, customer=request.user)
     
     if booking.status == 'PAID':
         messages.info(request, "This booking is already paid for.")
@@ -83,8 +85,9 @@ def initiate_payment(request):
             
             elif booking_id:
                 # Booking Logic
-                booking_obj = get_object_or_404(CarBooking, id=booking_id)
-                amount = int(booking_obj.total_cost) # Ensure integer
+                # FIXED: Using Booking model
+                booking_obj = get_object_or_404(Booking, id=booking_id)
+                amount = int(booking_obj.total_price) # Ensure integer (Note: field is total_price in new model)
                 account_ref = f"CarHire {booking_id}"
                 description = f"Rent {booking_obj.car.make} {booking_obj.car.model}"
             
