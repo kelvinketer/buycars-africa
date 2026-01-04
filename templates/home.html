@@ -31,12 +31,12 @@
         overflow: hidden; /* Keeps tabs inside */
     }
 
-    /* --- NEW: TAB STYLING --- */
+    /* --- TAB STYLING --- */
     .search-tabs {
         display: flex;
         border-bottom: 1px solid #eee;
         background: #f8f9fa;
-        margin: -3rem -3rem 2rem -3rem; /* Negative margins to stretch full width */
+        margin: -3rem -3rem 2rem -3rem; 
         padding: 0 1rem;
     }
     
@@ -125,7 +125,6 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
     
-    /* LOGO STYLING */
     .brand-logo {
         height: 50px;
         width: auto;
@@ -475,7 +474,7 @@
         fetch(`/track/${carId}/${action}/`, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
     }
 
-    // --- NEW: SCRIPT FOR SEARCH TABS ---
+    // --- UPDATED SCRIPT FOR INSTANT TAB SWITCHING ---
     function setSearchMode(mode, btnElement) {
         // 1. Update the hidden input
         document.getElementById('listing_type_input').value = mode;
@@ -486,6 +485,10 @@
         
         // 3. Add 'active' class to the clicked button
         btnElement.classList.add('active');
+
+        // 4. *** INSTANTLY SUBMIT THE FORM ***
+        // This causes the page to reload with the new filter applied
+        document.getElementById('searchForm').submit();
     }
 </script>
 

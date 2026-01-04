@@ -213,3 +213,8 @@ select:focus {
     color: #94a3b8 !important; /* Muted Grey */
     opacity: 1;
 }
+
+/* Helper for text link hover effect */
+.hover-opacity-100:hover {
+    opacity: 1 !important;
+}
