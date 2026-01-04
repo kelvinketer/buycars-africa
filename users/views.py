@@ -15,7 +15,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 # --- LOCAL IMPORTS ---
-from .models import DealerProfile
+# UPDATED: Added CustomerProfile to imports
+from .models import DealerProfile, CustomerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CustomerSignUpForm
 from payments.models import Payment   
 from cars.models import Car, Lead, SearchTerm
@@ -94,7 +95,8 @@ def login_view(request):
             if hasattr(user, 'dealer_profile'):
                 return redirect('dealer_dashboard')
             
-            # 4. Renter/Regular User -> Homepage
+            # 4. Renter/Regular User -> Homepage (or Renter Dashboard)
+            # Note: You can change this to 'renter_dashboard' if you prefer them to land there
             return redirect('home')
     else:
         form = AuthenticationForm()
@@ -104,6 +106,43 @@ def logout_view(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect('home')
+
+# ==========================================
+#      RENTER / CUSTOMER DASHBOARD
+# ==========================================
+
+@login_required
+def renter_dashboard(request):
+    """
+    Dashboard for Renters to view profile status and payment history.
+    """
+    # 1. Security Check: If they are a Dealer, send them to Dealer Dashboard
+    if hasattr(request.user, 'dealer_profile'):
+        return redirect('dealer_dashboard')
+
+    # 2. Get the Profile
+    profile, created = CustomerProfile.objects.get_or_create(user=request.user)
+
+    # 3. Handle Profile Updates
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        if u_form.is_valid():
+            u_form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('renter_dashboard')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+
+    # 4. Get Rental History (Based on Payments made by their phone number)
+    # We use phone_number because M-Pesa payments are linked to phone
+    user_payments = Payment.objects.filter(phone_number=request.user.phone_number).order_by('-id')
+
+    context = {
+        'u_form': u_form,
+        'profile': profile,
+        'payments': user_payments,
+    }
+    return render(request, 'users/renter_dashboard.html', context)
 
 # ==========================================
 #      DEALER SETTINGS & PROFILE

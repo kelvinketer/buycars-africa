@@ -10,4 +10,5 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),             # Dealer Signup (Old Default)
     path('signup/select/', views.select_account, name='select_account'), # New Gateway Page
     path('signup/renter/', views.customer_signup, name='customer_signup'), # New Renter Signup
+    path('renter/dashboard/', views.renter_dashboard, name='renter_dashboard'), # Renter Dashboard
 ]
