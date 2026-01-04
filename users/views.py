@@ -9,6 +9,11 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.management import call_command
 
+# --- NEW IMPORTS FOR DEBUGGING ---
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
+
 from .models import DealerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
 from payments.models import Payment   
@@ -223,18 +228,33 @@ def verify_dealer(request, user_id):
 @staff_member_required
 def trigger_weekly_report(request):
     """
-    Manually triggers the weekly email report command.
+    TEMPORARY DEBUGGER: Tests connection to Gmail directly.
+    Replaces the standard report command to expose errors.
     """
     try:
-        # Calls the management command 'users/management/commands/send_weekly_report.py'
-        call_command('send_weekly_report')
-        messages.success(request, "✅ SUCCESS: Weekly reports generated and sent to all dealers!")
-    except Exception as e:
-        # Shows error in the dashboard alert box instead of crashing
-        messages.error(request, f"❌ ERROR: Failed to send reports. Details: {e}")
+        # 1. Print settings to the screen (Hidden password for security)
+        debug_info = f"""
+        Testing connection with:
+        HOST: {settings.EMAIL_HOST}
+        PORT: {settings.EMAIL_PORT}
+        TLS: {settings.EMAIL_USE_TLS}
+        USER: {settings.EMAIL_HOST_USER}
+        """
+        
+        # 2. Try to send a simple "Hello" email
+        send_mail(
+            subject='Test Connection from Render',
+            message='If you received this, your email settings are PERFECT! 🚀',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[request.user.email], # Sends to your admin email
+            fail_silently=False,
+        )
+        
+        return HttpResponse(f"✅ SUCCESS! Email sent to {request.user.email}. <br><pre>{debug_info}</pre>")
 
-    # Redirects back to dashboard instead of a white page
-    return redirect('admin_dashboard')
+    except Exception as e:
+        # 3. If it fails, PRINT THE EXACT ERROR to the browser
+        return HttpResponse(f"❌ FAILED. <br> <strong>Error:</strong> {e} <br><pre>{debug_info}</pre>")
 
 @staff_member_required
 def trigger_subscription_check(request):
