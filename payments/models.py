@@ -1,9 +1,10 @@
 from django.db import models
 from django.conf import settings
-from cars.models import CarBooking  # <--- Import this to link payments to bookings
+# FIXED: Imported 'Booking' instead of 'CarBooking'
+from cars.models import Booking  
 
 class Payment(models.Model):
-    # 1. Define the Plans here (only for dealer subscriptions)
+    # 1. Dealer Subscription Plans
     PLAN_CHOICES = [
         ('STARTER', 'Starter Plan (KES 1,500)'),
         ('LITE', 'Lite Plan (KES 5,000)'),
@@ -18,8 +19,8 @@ class Payment(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='payments')
     
-    # 2. NEW: Link to a Booking (Nullable, because Plan payments won't have this)
-    booking = models.ForeignKey(CarBooking, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments')
+    # 2. FIXED: Link to 'Booking' model (Nullable, as Subscription payments won't have this)
+    booking = models.ForeignKey(Booking, on_delete=models.SET_NULL, null=True, blank=True, related_name='payments')
 
     # 3. Transaction Details
     phone_number = models.CharField(max_length=15)
@@ -31,7 +32,7 @@ class Payment(models.Model):
     mpesa_receipt_number = models.CharField(max_length=30, null=True, blank=True)
     
     # 5. Logic Fields
-    # We make plan_type optional now, because booking payments don't need it
+    # plan_type is optional because Booking payments don't use it
     plan_type = models.CharField(max_length=10, choices=PLAN_CHOICES, null=True, blank=True) 
     
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
@@ -44,7 +45,9 @@ class Payment(models.Model):
         if self.plan_type:
             return f"Subscription: {self.user} - {self.plan_type} - {self.status}"
         elif self.booking:
-            return f"Booking: {self.user} - Car #{self.booking.car.id} - {self.status}"
+            # We use 'self.booking.car.id' safely
+            car_id = self.booking.car.id if self.booking and self.booking.car else "Unknown"
+            return f"Booking: {self.user} - Car #{car_id} - {self.status}"
         return f"Payment: {self.user} - {self.amount}"
 
     class Meta:
