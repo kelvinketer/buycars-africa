@@ -25,6 +25,9 @@ class User(AbstractUser):
     
     # Trust badge for the website
     is_verified = models.BooleanField(default=False) 
+    
+    # Flag to differentiate logic if needed
+    is_dealer = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
@@ -139,3 +142,19 @@ class DealerProfile(models.Model):
                 featured_count = 0
             
         return featured_count < limit
+
+# --- NEW: CUSTOMER PROFILE FOR RENTERS ---
+class CustomerProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile')
+    phone_number = models.CharField(max_length=15)
+    id_number = models.CharField(max_length=20)
+    
+    # Verification Documents
+    id_front_image = models.ImageField(upload_to='verification/ids/', blank=True, null=True)
+    driving_license_image = models.ImageField(upload_to='verification/licenses/', blank=True, null=True)
+    
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Customer: {self.user.username}"

@@ -15,7 +15,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from .models import DealerProfile
-from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm 
+# UPDATED: Added CustomerSignUpForm
+from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CustomerSignUpForm
 from payments.models import Payment   
 from cars.models import Car, Lead, SearchTerm
 
@@ -23,7 +24,31 @@ User = get_user_model()
 
 # --- AUTHENTICATION VIEWS ---
 
+def select_account(request):
+    """
+    Gateway page where users choose between Renter or Dealer account.
+    """
+    return render(request, 'auth/select_account.html')
+
+def customer_signup(request):
+    """
+    Handles registration for Renters (Buyers) verifying their ID.
+    """
+    if request.method == 'POST':
+        form = CustomerSignUpForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Account created successfully! You can now book cars.")
+            return redirect('home') 
+    else:
+        form = CustomerSignUpForm()
+    return render(request, 'auth/customer_signup.html', {'form': form})
+
 def signup_view(request):
+    """
+    Handles registration for Dealers.
+    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -46,7 +71,10 @@ def login_view(request):
                 return redirect(request.GET.get('next'))
             if user.is_superuser:
                 return redirect('admin_dashboard')
-            return redirect('dealer_dashboard')
+            # Redirect Dealers to Dashboard, Renters to Home
+            if hasattr(user, 'dealer_profile'):
+                return redirect('dealer_dashboard')
+            return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'auth/login.html', {'form': form})
@@ -59,6 +87,11 @@ def logout_view(request):
 # --- DEALER PROFILE SETTINGS ---
 @login_required
 def profile_settings(request):
+    # Only allow Dealers to access this
+    if not hasattr(request.user, 'dealer_profile'):
+        messages.error(request, "This page is for Dealers only.")
+        return redirect('home')
+
     profile, created = DealerProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)

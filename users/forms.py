@@ -1,15 +1,45 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import DealerProfile
+from .models import DealerProfile, CustomerProfile  # Added CustomerProfile
 
 User = get_user_model()
 
-# --- SIGNUP FORM (Used in Registration) ---
+# --- SIGNUP FORM (Used in Dealer Registration) ---
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'phone_number')
+
+# --- NEW: RENTER SIGNUP FORM (Used in Customer Registration) ---
+class CustomerSignUpForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    phone_number = forms.CharField(max_length=15, required=True, help_text="M-Pesa Number")
+    id_number = forms.CharField(max_length=20, required=True, label="National ID Number")
+    id_front_image = forms.ImageField(required=True, label="Upload ID (Front)")
+    driving_license_image = forms.ImageField(required=True, label="Upload Driving License")
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ('username', 'email', 'phone_number')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.phone_number = self.cleaned_data['phone_number']
+        user.role = 'BUYER'  # Automatically assign Buyer role
+        user.is_dealer = False # Mark as NOT a dealer
+        
+        if commit:
+            user.save()
+            CustomerProfile.objects.create(
+                user=user,
+                phone_number=self.cleaned_data['phone_number'],
+                id_number=self.cleaned_data['id_number'],
+                id_front_image=self.cleaned_data['id_front_image'],
+                driving_license_image=self.cleaned_data['driving_license_image']
+            )
+        return user
 
 # --- SETTINGS FORM: USER INFO (Account Info) ---
 class UserUpdateForm(forms.ModelForm):

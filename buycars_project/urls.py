@@ -46,10 +46,9 @@ urlpatterns = [
     # --- LEAD TRACKING ---
     path('track/<int:car_id>/<str:action_type>/', car_views.track_action, name='track_action'),
 
-    # --- AUTHENTICATION ---
-    path('login/', user_views.login_view, name='login'),
-    path('signup/', user_views.signup_view, name='signup'),
-    path('logout/', user_views.logout_view, name='logout'),
+    # --- AUTHENTICATION (Delegated to users/urls.py) ---
+    # This single line handles login, logout, signup, select account, and renter signup
+    path('', include('users.urls')), 
 
     # --- DEALER SIDE ---
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
