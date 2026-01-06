@@ -13,7 +13,7 @@ def fix():
         print("Resetting migration history...")
         cursor.execute("DELETE FROM django_migrations WHERE app IN ('cars', 'payments');")
 
-        # 2. Fix 'SearchTerm' collision (Drop it so Django can recreate it)
+        # 2. Fix 'SearchTerm' collision
         print("Dropping cars_searchterm table...")
         cursor.execute("DROP TABLE IF EXISTS cars_searchterm CASCADE;")
 
@@ -21,22 +21,19 @@ def fix():
         print("Clearing old payment records...")
         cursor.execute("TRUNCATE TABLE payments_payment RESTART IDENTITY CASCADE;")
 
-        # 4. THE TRICK: Add 'mileage_km' if missing
-        # Django wants to delete this column in migration 0002. 
-        # If it's already gone, we add a dummy version so Django doesn't crash.
+        # 4. FIX MILEAGE_KM (Must EXIST for migration to delete it)
         print("Checking schema for 'mileage_km'...")
-        cursor.execute("""
-            SELECT count(*) 
-            FROM information_schema.columns 
-            WHERE table_name='cars_car' AND column_name='mileage_km';
-        """)
-        exists = cursor.fetchone()[0]
-        
-        if not exists:
-            print("Column 'mileage_km' missing. Adding dummy column to satisfy migration...")
+        cursor.execute("SELECT count(*) FROM information_schema.columns WHERE table_name='cars_car' AND column_name='mileage_km';")
+        if cursor.fetchone()[0] == 0:
+            print("Column 'mileage_km' missing. Adding dummy column...")
             cursor.execute("ALTER TABLE cars_car ADD COLUMN mileage_km integer NULL;")
-        else:
-            print("Column 'mileage_km' found. Migration should proceed normally.")
+
+        # 5. FIX BODY_TYPE (Must NOT EXIST for migration to add it)
+        print("Checking schema for 'body_type'...")
+        cursor.execute("SELECT count(*) FROM information_schema.columns WHERE table_name='cars_car' AND column_name='body_type';")
+        if cursor.fetchone()[0] > 0:
+            print("Column 'body_type' exists. Dropping it to allow fresh migration...")
+            cursor.execute("ALTER TABLE cars_car DROP COLUMN body_type;")
 
         print("Cleanup successful. Ready for migration.")
 
