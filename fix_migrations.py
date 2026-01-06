@@ -30,7 +30,7 @@ def fix():
             cursor.execute("ALTER TABLE cars_car ADD COLUMN mileage_km integer NULL;")
 
         # 5. PREP FOR ADDITION: Drop ALL conflicting columns
-        # I have added 'mileage' and 'discount_price' to this list.
+        # This list now includes 'registration_number' and other potential future errors.
         conflicting_columns = [
             'body_type', 
             'color', 
@@ -48,8 +48,12 @@ def fix():
             'location',
             'vin',
             'description',
-            'mileage',          # <--- THE CURRENT BLOCKER
-            'discount_price'    # <--- LIKELY NEXT BLOCKER
+            'mileage',
+            'discount_price',
+            'registration_number', # <--- YOUR CURRENT BLOCKER
+            'video_url',           # <--- Potential future blocker
+            'views_count',         # <--- Potential future blocker
+            'priority'             # <--- Potential future blocker
         ]
 
         print("Checking for conflicting columns...")
