@@ -38,15 +38,16 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link fw-semibold" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif; font-size: 0.95rem;">Browse Cars</a>
-                    </li>
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 ms-auto mt-3 mt-lg-0">
+                    
+                    <a class="nav-link text-light fw-medium px-2" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif;">
+                        Browse Cars
+                    </a>
                     
                     {% if user.is_authenticated %}
-                        <li class="nav-item dropdown ms-lg-3">
-                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif;">
-                                <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+                        <div class="dropdown">
+                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold d-flex align-items-center justify-content-center" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif;">
+                                <i class="fas fa-user-circle me-2"></i> {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
                                 {% if user.is_superuser %}
@@ -78,21 +79,21 @@
                                     </form>
                                 </li>
                             </ul>
-                        </li>
+                        </div>
                     {% else %}
-                        <li class="nav-item ms-lg-3">
-                            <a class="nav-link fw-semibold" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif; font-size: 0.95rem;">Log In</a>
-                        </li>
+                        <a class="nav-link text-light fw-medium px-2" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif;">
+                            Log In
+                        </a>
+
+                        <a class="btn btn-outline-light rounded-pill px-4 fw-bold" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">
+                            Sign Up
+                        </a>
                         
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-outline-light rounded-pill px-4 py-2 fw-bold" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">Sign Up</a>
-                        </li>
-                        
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm" href="{% url 'sell_page' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">Start Selling</a>
-                        </li>
+                        <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'sell_page' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">
+                            Start Selling
+                        </a>
                     {% endif %}
-                </ul>
+                </div>
             </div>
         </div>
     </nav>
