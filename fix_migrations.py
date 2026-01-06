@@ -8,31 +8,39 @@ django.setup()
 
 def fix():
     with connection.cursor() as cursor:
-        print("Starting Final Database Rescue...")
+        print("Starting FINAL Database Rescue...")
 
         # 1. Clear Migration History
         print("Resetting migration history...")
         cursor.execute("DELETE FROM django_migrations WHERE app IN ('cars', 'payments');")
 
-        # 2. DROP CONFLICTING TABLES
-        # This is the new fix: Drop the booking table that is blocking the deploy
-        print("Dropping conflict tables (searchterm, booking)...")
-        cursor.execute("DROP TABLE IF EXISTS cars_searchterm CASCADE;")
-        cursor.execute("DROP TABLE IF EXISTS cars_booking CASCADE;")  # <--- NEW ADDITION
+        # 2. DROP ALL AUXILIARY TABLES (The "Zombie Tables")
+        # We drop these so Django can recreate them fresh.
+        tables_to_drop = [
+            'cars_searchterm',
+            'cars_booking',
+            'cars_carview',   # <--- THE CURRENT ERROR
+            'cars_carimage',  # <--- PROACTIVE: Drop images table if it exists
+            'cars_feature',   # <--- PROACTIVE: Drop features table if it exists
+        ]
+        
+        print("Dropping auxiliary tables...")
+        for table in tables_to_drop:
+            cursor.execute(f"DROP TABLE IF EXISTS {table} CASCADE;")
 
         # 3. Clear Payments (Prevent Foreign Key Crashes)
         print("Clearing old payment records...")
         cursor.execute("TRUNCATE TABLE payments_payment RESTART IDENTITY CASCADE;")
 
-        # 4. PREP FOR DELETION: Add 'mileage_km' if missing
+        # 4. PREP cars_car: Add 'mileage_km' if missing
         print("Checking 'mileage_km'...")
         cursor.execute("SELECT count(*) FROM information_schema.columns WHERE table_name='cars_car' AND column_name='mileage_km';")
         if cursor.fetchone()[0] == 0:
             print("Adding dummy 'mileage_km'...")
             cursor.execute("ALTER TABLE cars_car ADD COLUMN mileage_km integer NULL;")
 
-        # 5. PREP FOR ADDITION: Drop ALL conflicting columns
-        # We keep this list to ensure no column blocks us after the table is fixed
+        # 5. PREP cars_car: Drop ALL conflicting columns
+        # This list removes any column that might block the migration.
         conflicting_columns = [
             'body_type', 'color', 'condition', 'transmission', 
             'drive_type', 'fuel_type', 'engine_size', 'engine_size_cc',
@@ -42,7 +50,7 @@ def fix():
             'registration_number', 'video_url', 'views_count', 'priority'
         ]
 
-        print("Checking for conflicting columns...")
+        print("Checking for conflicting columns in cars_car...")
         for col in conflicting_columns:
             cursor.execute(f"SELECT count(*) FROM information_schema.columns WHERE table_name='cars_car' AND column_name='{col}';")
             if cursor.fetchone()[0] > 0:
