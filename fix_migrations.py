@@ -6,49 +6,73 @@ from django.db import connection
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'buycars_project.settings')
 django.setup()
 
-def emergency_repair():
-    print("🚑 STARTING EMERGENCY DATABASE REPAIR...")
+def reconstruct_tables():
+    print("🏗️ STARTING TABLE RECONSTRUCTION...")
     
     with connection.cursor() as cursor:
-        # We manually add every column that your views.py is looking for.
-        # "IF NOT EXISTS" ensures it won't crash if the column is already there.
+        # 1. Recreate 'CarImage' Table (Fixes the current error)
+        print("   -> Recreating table: cars_carimage...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cars_carimage (
+                id bigserial PRIMARY KEY,
+                image varchar(200) NOT NULL,
+                is_main boolean DEFAULT false,
+                car_id bigint NOT NULL REFERENCES cars_car(id) DEFERRABLE INITIALLY DEFERRED
+            );
+            CREATE INDEX IF NOT EXISTS cars_carimage_car_id_idx ON cars_carimage(car_id);
+        """)
         
-        columns_to_add = [
-            # Column Name            Data Type & Default
-            ("body_type",            "varchar(50) DEFAULT 'suv'"),
-            ("listing_type",         "varchar(20) DEFAULT 'sale'"),
-            ("is_available_for_rent","boolean DEFAULT false"),
-            ("rent_price_per_day",   "decimal(10, 2) NULL"),
-            ("min_hire_days",        "integer DEFAULT 1"),
-            ("mileage",              "integer DEFAULT 0"),
-            ("location",             "varchar(100) DEFAULT 'Nairobi'"),
-            ("is_featured",          "boolean DEFAULT false"),
-            ("condition",            "varchar(50) DEFAULT 'used'"),
-            ("transmission",         "varchar(50) DEFAULT 'automatic'"),
-            ("fuel_type",            "varchar(50) DEFAULT 'petrol'"),
-            ("engine_size",          "varchar(50) DEFAULT '2000cc'"),
-            ("color",                "varchar(50) DEFAULT 'white'"),
-            ("drive_type",           "varchar(50) DEFAULT '2wd'"),
-            ("description",          "text DEFAULT ''"),
-            ("vin",                  "varchar(50) DEFAULT ''"),
-            ("video_url",            "varchar(200) DEFAULT ''"),
-            ("registration_number",  "varchar(20) DEFAULT ''"),
-            ("views_count",          "integer DEFAULT 0"),
-            ("priority",             "integer DEFAULT 0"),
-            ("discount_price",       "decimal(10, 2) NULL"),
-        ]
+        # 2. Recreate 'Booking' Table (Prevents the next error)
+        print("   -> Recreating table: cars_booking...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cars_booking (
+                id bigserial PRIMARY KEY,
+                full_name varchar(100) NOT NULL,
+                email varchar(254) NOT NULL,
+                phone varchar(20) NOT NULL,
+                start_date date NOT NULL,
+                end_date date NOT NULL,
+                total_cost numeric(10, 2) NOT NULL,
+                status varchar(20) NOT NULL,
+                created_at timestamp with time zone NOT NULL,
+                car_id bigint NOT NULL REFERENCES cars_car(id) DEFERRABLE INITIALLY DEFERRED
+            );
+            CREATE INDEX IF NOT EXISTS cars_booking_car_id_idx ON cars_booking(car_id);
+        """)
 
-        for col_name, col_def in columns_to_add:
-            print(f"   -> Fixing column: {col_name}...")
-            # This SQL command works on PostgreSQL to add columns safely
-            sql = f"ALTER TABLE cars_car ADD COLUMN IF NOT EXISTS {col_name} {col_def};"
-            try:
-                cursor.execute(sql)
-            except Exception as e:
-                # If it fails, we print why but keep going
-                print(f"      ⚠️ Warning on {col_name}: {e}")
+        # 3. Recreate 'SearchTerm' Table
+        print("   -> Recreating table: cars_searchterm...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cars_searchterm (
+                id bigserial PRIMARY KEY,
+                term varchar(255) NOT NULL,
+                search_date timestamp with time zone NOT NULL
+            );
+        """)
 
-    print("✅ REPAIR COMPLETE. The database structure now matches your code.")
+        # 4. Recreate 'CarView' Table
+        print("   -> Recreating table: cars_carview...")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cars_carview (
+                id bigserial PRIMARY KEY,
+                ip_address varchar(45) NULL,
+                session_id varchar(255) NULL,
+                timestamp timestamp with time zone NOT NULL,
+                car_id bigint NOT NULL REFERENCES cars_car(id) DEFERRABLE INITIALLY DEFERRED
+            );
+        """)
+
+        # 5. FAKE the migration history (Crucial Step)
+        # We tell Django: "Hey, we manually built migration 0001, assume it's done."
+        # This prevents Django from trying to run it again and crashing.
+        print("   -> Marking migration 0001 as complete...")
+        cursor.execute("""
+            INSERT INTO django_migrations (app, name, applied)
+            VALUES ('cars', '0001_initial', NOW())
+            ON CONFLICT DO NOTHING;
+        """)
+
+    print("✅ RECONSTRUCTION COMPLETE. Tables restored & migration faked.")
 
 if __name__ == "__main__":
-    emergency_repair()
+    reconstruct_tables()
