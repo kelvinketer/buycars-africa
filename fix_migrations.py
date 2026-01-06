@@ -14,9 +14,11 @@ def fix():
         print("Resetting migration history...")
         cursor.execute("DELETE FROM django_migrations WHERE app IN ('cars', 'payments');")
 
-        # 2. Fix 'SearchTerm' collision
-        print("Dropping cars_searchterm table...")
+        # 2. DROP CONFLICTING TABLES
+        # This is the new fix: Drop the booking table that is blocking the deploy
+        print("Dropping conflict tables (searchterm, booking)...")
         cursor.execute("DROP TABLE IF EXISTS cars_searchterm CASCADE;")
+        cursor.execute("DROP TABLE IF EXISTS cars_booking CASCADE;")  # <--- NEW ADDITION
 
         # 3. Clear Payments (Prevent Foreign Key Crashes)
         print("Clearing old payment records...")
@@ -30,30 +32,14 @@ def fix():
             cursor.execute("ALTER TABLE cars_car ADD COLUMN mileage_km integer NULL;")
 
         # 5. PREP FOR ADDITION: Drop ALL conflicting columns
-        # This list now includes 'registration_number' and other potential future errors.
+        # We keep this list to ensure no column blocks us after the table is fixed
         conflicting_columns = [
-            'body_type', 
-            'color', 
-            'condition', 
-            'transmission', 
-            'drive_type', 
-            'fuel_type',
-            'engine_size',
-            'engine_size_cc',
-            'is_available_for_rent',
-            'listing_type',
-            'rent_price_per_day',
-            'min_hire_days',
-            'is_featured',
-            'location',
-            'vin',
-            'description',
-            'mileage',
-            'discount_price',
-            'registration_number', # <--- YOUR CURRENT BLOCKER
-            'video_url',           # <--- Potential future blocker
-            'views_count',         # <--- Potential future blocker
-            'priority'             # <--- Potential future blocker
+            'body_type', 'color', 'condition', 'transmission', 
+            'drive_type', 'fuel_type', 'engine_size', 'engine_size_cc',
+            'is_available_for_rent', 'listing_type', 'rent_price_per_day',
+            'min_hire_days', 'is_featured', 'location', 'vin', 
+            'description', 'mileage', 'discount_price', 
+            'registration_number', 'video_url', 'views_count', 'priority'
         ]
 
         print("Checking for conflicting columns...")
@@ -63,7 +49,7 @@ def fix():
                 print(f"Column '{col}' exists. Dropping it to allow fresh migration...")
                 cursor.execute(f"ALTER TABLE cars_car DROP COLUMN {col} CASCADE;")
 
-        print("Cleanup successful. The path for Migration 0002 is now clear.")
+        print("Cleanup successful. Ready for fresh migration.")
 
 if __name__ == "__main__":
     fix()
