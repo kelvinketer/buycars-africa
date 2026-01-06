@@ -85,11 +85,11 @@
                             Log In
                         </a>
 
-                        <a class="btn btn-outline-light rounded-pill px-4 fw-bold" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">
+                        <a class="btn btn-outline-light nav-btn" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">
                             Sign Up
                         </a>
                         
-                        <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'sell_page' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">
+                        <a class="btn btn-danger nav-btn shadow-sm" href="{% url 'sell_page' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">
                             Start Selling
                         </a>
                     {% endif %}
@@ -196,6 +196,26 @@
     </footer>
 
     <style>
+        /* Make nav buttons perfectly uniform */
+        .nav-btn {
+            border-radius: 50px !important;
+            padding: 8px 24px !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover effect for outline button to keep it clean */
+        .btn-outline-light.nav-btn:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
         /* Sticky footer helper */
         body { min-height: 100vh; }
 
