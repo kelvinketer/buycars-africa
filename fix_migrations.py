@@ -11,7 +11,6 @@ def fix():
         print("Starting Final Database Rescue...")
 
         # 1. Clear Migration History
-        # We need Django to "forget" it failed so it tries again from scratch.
         print("Resetting migration history...")
         cursor.execute("DELETE FROM django_migrations WHERE app IN ('cars', 'payments');")
 
@@ -31,8 +30,7 @@ def fix():
             cursor.execute("ALTER TABLE cars_car ADD COLUMN mileage_km integer NULL;")
 
         # 5. PREP FOR ADDITION: Drop ALL conflicting columns
-        # These are the columns currently blocking the migration. 
-        # We drop them so Django can recreate them cleanly.
+        # I have added 'listing_type' to this list to fix your specific error.
         conflicting_columns = [
             'body_type', 
             'color', 
@@ -42,7 +40,8 @@ def fix():
             'fuel_type',
             'engine_size',
             'engine_size_cc',
-            'is_available_for_rent',  # <--- THIS IS THE ONE BLOCKING YOU NOW
+            'is_available_for_rent',
+            'listing_type',           # <--- THIS WAS THE BLOCKER
             'rent_price_per_day',
             'min_hire_days',
             'is_featured',
