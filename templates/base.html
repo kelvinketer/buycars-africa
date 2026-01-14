@@ -43,7 +43,54 @@
                     <a class="btn btn-outline-light nav-btn" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif;">
                         Browse Cars
                     </a>
-                    
+
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle nav-btn d-flex align-items-center justify-content-center border-secondary text-light" type="button" data-bs-toggle="dropdown" style="min-width: 100px;">
+                            {% if request.session.currency == 'USD' %} 🇺🇸 USD
+                            {% elif request.session.currency == 'GBP' %} 🇬🇧 GBP
+                            {% elif request.session.currency == 'AED' %} 🇦🇪 AED
+                            {% else %} 🇰🇪 KES
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2 rounded-3">
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="currency" value="KES">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                        <span class="me-2">🇰🇪</span> KES (Kenya)
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="currency" value="USD">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                        <span class="me-2">🇺🇸</span> USD (USA)
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="currency" value="GBP">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                        <span class="me-2">🇬🇧</span> GBP (UK)
+                                    </button>
+                                </form>
+                            </li>
+                             <li>
+                                <form action="{% url 'set_currency' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="currency" value="AED">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                        <span class="me-2">🇦🇪</span> AED (Dubai)
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                     {% if user.is_authenticated %}
                         <div class="dropdown">
                             <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold d-flex align-items-center justify-content-center" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif;">

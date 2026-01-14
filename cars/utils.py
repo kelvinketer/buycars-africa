@@ -1,19 +1,31 @@
-from io import BytesIO
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
+from decimal import Decimal
 
-def render_to_pdf(template_src, context_dict={}):
-    template = get_template(template_src)
-    html  = template.render(context_dict)
-    result = BytesIO()
+# Exchange Rates (Base is KES)
+EXCHANGE_RATES = {
+    'KES': Decimal('1.0'),
+    'USD': Decimal('0.0076'),  # Approx: 1 USD = 131 KES
+    'GBP': Decimal('0.0060'),  # Approx: 1 GBP = 166 KES
+    'EUR': Decimal('0.0070'),  # Approx: 1 EUR = 142 KES
+    'AED': Decimal('0.0280'),  # Approx: 1 AED = 35 KES
+}
+
+CURRENCY_SYMBOLS = {
+    'KES': 'KES',
+    'USD': '$',
+    'GBP': '£',
+    'EUR': '€',
+    'AED': 'AED',
+}
+
+def convert_price(amount_in_kes, target_currency):
+    """
+    Converts KES amount to target currency.
+    """
+    if not amount_in_kes:
+        return 0
     
-    # FIX 1: Use "UTF-8" instead of "ISO-8859-1" to handle special characters (like •)
-    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    rate = EXCHANGE_RATES.get(target_currency, Decimal('1.0'))
+    converted = Decimal(amount_in_kes) * rate
     
-    if not pdf.err:
-        # FIX 2: Return raw bytes (result.getvalue()), NOT an HttpResponse.
-        # The view (views.py) wraps this in an HttpResponse with the correct filename headers.
-        return result.getvalue()
-        
-    return None
+    # Round nicely: No cents for large car prices
+    return int(converted)

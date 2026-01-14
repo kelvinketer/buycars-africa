@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.http import require_POST  # <--- NEW IMPORT
 from django.contrib import messages
 from django.db.models import Q, Count, F, Sum
 from django.db.models.functions import TruncDate
@@ -15,7 +16,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from users.models import DealerProfile
-# FIXED: Changed CarBooking to Booking
 from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking 
 from .forms import CarForm, CarBookingForm
 from .utils import render_to_pdf 
@@ -116,6 +116,21 @@ def public_homepage(request):
     }
     return render(request, 'home.html', context)
 
+# --- NEW: CURRENCY SWITCHER VIEW ---
+@require_POST
+def set_currency(request):
+    """
+    Sets the user's preferred currency in the session (e.g., USD, GBP, KES).
+    """
+    currency = request.POST.get('currency', 'KES')
+    # Save choice to the user's session (temporary memory)
+    request.session['currency'] = currency
+    
+    # Reload the page they were on, or go home if referer is missing
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+# -----------------------------------
+
 def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
     
@@ -156,10 +171,9 @@ def book_car(request, car_id):
                 return redirect('book_car', car_id=car.id)
 
             # 4. Check Availability (Prevent Double Booking)
-            # FIXED: Using 'Booking' model instead of 'CarBooking'
             is_booked = Booking.objects.filter(
                 car=car,
-                status__in=['APPROVED', 'PAID'], # Updated statuses to match new model
+                status__in=['APPROVED', 'PAID'], 
                 start_date__lte=booking.end_date,
                 end_date__gte=booking.start_date
             ).exists()
@@ -204,7 +218,7 @@ def book_car(request, car_id):
                 print(f"Error sending booking email: {e}")
             # --------------------------------------------
 
-            # 7. Redirect to Payment (FIXED: NOW REDIRECTS TO CHECKOUT)
+            # 7. Redirect to Payment
             return redirect('checkout', booking_id=booking.id)
 
     else:
