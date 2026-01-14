@@ -1,23 +1,27 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load static %}
-{% load currency_tags %}  {% block head_extra %}
+{% load currency_tags %}
+
+{% block head_extra %}
 <style>
-    /* 1. HERO SECTION */
+    /* 1. HERO SECTION (UPDATED FOR GLOBAL FEEL) */
     .hero-section {
-        background: linear-gradient(rgba(11, 37, 89, 0.85), rgba(11, 37, 89, 0.9)),
+        /* Darker Blue Overlay for Premium Feel */
+        background: linear-gradient(rgba(11, 37, 89, 0.9), rgba(11, 37, 89, 0.95)),
                     url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
-        padding-top: 160px;
-        padding-bottom: 180px;
+        padding-top: 180px;
+        padding-bottom: 200px; /* More space for the float */
         color: white;
         position: relative;
+        overflow: hidden;
     }
 
     /* 2. FLOATING SEARCH CARD CONTAINER */
     .search-card-container {
-        margin-top: -120px;
+        margin-top: -140px; /* Pulls it up into the Hero */
         position: relative;
         z-index: 20;
     }
@@ -25,7 +29,7 @@
     /* MODERN SEARCH CARD DESIGN */
     .search-card {
         background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(10px); /* Glass effect */
+        backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 24px;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -97,7 +101,6 @@
         color: #94a3b8;
     }
 
-    /* Labels above inputs */
     .input-label {
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -165,17 +168,40 @@
 
     .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
     .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+
+    /* UTILITY: TEXT GRADIENT */
+    .text-gradient-silver {
+        background: linear-gradient(to right, #fff, #cbd5e1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<section class="hero-section text-center">
-    <div class="container">
+<section class="hero-section text-center position-relative">
+    <div class="position-absolute top-0 start-0 w-100 h-100" 
+         style="background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(255,255,255,0.03) 20px); pointer-events: none;">
+    </div>
+
+    <div class="container position-relative z-1">
         <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <h1 class="display-3 fw-bold mb-3">Find a Car to <span class="text-danger">Buy or Rent.</span></h1>
-                <p class="lead text-white-50 fs-5 mb-0">Browse verified vehicles for Sale and Rent from Kenya's top trusted dealers.</p>
+            <div class="col-lg-10">
+                <div class="d-inline-flex align-items-center bg-white bg-opacity-10 border border-light border-opacity-25 rounded-pill px-3 py-1 mb-4 shadow-sm">
+                    <span class="badge bg-danger rounded-pill me-2">NEW</span>
+                    <span class="text-white small fw-bold">Now serving UK, US & Dubai Diaspora 🌍</span>
+                </div>
+
+                <h1 class="display-3 fw-bold mb-3 text-white" style="font-family: 'Poppins', sans-serif; letter-spacing: -1px;">
+                    Buy Verified Cars in Kenya, <br>
+                    <span class="text-gradient-silver">From Anywhere.</span>
+                </h1>
+                
+                <p class="lead text-white-50 fs-5 mb-0 mx-auto" style="max-width: 700px;">
+                    The secure platform for the Diaspora to purchase, inspect, and deliver vehicles to family back home. 
+                    <span class="text-white fw-bold">No brokers. No risk.</span>
+                </p>
             </div>
         </div>
     </div>
@@ -263,7 +289,41 @@
     </div>
 </div>
 
-<section class="bg-light pb-5" style="padding-top: 100px; margin-top: -60px; z-index: 10;">
+<section class="py-5 bg-white border-bottom">
+    <div class="container pt-4">
+        <div class="row g-4 justify-content-center text-center">
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-globe-africa fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Built for Diaspora</h5>
+                    <p class="text-muted small px-3">Switch currencies instantly. We handle the paperwork and verification so you don't have to rely on relatives.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border-start border-end border-light">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-shield-alt fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Verified Inspections</h5>
+                    <p class="text-muted small px-3">Don't buy a ghost car. Our partners physically inspect every vehicle before your funds are released.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-lock fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Secure Payments</h5>
+                    <p class="text-muted small px-3">Pay securely via Visa/Mastercard. We hold your payment in escrow until the car is handed over.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-light py-5">
     <div class="container">
         <div class="d-flex justify-content-between align-items-end mb-4">
             <div>
