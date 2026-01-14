@@ -1,4 +1,23 @@
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 from decimal import Decimal
+
+# --- 1. PDF GENERATION LOGIC ---
+def render_to_pdf(template_src, context_dict={}):
+    """
+    Helper function to generate PDF from a template.
+    """
+    template = get_template(template_src)
+    html  = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return result.getvalue()
+    return None
+
+# --- 2. CURRENCY CONVERSION LOGIC ---
 
 # Exchange Rates (Base is KES)
 EXCHANGE_RATES = {
