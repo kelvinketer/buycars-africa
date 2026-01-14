@@ -13,6 +13,7 @@ urlpatterns = [
     # --- SUPER ADMIN (CEO Dashboard) ---
     path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'),
     path('super-admin/verify/<int:user_id>/', user_views.verify_dealer, name='verify_dealer'),
+    path('platform/', car_views.platform_dashboard, name='platform_dashboard'), # <--- ADDED MISSING PLATFORM VIEW
 
     # --- PASSWORD RESET ROUTES ---
     path('reset_password/', 
@@ -33,11 +34,12 @@ urlpatterns = [
 
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
+    path('set-currency/', car_views.set_currency, name='set_currency'), # <--- FIXED: ADDED MISSING CURRENCY URL
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
-    # --- [NEW] BOOKING PAGE ---
+    # --- BOOKING PAGE ---
     path('book/<int:car_id>/', car_views.book_car, name='book_car'),
 
     # --- DEALER LANDING PAGE ---
@@ -47,7 +49,7 @@ urlpatterns = [
     path('track/<int:car_id>/<str:action_type>/', car_views.track_action, name='track_action'),
 
     # --- AUTHENTICATION (Delegated to users/urls.py) ---
-    # This single line handles login, logout, signup, select account, and renter signup
+    # This handles login, logout, signup, select account, etc.
     path('', include('users.urls')), 
 
     # --- DEALER SIDE ---
@@ -68,7 +70,7 @@ urlpatterns = [
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
     
-    # --- [NEW] MARK AS SOLD ---
+    # --- MARK AS SOLD ---
     path('dashboard/car/<int:car_id>/mark-sold/', car_views.mark_as_sold, name='mark_as_sold'),
 
     # --- IMAGE MANAGEMENT ---
