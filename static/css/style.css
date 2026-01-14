@@ -1,49 +1,58 @@
 /* --- 1. FONTS & VARIABLES --- */
 /* We import both Inter (for easy reading) and Poppins (for headers) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    /* --- NEW EXECUTIVE SCHEME --- */
-    --primary-color: #0f172a; /* Deep Navy (Trust) */
-    --accent-color: #dc2626;  /* Vivid Red (Action) */
+    /* --- NEW BRAND IDENTITY (BuyCars Navy & Red) --- */
+    --primary-color: #0B2559; /* Official Deep Navy */
+    --accent-color: #D9232E;  /* Official Vibrant Red */
+    --brand-white: #FFFFFF;
+    
     --text-dark: #1e293b;
     --text-muted: #64748b;
     --bg-light: #f8fafc;
     
-    /* --- LEGACY COMPATIBILITY (Prevents breaking old code) --- */
+    /* --- LEGACY COMPATIBILITY --- */
     --primary-red: var(--accent-color);
     --dark-navy: var(--primary-color);
     --text-main: var(--text-dark);
     
     /* --- SHADOWS & RADIUS --- */
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-shadow: 0 4px 12px rgba(11, 37, 89, 0.1); /* Blue-tinted shadow */
     --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --radius: 12px;
 }
 
 body {
-    font-family: 'Inter', sans-serif; /* Cleaner for body text */
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-light);
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6, .navbar-brand {
-    font-family: 'Poppins', sans-serif; /* Keep Poppins for headings */
-    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: var(--primary-color);
 }
 
 /* --- 2. NAVBAR --- */
 .navbar {
     background-color: var(--primary-color) !important;
     padding: 1rem 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .navbar-brand {
-    font-weight: 700;
+    color: var(--brand-white) !important;
+    font-weight: 800; /* Extra Bold for the logo look */
     font-size: 1.5rem;
     letter-spacing: -0.5px;
+}
+
+/* Force the ".Africa" span to be Brand Red */
+.navbar-brand span.text-danger {
+    color: var(--accent-color) !important;
 }
 
 .nav-link {
@@ -51,33 +60,55 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     font-size: 0.95rem;
 }
 
-/* --- 3. BUTTONS --- */
+/* --- 3. BUTTONS (Standardized) --- */
+/* Custom Class */
 .btn-primary-custom {
     background-color: var(--accent-color);
     color: white;
     border: none;
-    border-radius: 50px; /* Modern pill shape */
+    border-radius: 50px;
     padding: 0.6rem 1.5rem;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
-.btn-primary-custom:hover {
-    background-color: #b91c1c; /* Darker red on hover */
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+/* Override Bootstrap Defaults to match Brand */
+.btn-danger, .btn-primary {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    border-radius: 50px; /* Pill shape standard */
+    font-weight: 600;
+    padding: 8px 24px;
+    transition: all 0.3s ease;
 }
 
-/* --- 4. HERO SECTION (Updated) --- */
-/* I kept your original image background but updated the overlay colors */
+.btn-primary-custom:hover, .btn-danger:hover, .btn-primary:hover {
+    background-color: #b91c25 !important; /* Darker red */
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(217, 35, 46, 0.4);
+}
+
+.btn-outline-light {
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.3);
+    font-weight: 600;
+}
+
+.btn-outline-light:hover {
+    background-color: white;
+    color: var(--primary-color) !important;
+}
+
+/* --- 4. HERO SECTION --- */
 .hero-section {
-    background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    /* Updated gradient to use the new Navy Brand Color */
+    background: linear-gradient(rgba(11, 37, 89, 0.9), rgba(11, 37, 89, 0.8)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
     background-size: cover;
     background-position: center;
     color: white;
     padding: 100px 0;
-    border-radius: 0 0 50px 50px; /* Kept your modern curve */
+    border-radius: 0 0 50px 50px;
     margin-bottom: 3rem;
 }
 
@@ -89,8 +120,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* --- 5. CAR CARDS (Premium Upgrade) --- */
-/* This targets both .card and .car-card to cover all bases */
+/* --- 5. CAR CARDS --- */
 .card, .car-card {
     border: none;
     border-radius: var(--radius);
@@ -112,25 +142,24 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     border-bottom: 1px solid #f1f5f9;
 }
 
-/* --- NEW: ZOOM EFFECT --- */
+/* Zoom Effect */
 .car-image-container img {
     transition: transform 0.5s ease;
 }
-
 .card:hover .car-image-container img {
-    transform: scale(1.05); /* Subtle zoom effect */
+    transform: scale(1.05);
 }
-/* ------------------------ */
 
 .card-body {
     padding: 1.25rem;
 }
 
 .car-price {
-    color: var(--accent-color);
-    font-weight: 700;
+    color: var(--accent-color); /* Brand Red */
+    font-weight: 800;
     font-size: 1.25rem;
     font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.5px;
 }
 
 /* Premium Badge */
@@ -138,7 +167,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(15, 23, 42, 0.85); /* Semi-transparent Navy */
+    background: rgba(11, 37, 89, 0.9); /* Brand Navy */
     color: white;
     padding: 5px 12px;
     border-radius: 20px;
@@ -148,7 +177,42 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     z-index: 2;
 }
 
-/* --- 6. DETAILS PAGE & UTILS --- */
+/* --- 6. NEW BRAND UTILITIES (Custom Elements) --- */
+
+/* The "Verified Dealer" Badge */
+.badge-verified {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* The "Brand Red Line" Divider */
+.divider-brand {
+    height: 4px;
+    width: 60px;
+    background-color: var(--accent-color);
+    margin: 1.5rem 0;
+    border-radius: 2px;
+}
+
+/* Diaspora / Global Texture Background */
+.bg-diaspora {
+    background-color: #f8f9fa;
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 19px,
+        rgba(11, 37, 89, 0.05) 20px
+    );
+}
+
+/* --- 7. DETAILS PAGE & UTILS --- */
 .breadcrumb {
     background: transparent;
     padding: 0;
@@ -165,12 +229,13 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     font-weight: 600;
 }
 
-/* --- 7. FOOTER --- */
+/* --- 8. FOOTER --- */
 .footer {
-    background-color: var(--primary-color);
+    background-color: #081a40; /* Slightly darker than primary for footer */
     color: white;
     padding: 4rem 0 2rem;
     margin-top: auto;
+    border-top: 4px solid var(--accent-color); /* The red top border */
 }
 
 .footer a {
@@ -181,51 +246,40 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 .footer a:hover {
     color: white;
+    padding-left: 5px; /* Subtle movement */
 }
 
-/* --- 8. GLOBAL FORM FIXES (Input Visibility) --- */
-/* Forces all inputs to have dark text on white background */
-.form-control, 
-.form-select, 
-input, 
-textarea, 
-select {
-    color: #1a202c !important;       /* Dark text (almost black) */
-    background-color: #ffffff !important; /* White background */
-    border-color: #ced4da;
-}
-
-/* Focus State */
-.form-control:focus, 
-.form-select:focus, 
-input:focus, 
-textarea:focus, 
-select:focus {
+/* --- 9. GLOBAL FORM FIXES (Crucial) --- */
+.form-control, .form-select, input, textarea, select {
     color: #1a202c !important;
     background-color: #ffffff !important;
-    border-color: var(--accent-color); /* Uses your Brand Red */
-    box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25); /* Red glow */
+    border-color: #cbd5e1;
+}
+
+.form-control:focus, .form-select:focus, input:focus, textarea:focus, select:focus {
+    color: #1a202c !important;
+    background-color: #ffffff !important;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(217, 35, 46, 0.25);
     outline: none;
 }
 
-/* Placeholder Text */
 ::placeholder {
-    color: #94a3b8 !important; /* Muted Grey */
+    color: #94a3b8 !important;
     opacity: 1;
 }
 
-/* Helper for text link hover effect */
 .hover-opacity-100:hover {
     opacity: 1 !important;
 }
 
-/* --- 9. NEW: PREMIUM DROPDOWN STYLING --- */
+/* --- 10. PREMIUM DROPDOWN --- */
 .dropdown-menu {
     border: none;
     border-radius: 16px;
     box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
     padding: 10px;
-    margin-top: 15px !important; /* Pushes it down slightly */
+    margin-top: 15px !important;
     animation: fadeInDropdown 0.2s ease-out;
 }
 
@@ -243,9 +297,9 @@ select:focus {
 }
 
 .dropdown-item:hover {
-    background-color: #fef2f2; /* Very light red */
-    color: #dc3545;
-    transform: translateX(5px); /* Subtle slide effect */
+    background-color: #fef2f2;
+    color: var(--accent-color);
+    transform: translateX(5px);
 }
 
 .dropdown-item i {
