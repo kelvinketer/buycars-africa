@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load static %}
-
-{% block head_extra %}
+{% load currency_tags %}  {% block head_extra %}
 <style>
     /* 1. HERO SECTION */
     .hero-section {
-        background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)),
+        background: linear-gradient(rgba(11, 37, 89, 0.85), rgba(11, 37, 89, 0.9)),
                     url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop');
         background-size: cover;
         background-position: center;
@@ -62,7 +61,7 @@
         color: #0f172a;
     }
 
-    /* Active State - Looks like a floating card */
+    /* Active State */
     .search-tab-btn.active {
         background: white;
         color: #dc3545; /* Brand Red */
@@ -72,7 +71,7 @@
 
     /* 4. PREMIUM INPUT FIELDS */
     .custom-search-input {
-        height: 60px !important; /* Taller inputs */
+        height: 60px !important; 
         border-radius: 16px !important;
         border: 2px solid transparent; 
         background-color: #f8fafc;
@@ -90,7 +89,7 @@
     .custom-search-input:focus {
         background-color: white;
         border-color: #dc3545;
-        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1); /* Soft red glow */
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.1); 
     }
     
     .custom-search-input::placeholder {
@@ -130,7 +129,7 @@
         background: linear-gradient(135deg, #bb2d3b 0%, #a0202d 100%);
     }
 
-    /* 6. BRAND GRID & LISTINGS (Keep existing styles) */
+    /* 6. BRAND GRID & LISTINGS */
     .brand-card {
         background: white;
         border: 1px solid rgba(0,0,0,0.03);
@@ -244,10 +243,14 @@
 
             <div class="row g-3 mt-2">
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="min_price" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" placeholder="Min Price (KES)" value="{{ request.GET.min_price }}">
+                    <input type="number" name="min_price" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" 
+                           placeholder="Min Price ({% if request.session.currency %}{{ request.session.currency }}{% else %}KES{% endif %})" 
+                           value="{{ request.GET.min_price }}">
                 </div>
                 <div class="col-lg-3 col-6">
-                    <input type="number" name="max_price" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" placeholder="Max Price (KES)" value="{{ request.GET.max_price }}">
+                    <input type="number" name="max_price" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" 
+                           placeholder="Max Price ({% if request.session.currency %}{{ request.session.currency }}{% else %}KES{% endif %})" 
+                           value="{{ request.GET.max_price }}">
                 </div>
                 <div class="col-lg-3 col-6">
                     <input type="number" name="min_year" class="form-control custom-search-input" style="height: 50px !important; font-size: 0.9rem;" placeholder="Min Year" value="{{ request.GET.min_year }}">
@@ -367,13 +370,13 @@
                             
                             {% if car.listing_type == 'RENT' %}
                                 <div>
-                                    <h6 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
+                                    <h6 class="text-primary fw-bold mb-0">{% global_price car.rent_price_per_day %}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Book</a>
 
                             {% else %}
                                 <h6 class="text-success fw-bold mb-0 fs-5">
-                                    KES {{ car.price|floatformat:0|intcomma }}
+                                    {% global_price car.price %}
                                 </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">View</a>
                             {% endif %}
@@ -459,19 +462,19 @@
                             
                             {% if car.listing_type == 'RENT' %}
                                 <div>
-                                    <h6 class="text-primary fw-bold mb-0">KES {{ car.rent_price_per_day|floatformat:0|intcomma }}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
+                                    <h6 class="text-primary fw-bold mb-0">{% global_price car.rent_price_per_day %}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
                             
                             {% elif car.listing_type == 'BOTH' %}
                                 <div>
-                                    <small class="d-block text-success lh-1 fw-bold">Buy: {{ car.price|floatformat:0|intcomma }}</small>
-                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {{ car.rent_price_per_day|floatformat:0|intcomma }}/day</small>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% global_price car.price %}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% global_price car.rent_price_per_day %}/day</small>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
 
                             {% else %}
-                                <h6 class="text-success fw-bold mb-0 fs-5">KES {{ car.price|floatformat:0|intcomma }}</h6>
+                                <h6 class="text-success fw-bold mb-0 fs-5">{% global_price car.price %}</h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
                             {% endif %}
 
@@ -500,18 +503,10 @@
 
     // --- SCRIPT FOR INSTANT TAB SWITCHING ---
     function setSearchMode(mode, btnElement) {
-        // 1. Update the hidden input
         document.getElementById('listing_type_input').value = mode;
-        
-        // 2. Remove 'active' class from all buttons
         let buttons = document.querySelectorAll('.search-tab-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
-        
-        // 3. Add 'active' class to the clicked button
         btnElement.classList.add('active');
-
-        // 4. *** INSTANTLY SUBMIT THE FORM ***
-        // This causes the page to reload with the new filter applied
         document.getElementById('searchForm').submit();
     }
 </script>
