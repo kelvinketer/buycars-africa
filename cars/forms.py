@@ -1,7 +1,6 @@
 from django import forms
 from django.utils import timezone
-# FIXED: Imported Booking instead of CarBooking
-from .models import Car, Booking  
+from .models import Car, Booking 
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -29,10 +28,15 @@ class CarForm(forms.ModelForm):
 
     class Meta:
         model = Car
-        # We exclude fields the dealer shouldn't touch manually
-        exclude = ['dealer', 'status', 'is_featured', 'created_at', 'views', 'leads']
+        # Exclude internal fields AND the old legacy 'location' field
+        exclude = ['dealer', 'status', 'is_featured', 'created_at', 'views', 'leads', 'location']
         
         widgets = {
+            # --- NEW GLOBAL FIELDS ---
+            'country': forms.Select(attrs={'class': 'form-select'}),
+            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Nairobi, Cape Town, Dubai'}),
+            'listing_currency': forms.Select(attrs={'class': 'form-select'}),
+
             # --- EXISTING FIELDS ---
             'make': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Toyota'}),
             'model': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Harrier'}),
@@ -49,10 +53,10 @@ class CarForm(forms.ModelForm):
             'engine_size': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2000'}),
             'color': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Pearl White'}),
             'body_type': forms.Select(attrs={'class': 'form-select'}),
-            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Nairobi, Kiambu Road'}),
+            
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe the car...'}),
 
-            # --- NEW RENTAL FIELDS ---
+            # --- RENTAL FIELDS ---
             # We add IDs here to control them with JavaScript (Show/Hide logic)
             'listing_type': forms.Select(attrs={'class': 'form-select', 'id': 'id_listing_type'}),
             'rent_price_per_day': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 3500', 'id': 'id_rent_price'}),
@@ -60,10 +64,9 @@ class CarForm(forms.ModelForm):
             'is_available_for_rent': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-# --- NEW: BOOKING FORM ---
+# --- BOOKING FORM ---
 class CarBookingForm(forms.ModelForm):
     class Meta:
-        # FIXED: Using the new Booking model
         model = Booking
         fields = ['start_date', 'end_date']
         widgets = {

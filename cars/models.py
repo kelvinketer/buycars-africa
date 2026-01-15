@@ -8,7 +8,32 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 class Car(models.Model):
-    # --- DROPDOWN CHOICES ---
+    # --- GLOBAL DROPDOWN CHOICES (NEW) ---
+    COUNTRY_CHOICES = [
+        ('KE', 'Kenya'),
+        ('ZA', 'South Africa'),
+        ('GB', 'United Kingdom'),
+        ('JP', 'Japan'),
+        ('AE', 'United Arab Emirates'),
+        ('UG', 'Uganda'),
+        ('TZ', 'Tanzania'),
+        ('RW', 'Rwanda'),
+        ('NG', 'Nigeria'),
+        ('GH', 'Ghana'),
+    ]
+
+    CURRENCY_CHOICES = [
+        ('KES', 'Kenyan Shilling (KES)'),
+        ('ZAR', 'South African Rand (ZAR)'),
+        ('GBP', 'British Pound (GBP)'),
+        ('USD', 'US Dollar (USD)'),
+        ('AED', 'UAE Dirham (AED)'),
+        ('JPY', 'Japanese Yen (JPY)'),
+        ('NGN', 'Nigerian Naira (NGN)'),
+        ('GHS', 'Ghanaian Cedi (GHS)'),
+    ]
+
+    # --- EXISTING DROPDOWN CHOICES ---
     STATUS_CHOICES = (
         ('AVAILABLE', 'Available'),
         ('SOLD', 'Sold'),
@@ -46,7 +71,7 @@ class Car(models.Model):
         ('CONVERTIBLE', 'Convertible'),
     ]
 
-    # --- NEW: LISTING TYPE FOR RENTALS ---
+    # --- LISTING TYPE FOR RENTALS ---
     LISTING_TYPE_CHOICES = [
         ('SALE', 'For Sale'),
         ('RENT', 'For Hire'),
@@ -64,6 +89,14 @@ class Car(models.Model):
     year = models.IntegerField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     
+    # === NEW GLOBAL FIELDS ===
+    country = models.CharField(max_length=2, choices=COUNTRY_CHOICES, default='KE', help_text="The country where this car is physically located.")
+    city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Cape Town)")
+    listing_currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='KES', help_text="Currency for the listed price.")
+    
+    # Note: 'location' kept for legacy support/display, but 'city' & 'country' are preferred for logic
+    location = models.CharField(max_length=100, default='Nairobi')
+
     # === NEW RENTAL FIELDS ===
     listing_type = models.CharField(
         max_length=10, 
@@ -77,7 +110,7 @@ class Car(models.Model):
         decimal_places=2, 
         null=True, 
         blank=True,
-        help_text="Cost per day in KES (only required if For Hire)"
+        help_text="Cost per day in Listing Currency (only required if For Hire)"
     )
     
     min_hire_days = models.PositiveIntegerField(
@@ -92,7 +125,6 @@ class Car(models.Model):
     
     engine_size = models.IntegerField(help_text="Engine cc", null=True, blank=True)
     color = models.CharField(max_length=50, default='White')
-    location = models.CharField(max_length=100, default='Nairobi')
     
     condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='FOREIGN')
     transmission = models.CharField(max_length=20, choices=TRANSMISSION_CHOICES, default='AUTOMATIC')
@@ -126,7 +158,7 @@ class Car(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.year} {self.make} {self.model}"
+        return f"{self.year} {self.make} {self.model} - {self.city}, {self.country}"
 
 class CarImage(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='images')
