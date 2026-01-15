@@ -85,7 +85,13 @@
             {% for car in featured_cars %}
             <div class="col-lg-3 col-md-6">
                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                    <img src="{{ car.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% if car.images.first %}
+                        <img src="{{ car.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-car fa-2x text-muted"></i>
+                        </div>
+                    {% endif %}
                     <div class="card-body">
                         <h6 class="fw-bold text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h6>
                         <h5 class="text-success fw-bold mb-0">{% global_price car.price %}</h5>
@@ -96,7 +102,9 @@
                 </div>
             </div>
             {% empty %}
-                <p class="text-center text-muted">Loading premium inventory...</p>
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No premium vehicles listed yet.</p>
+                </div>
             {% endfor %}
         </div>
     </div>
