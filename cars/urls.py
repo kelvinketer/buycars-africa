@@ -10,7 +10,7 @@ urlpatterns = [
     path('brands/', views.all_brands, name='all_brands'),
     path('pricing/', views.pricing_page, name='pricing'),
     
-    # Diaspora Landing Page (The missing link)
+    # Diaspora Landing Page
     path('diaspora/', views.diaspora_landing, name='diaspora_landing'),
 
     # Rental / Booking URL
@@ -36,8 +36,4 @@ urlpatterns = [
     # Platform Admin (Staff Only)
     path('platform/', views.platform_dashboard, name='platform_dashboard'),
 ]
-# Update diaspora link to point to the correct view test 
-
-# Force update for diaspora page deployment
-
-# Force server update v2
+# FINAL_UPDATE_V3: Force Diaspora Link
