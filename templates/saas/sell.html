@@ -66,8 +66,8 @@
                         <div class="alert alert-success border-0 d-flex align-items-center mb-0">
                             <i class="fab fa-whatsapp fa-lg me-3"></i>
                             <div>
-                                <strong class="d-block">New Inquiry</strong>
-                                <small>Buyer clicked to chat about "Toyota Prado"</small>
+                                <strong class="d-block text-dark">New Inquiry</strong>
+                                <small class="text-muted">Buyer clicked to chat about "Toyota Prado"</small>
                             </div>
                         </div>
                     </div>
@@ -124,32 +124,70 @@
 <section class="py-5" style="background-color: #f8fafc;">
     <div class="container py-4 text-center">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h2 class="fw-bold mb-4 text-dark">Simple, Transparent Pricing</h2>
-                <p class="lead text-muted mb-5">Start for free. Upgrade only when you grow.</p>
+            <div class="col-lg-10">
+                <h2 class="fw-bold mb-4 text-dark">Dealer Plans Tailored for Growth</h2>
+                <p class="lead text-muted mb-5">Choose the capacity that fits your stock level.</p>
                 
-                <div class="d-flex justify-content-center gap-3">
-                    <div class="card border-0 shadow-sm p-4 rounded-4 bg-white" style="min-width: 280px;">
-                        <h5 class="fw-bold text-muted">Starter</h5>
-                        <h2 class="fw-bold display-4 text-dark">Free</h2>
-                        <ul class="list-unstyled text-start my-4">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> List up to 3 Cars</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Basic Dashboard</li>
-                        </ul>
-                        <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold">Get Started</a>
-                    </div>
+                <div class="row g-4 justify-content-center">
                     
-                    <div class="card border-danger border-2 shadow-lg p-4 rounded-4 bg-white position-relative" style="min-width: 300px; transform: scale(1.05);">
-                        <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger px-3 py-2">MOST POPULAR</span>
-                        <h5 class="fw-bold text-danger mt-2">Pro Dealer</h5>
-                        <h2 class="fw-bold display-4 text-dark">2,500<small class="fs-6 text-muted">/mo</small></h2>
-                        <ul class="list-unstyled text-start my-4">
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Unlimited Listings</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Verified Badge</li>
-                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Priority Support</li>
-                        </ul>
-                        <a href="{% url 'signup' %}" class="btn btn-danger rounded-pill w-100 fw-bold">Go Pro</a>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
+                            <div class="py-3">
+                                <h5 class="fw-bold text-muted text-uppercase small ls-1">Starter</h5>
+                                <h2 class="fw-bold display-4 text-dark my-3">Free</h2>
+                                <p class="text-muted small">Perfect for trying out the platform.</p>
+                            </div>
+                            <hr class="opacity-10">
+                            <ul class="list-unstyled text-start my-4 px-3">
+                                <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>3</strong> Active Listings</li>
+                                <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Basic Dashboard</li>
+                                <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Standard Support</li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-2">Get Started</a>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow p-4 rounded-4 bg-white h-100 position-relative" style="transform: scale(1.02); z-index: 2;">
+                            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-primary px-3 py-2">RECOMMENDED</span>
+                            <div class="py-3">
+                                <h5 class="fw-bold text-primary text-uppercase small ls-1">Standard</h5>
+                                <h2 class="fw-bold display-4 text-dark my-3">1,500<small class="fs-6 text-muted">/mo</small></h2>
+                                <p class="text-muted small">For growing car yards.</p>
+                            </div>
+                            <hr class="opacity-10">
+                            <ul class="list-unstyled text-start my-4 px-3">
+                                <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> <strong>20</strong> Active Listings</li>
+                                <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> WhatsApp Leads</li>
+                                <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> Verified Badge</li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="{% url 'signup' %}" class="btn btn-primary rounded-pill w-100 fw-bold py-2">Upgrade Now</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card border-danger border-2 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
+                            <div class="py-3">
+                                <h5 class="fw-bold text-danger text-uppercase small ls-1">Premium</h5>
+                                <h2 class="fw-bold display-4 text-dark my-3">2,500<small class="fs-6 text-muted">/mo</small></h2>
+                                <p class="text-muted small">For established volume dealers.</p>
+                            </div>
+                            <hr class="opacity-10">
+                            <ul class="list-unstyled text-start my-4 px-3">
+                                <li class="mb-3"><i class="fas fa-check-circle text-danger me-2"></i> <strong>Unlimited</strong> Listings</li>
+                                <li class="mb-3"><i class="fas fa-check-circle text-danger me-2"></i> Priority Placement</li>
+                                <li class="mb-3"><i class="fas fa-check-circle text-danger me-2"></i> Dedicated Manager</li>
+                            </ul>
+                            <div class="mt-auto">
+                                <a href="{% url 'signup' %}" class="btn btn-danger rounded-pill w-100 fw-bold py-2">Go Premium</a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -161,5 +199,6 @@
     .hover-lift:hover { transform: translateY(-3px); }
     .transition-hover { transition: all 0.3s ease; }
     .transition-hover:hover { background: white !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: transparent !important; }
+    .ls-1 { letter-spacing: 1px; }
 </style>
 {% endblock %}
