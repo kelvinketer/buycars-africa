@@ -13,7 +13,7 @@ urlpatterns = [
     # --- SUPER ADMIN (CEO Dashboard) ---
     path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'),
     path('super-admin/verify/<int:user_id>/', user_views.verify_dealer, name='verify_dealer'),
-    path('platform/', car_views.platform_dashboard, name='platform_dashboard'), # <--- ADDED MISSING PLATFORM VIEW
+    path('platform/', car_views.platform_dashboard, name='platform_dashboard'), 
 
     # --- PASSWORD RESET ROUTES ---
     path('reset_password/', 
@@ -34,11 +34,14 @@ urlpatterns = [
 
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
-    path('set-currency/', car_views.set_currency, name='set_currency'), # <--- FIXED: ADDED MISSING CURRENCY URL
+    path('set-currency/', car_views.set_currency, name='set_currency'),
     path('car/<int:car_id>/', car_views.car_detail, name='car_detail'), 
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
+    # --- NEW: DIASPORA LANDING PAGE ---
+    path('diaspora/', car_views.diaspora_landing, name='diaspora_landing'),
+
     # --- BOOKING PAGE ---
     path('book/<int:car_id>/', car_views.book_car, name='book_car'),
 
@@ -49,12 +52,11 @@ urlpatterns = [
     path('track/<int:car_id>/<str:action_type>/', car_views.track_action, name='track_action'),
 
     # --- AUTHENTICATION (Delegated to users/urls.py) ---
-    # This handles login, logout, signup, select account, etc.
     path('', include('users.urls')), 
 
     # --- DEALER SIDE ---
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
-    path('add-car/', car_views.add_car, name='add_car'),
+    path('dashboard/add/', car_views.add_car, name='add_car'), # Updated to match dashboard link
     
     # MONTHLY REPORT PDF ROUTE
     path('dashboard/report/', car_views.download_report, name='download_report'),
