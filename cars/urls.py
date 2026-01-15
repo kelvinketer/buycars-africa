@@ -36,3 +36,4 @@ urlpatterns = [
     # Platform Admin (Staff Only)
     path('platform/', views.platform_dashboard, name='platform_dashboard'),
 ]
+# Update diaspora link to point to the correct view
