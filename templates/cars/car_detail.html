@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="bg-light py-4 py-lg-5">
+<div class="bg-light py-4 py-lg-5 font-sans">
     <div class="container">
         
         <nav aria-label="breadcrumb" class="mb-4 d-none d-lg-block">
@@ -34,7 +34,7 @@
                     <div class="position-relative d-flex align-items-center justify-content-center" 
                          style="height: 500px; min-height: 350px; background-color: #f1f5f9;">
                         
-                        <div class="position-absolute top-0 end-0 m-3 z-3">
+                        <div class="position-absolute top-0 end-0 m-3 z-3 d-flex flex-column gap-2 align-items-end">
                             {% if car.status == 'SOLD' %}
                                 <span class="badge bg-danger fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">SOLD OUT</span>
                             {% elif car.status == 'RESERVED' %}
@@ -42,6 +42,10 @@
                             {% elif car.listing_type == 'RENT' %}
                                 <span class="badge bg-primary fs-6 fw-bold py-2 px-3 shadow-sm rounded-2">FOR HIRE</span>
                             {% endif %}
+
+                            <span class="badge bg-white text-dark border shadow-sm py-2 px-3 rounded-pill d-flex align-items-center gap-2">
+                                <i class="fas fa-globe text-primary"></i> Global Pay Accepted
+                            </span>
                         </div>
 
                         {% if car.images.first %}
@@ -120,6 +124,45 @@
                     </div>
                 </div>
 
+                {% if car.listing_type != 'RENT' and car.dealer.dealer_profile.phone_number %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="background: #f8fafc;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <h5 class="fw-bold mb-0 text-dark">Remote Buyer Tools</h5>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I am interested in the {{ car.year }} {{ car.make }} {{ car.model }} (KES {{ car.price|intcomma }}). Can you please send me a detailed video walkaround?" 
+                                   target="_blank" 
+                                   class="btn btn-white border w-100 py-3 d-flex align-items-center justify-content-center shadow-sm hover-lift text-start">
+                                    <i class="fab fa-whatsapp text-success fs-4 me-3"></i>
+                                    <div class="lh-sm">
+                                        <div class="fw-bold text-dark">Request Video</div>
+                                        <small class="text-muted">Get a virtual tour</small>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <a href="https://wa.me/{{ car.dealer.dealer_profile.phone_number|whatsapp_format }}?text=Hi, I would like to schedule a mechanic inspection for the {{ car.year }} {{ car.make }} {{ car.model }}." 
+                                   target="_blank"
+                                   class="btn btn-white border w-100 py-3 d-flex align-items-center justify-content-center shadow-sm hover-lift text-start">
+                                    <i class="fas fa-tools text-secondary fs-4 me-3"></i>
+                                    <div class="lh-sm">
+                                        <div class="fw-bold text-dark">Book Inspection</div>
+                                        <small class="text-muted">Verify condition</small>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <div class="card border-0 shadow-sm rounded-4 mb-4" style="background-color: #f0f9ff;">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
@@ -157,6 +200,7 @@
                                     <h2 class="text-success fw-bold mb-0">KES {{ car.price|floatformat:0|intcomma }}</h2>
                                 {% endif %}
                             </div>
+                            
                             <hr class="text-muted opacity-25">
                             
                             <div class="row g-2 mb-4">
@@ -332,6 +376,7 @@
 </div>
 
 <style>
+    .font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
     .hover-lift { transition: transform 0.3s ease; }
     .hover-lift:hover { transform: translateY(-5px); }
     @media (max-width: 991px) {
@@ -407,7 +452,7 @@
         document.getElementById('monthlyPayment').innerText = "KES " + Math.floor(monthly).toLocaleString();
     }
     
-    // 4. Rental Calculator (Rent Mode) - NEW!
+    // 4. Rental Calculator (Rent Mode)
     function calculateRental() {
         const startInput = document.getElementById('start_date');
         const endInput = document.getElementById('end_date');
@@ -421,7 +466,6 @@
         const dailyRate = {{ car.rent_price_per_day|default:0 }};
 
         if (start && end && end >= start) {
-            // Calculate difference in days (add 1 to include start date)
             const diffTime = Math.abs(end - start);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
             
