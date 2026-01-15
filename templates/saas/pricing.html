@@ -41,14 +41,10 @@
                                     <button class="btn btn-soft-dark rounded-pill py-3 fw-bold disabled">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
-                                {% elif user.dealer_profile.plan_type == 'LITE' or user.dealer_profile.plan_type == 'PRO' %}
-                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-soft-secondary rounded-pill py-3 fw-bold hover-scale transition-all">
-                                        Downgrade to Starter
-                                    </button>
                                 {% else %}
-                                    <button onclick="openPaymentModal('STARTER', 1500)" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">
+                                    <a href="{% url 'subscription_checkout' 'STARTER' %}" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">
                                         Select Starter
-                                    </button>
+                                    </a>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">Get Started</a>
@@ -87,14 +83,10 @@
                                     <button class="btn btn-white text-brand-dark rounded-pill py-3 fw-bold disabled shadow-sm">
                                         <i class="fas fa-check-circle me-2"></i> Current Plan
                                     </button>
-                                {% elif user.dealer_profile.plan_type == 'PRO' %}
-                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-soft-light rounded-pill py-3 fw-bold hover-scale">
-                                        Downgrade to Lite
-                                    </button>
                                 {% else %}
-                                    <button onclick="openPaymentModal('LITE', 5000)" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">
+                                    <a href="{% url 'subscription_checkout' 'LITE' %}" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">
                                         Upgrade to Lite
-                                    </button>
+                                    </a>
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'signup' %}" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">Get Started</a>
@@ -137,9 +129,9 @@
                                     </a>
 
                                 {% else %}
-                                    <button onclick="openPaymentModal('PRO', 12000)" class="btn btn-brand-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">
+                                    <a href="{% url 'subscription_checkout' 'PRO' %}" class="btn btn-brand-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">
                                         Upgrade to Pro
-                                    </button>
+                                    </a>
                                     
                                     <div class="text-center mt-2">
                                         <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20interested%20in%20your%20Enterprise%20solutions." 
@@ -161,223 +153,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 rounded-5 shadow-2xl overflow-hidden" style="background: #ffffff;">
-            <div class="modal-header border-0 p-4 bg-brand-dark text-white">
-                <div class="d-flex align-items-center">
-                    <div class="bg-white bg-opacity-10 p-2 rounded-3 shadow-sm me-3">
-                        <i class="fas fa-shield-alt text-white fa-lg"></i>
-                    </div>
-                    <div>
-                        <h5 class="fw-bold mb-0">Secure Checkout</h5>
-                        <small class="opacity-75">Pay securely via M-PESA</small>
-                    </div>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" id="closeModalBtn"></button>
-            </div>
-
-            <div class="modal-body p-0">
-                <div id="paymentStep1" class="p-4 p-md-5">
-                    <div class="bg-light p-4 rounded-4 mb-4 border border-dashed">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-muted small text-uppercase fw-bold ls-1">Plan</span>
-                            <span class="badge bg-brand-dark text-white px-3 py-1 rounded-pill small" id="displayPlan">LITE</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-end">
-                            <span class="text-muted small">Total Due</span>
-                            <h2 class="fw-bold text-brand-dark mb-0" id="displayAmount">KES 5,000</h2>
-                        </div>
-                    </div>
-
-                    <form onsubmit="initiatePayment(event)">
-                        <label class="form-label fw-bold small text-muted text-uppercase ls-1 mb-2">M-Pesa Phone Number</label>
-                        <div class="input-group input-group-lg mb-4 shadow-sm rounded-4 overflow-hidden border">
-                            <span class="input-group-text bg-white border-0 ps-4 pe-2 text-muted">
-                                <i class="fas fa-mobile-alt"></i>
-                            </span>
-                            <input type="tel" class="form-control border-0 py-3 ps-2 fw-bold text-dark" 
-                                   id="phoneNumber" 
-                                   placeholder="0712 345 678" 
-                                   style="font-size: 1.1rem; letter-spacing: 0.5px;"
-                                   value="{{ user.dealer_profile.phone_number }}" required>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-brand-red btn-lg rounded-pill py-3 fw-bold shadow-lg hover-scale transition-all" id="payBtn">
-                                Pay Now <i class="fas fa-arrow-right ms-2 small"></i>
-                            </button>
-                        </div>
-                        <div class="text-center mt-4">
-                            <small class="text-muted opacity-75" style="font-size: 0.75rem;">
-                                <i class="fas fa-lock me-1"></i> Secured by Safaricom M-PESA
-                            </small>
-                        </div>
-                    </form>
-                </div>
-
-                <div id="paymentStep2" class="p-5 text-center" style="display: none;">
-                    <div class="my-4 position-relative d-inline-block">
-                        <div class="spinner-grow text-brand-red opacity-25" role="status" style="width: 5rem; height: 5rem;"></div>
-                        <div class="position-absolute top-50 start-50 translate-middle">
-                             <i class="fas fa-mobile-alt fa-2x text-brand-red"></i>
-                        </div>
-                    </div>
-                    <h4 class="fw-bold mb-2">Check your phone</h4>
-                    <p class="text-muted mb-4 px-4">We sent a PIN prompt to <br><strong id="sentPhone" class="text-dark">...</strong></p>
-                    <div class="progress rounded-pill bg-light mb-3 mx-auto" style="height: 6px; width: 60%; overflow: hidden;">
-                        <div class="progress-bar bg-brand-red progress-bar-striped progress-bar-animated" style="width: 100%"></div>
-                    </div>
-                    <small class="text-muted animate-pulse">Waiting for confirmation...</small>
-                </div>
-
-                <div id="paymentStep3" class="p-5 text-center" style="display: none;">
-                    <div class="mb-4">
-                        <div class="success-checkmark">
-                            <div class="check-icon">
-                                <span class="icon-line line-tip"></span>
-                                <span class="icon-line line-long"></span>
-                                <div class="icon-circle"></div>
-                                <div class="icon-fix"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="fw-bold text-dark mb-2">Payment Successful!</h3>
-                    <p class="text-muted mb-4">Your subscription is now active.</p>
-                    <div class="d-grid">
-                        <a href="{% url 'dealer_dashboard' %}" class="btn btn-brand-dark btn-lg rounded-pill shadow-lg hover-scale">Go to Dashboard</a>
-                    </div>
-                </div>
-
-                <div id="paymentStep4" class="p-5 text-center" style="display: none;">
-                    <div class="mb-4 text-danger">
-                        <div class="bg-danger bg-opacity-10 p-4 rounded-circle d-inline-block">
-                            <i class="fas fa-times fa-3x"></i>
-                        </div>
-                    </div>
-                    <h4 class="fw-bold text-danger mb-2">Payment Failed</h4>
-                    <p class="text-muted mb-4" id="errorMessage">Something went wrong.</p>
-                    <div class="d-grid w-75 mx-auto">
-                        <button onclick="resetModal()" class="btn btn-outline-dark rounded-pill py-2">Try Again</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let selectedPlan = '';
-    let pollInterval = null;
-
-    function openPaymentModal(plan, amount) {
-        selectedPlan = plan;
-        document.getElementById('displayAmount').innerText = 'KES ' + amount.toLocaleString();
-        document.getElementById('displayPlan').innerText = plan;
-        resetModal();
-        new bootstrap.Modal(document.getElementById('paymentModal')).show();
-    }
-
-    function resetModal() {
-        document.getElementById('paymentStep1').style.display = 'block';
-        document.getElementById('paymentStep2').style.display = 'none';
-        document.getElementById('paymentStep3').style.display = 'none';
-        document.getElementById('paymentStep4').style.display = 'none';
-        const btn = document.getElementById('payBtn');
-        btn.disabled = false;
-        btn.innerHTML = 'Pay Now <i class="fas fa-arrow-right ms-2 small"></i>';
-        document.getElementById('closeModalBtn').disabled = false;
-    }
-
-    async function initiatePayment(e) {
-        e.preventDefault();
-        const phone = document.getElementById('phoneNumber').value;
-        const btn = document.getElementById('payBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
-
-        try {
-            const response = await fetch("{% url 'initiate_payment' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    plan_type: selectedPlan,
-                    phone_number: phone
-                })
-            });
-
-            const data = await response.json();
-            if (data.status === 'success') {
-                document.getElementById('sentPhone').innerText = phone;
-                fadeOut('paymentStep1', () => { fadeIn('paymentStep2'); });
-                document.getElementById('closeModalBtn').disabled = true; 
-                startPolling();
-            } else {
-                showError(data.message);
-            }
-        } catch (error) {
-            showError("Network error. Please try again.");
-        }
-    }
-
-    function fadeOut(id, callback) {
-        const el = document.getElementById(id);
-        el.style.opacity = 0;
-        setTimeout(() => {
-            el.style.display = 'none';
-            if (callback) callback();
-        }, 300);
-    }
-    function fadeIn(id) {
-        const el = document.getElementById(id);
-        el.style.opacity = 0;
-        el.style.display = 'block';
-        setTimeout(() => {
-            el.style.opacity = 1;
-        }, 50);
-    }
-
-    function startPolling() {
-        let attempts = 0;
-        const maxAttempts = 60;
-        pollInterval = setInterval(async () => {
-            attempts++;
-            if (attempts >= maxAttempts) {
-                stopPolling();
-                showError("Payment timed out. Did you enter your PIN?");
-                return;
-            }
-            try {
-                const response = await fetch("{% url 'check_payment_status' %}");
-                const data = await response.json();
-                if (data.status === 'SUCCESS') {
-                    stopPolling();
-                    fadeOut('paymentStep2', () => { fadeIn('paymentStep3'); });
-                } else if (data.status === 'FAILED') {
-                    stopPolling();
-                    showError(data.description || "Payment failed.");
-                }
-            } catch (err) {
-                console.log("Polling error", err);
-            }
-        }, 2000); 
-    }
-
-    function stopPolling() {
-        if (pollInterval) clearInterval(pollInterval);
-        document.getElementById('closeModalBtn').disabled = false;
-    }
-
-    function showError(msg) {
-        document.getElementById('errorMessage').innerText = msg;
-        fadeOut('paymentStep1', () => fadeIn('paymentStep4'));
-        fadeOut('paymentStep2', () => fadeIn('paymentStep4'));
-    }
-</script>
-
 <style>
     /* BRAND COLORS */
     :root {
@@ -388,8 +163,7 @@
     }
 
     .font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-    .ls-1 { letter-spacing: 1px; }
-
+    
     /* Custom Colors */
     .text-brand-red { color: var(--brand-red) !important; }
     .text-brand-dark { color: var(--brand-dark) !important; }
@@ -421,18 +195,6 @@
     }
 
     /* Soft Buttons */
-    .btn-soft-secondary {
-        background-color: #f3f4f6;
-        color: #4b5563;
-        border: 1px solid transparent;
-    }
-    .btn-soft-secondary:hover {
-        background-color: #e5e7eb;
-        color: #1f2937;
-        transform: translateY(-2px);
-    }
-
-    /* Force Soft Dark to stay visible */
     .btn-soft-dark, .btn-soft-dark.disabled {
         background-color: #e2e8f0 !important;
         color: #1e293b !important;
@@ -440,7 +202,7 @@
         opacity: 1 !important;
     }
 
-    /* GLASS BUTTON (For Dark Backgrounds) */
+    /* Glass Button */
     .btn-soft-light {
         background-color: rgba(255, 255, 255, 0.15);
         color: #ffffff;
@@ -451,10 +213,8 @@
         background-color: rgba(255, 255, 255, 0.25);
         color: #ffffff;
         transform: translateY(-2px);
-        border-color: rgba(255,255,255,0.4);
     }
     
-    /* FIX: Force visibility of white button on dark background even when disabled */
     .btn-white, .btn-white.disabled {
         background-color: #ffffff !important;
         color: var(--brand-dark) !important;
@@ -467,33 +227,11 @@
         transform: translateY(-2px);
     }
 
-    /* Card Details */
-    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-    .transition-all { transition: all 0.3s ease; }
-    .border-2 { border-width: 2px !important; }
-    .border-top-pro { border-top: 5px solid var(--brand-gold) !important; }
-
-    /* Animations */
-    #paymentStep1, #paymentStep2, #paymentStep3, #paymentStep4 { transition: opacity 0.3s ease; }
-    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: .5; }
-    }
-
-    /* Success Checkmark */
-    .success-checkmark { width: 80px; height: 115px; margin: 0 auto; }
-    .check-icon { width: 80px; height: 80px; position: relative; border-radius: 50%; box-sizing: content-box; border: 4px solid #4CAF50; }
-    .check-icon::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: content-box; border: 4px solid rgba(255, 255, 255, 0.2); }
-    .check-icon::after { top: 0; left: 0; position: absolute; width: 100%; height: 100%; border-radius: 50%; box-sizing: content-box; border: 4px solid rgba(76, 175, 80, 0.5); z-index: 1; animation: rotate-circle 4.25s ease-in; }
-    .icon-line { height: 5px; background-color: #4CAF50; display: block; border-radius: 2px; position: absolute; z-index: 10; }
-    .line-tip { top: 46px; left: 14px; width: 25px; transform: rotate(45deg); animation: icon-line-tip 0.75s; }
-    .line-long { top: 38px; right: 8px; width: 47px; transform: rotate(-45deg); animation: icon-line-long 0.75s; }
-    .icon-circle { top: -4px; left: -4px; z-index: 10; width: 80px; height: 80px; border-radius: 50%; position: absolute; box-sizing: content-box; border: 4px solid rgba(76, 175, 80, 0.5); }
-    .icon-fix { top: 8px; width: 5px; left: 26px; z-index: 1; height: 85px; position: absolute; transform: rotate(-45deg); background-color: #FFFFFF; }
+    /* Utilities */
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; }
     
-    @keyframes rotate-circle { 0% { transform: rotate(-45deg); } 5% { transform: rotate(-45deg); } 12% { transform: rotate(-405deg); } 100% { transform: rotate(-405deg); } }
-    @keyframes icon-line-tip { 0% { width: 0; left: 1px; top: 19px; } 54% { width: 0; left: 1px; top: 19px; } 70% { width: 50px; left: -8px; top: 37px; } 84% { width: 17px; left: 21px; top: 48px; } 100% { width: 25px; left: 14px; top: 46px; } }
-    @keyframes icon-line-long { 0% { width: 0; right: 46px; top: 54px; } 65% { width: 0; right: 46px; top: 54px; } 84% { width: 55px; right: 0px; top: 35px; } 100% { width: 47px; right: 8px; top: 38px; } }
+    .border-top-pro { border-top: 5px solid var(--brand-gold) !important; }
+    .border-2 { border-width: 2px !important; }
 </style>
 {% endblock %}
