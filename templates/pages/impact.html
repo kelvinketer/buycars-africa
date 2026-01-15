@@ -3,66 +3,92 @@
 
 {% block content %}
 <style>
-    /* Custom "Tech-Nature" Gradient */
-    .bg-gradient-nature {
-        background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
-    }
-    
-    .text-glow {
-        text-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+    /* --- CUSTOM TECH-NATURE THEME --- */
+    :root {
+        --neon-green: #00ff9d;
+        --deep-forest: #022c22;
+        --slate-dark: #0f172a;
     }
 
-    .counter-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: transform 0.3s ease;
+    .bg-tech-nature {
+        background: radial-gradient(circle at top right, #064e3b 0%, #020617 100%);
     }
     
-    .counter-card:hover {
+    .text-glow-green {
+        color: var(--neon-green);
+        text-shadow: 0 0 25px rgba(0, 255, 157, 0.4);
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .glass-card:hover {
         transform: translateY(-5px);
-        border-color: #22c55e;
+        border-color: var(--neon-green);
+        background: rgba(255, 255, 255, 0.05);
     }
 
-    .pillar-icon {
-        width: 80px; 
-        height: 80px; 
+    .pillar-icon-box {
+        width: 90px; 
+        height: 90px; 
         display: flex; 
         align-items: center; 
         justify-content: center;
-        background: rgba(34, 197, 94, 0.1);
-        color: #22c55e;
-        border-radius: 50%;
+        background: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%);
+        color: #166534;
+        border-radius: 24px;
         margin-bottom: 1.5rem;
+        box-shadow: 0 10px 30px -10px rgba(22, 101, 52, 0.3);
+    }
+
+    /* Animated Counter Bar */
+    .progress-glow {
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
     }
 </style>
 
-<div class="position-relative text-white overflow-hidden d-flex align-items-center" style="min-height: 80vh; background-color: #022c22;">
+<div class="position-relative text-white overflow-hidden d-flex align-items-center bg-tech-nature" style="min-height: 85vh;">
+    
     <div class="position-absolute top-0 start-0 w-100 h-100" 
-         style="background: url('{% static 'img/impact-hero.jpg' %}') center/cover no-repeat; opacity: 0.4;">
+         style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop'); opacity: 0.15; background-size: cover; background-position: center;">
     </div>
     
-    <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient-nature opacity-75"></div>
+    <div class="position-absolute bottom-0 start-0 w-100 h-50" 
+         style="background: linear-gradient(to top, #020617 0%, transparent 100%);">
+    </div>
 
-    <div class="container position-relative z-2">
+    <div class="container position-relative z-2 pt-5">
         <div class="row justify-content-center text-center">
-            <div class="col-lg-9">
-                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill mb-4 ls-1 fw-bold">
-                    THE 2026 INITIATIVE
-                </span>
-                <h1 class="display-2 fw-bold mb-4 ls-tight">
+            <div class="col-lg-10">
+                <div class="d-inline-block mb-4">
+                    <span class="badge rounded-pill px-3 py-2 border border-success border-opacity-50 text-uppercase ls-2" 
+                          style="background: rgba(22, 163, 74, 0.2); color: #86efac; letter-spacing: 2px;">
+                        The 2026 Initiative
+                    </span>
+                </div>
+
+                <h1 class="display-1 fw-bold mb-4 ls-tight text-white">
                     1 Million Trees. <br>
-                    1 Nation. <span class="text-success text-glow">Engineered.</span>
+                    1 Nation. <span class="text-glow-green">Engineered.</span>
                 </h1>
-                <p class="lead text-white-50 mb-5 fs-4 mx-auto" style="max-width: 700px;">
-                    We are moving beyond traditional planting. Using digital monitoring and agro-tech integration, we are engineering the restoration of Kenya’s landscapes.
+
+                <p class="lead text-white-50 mb-5 fs-4 mx-auto fw-light" style="max-width: 750px; line-height: 1.6;">
+                    We are moving beyond traditional planting. Using digital monitoring, GPS tagging, and agro-tech integration, we are <strong class="text-white">engineering</strong> the restoration of Kenya’s landscapes.
                 </p>
-                <div class="d-flex justify-content-center gap-3">
-                    <a href="#partner" class="btn btn-success btn-lg rounded-pill fw-bold px-5 py-3 shadow-lg hover-lift">
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="#partner" class="btn btn-success btn-lg rounded-pill fw-bold px-5 py-3 shadow-lg hover-lift" 
+                       style="background-color: #22c55e; border: none;">
                         Become a Partner
                     </a>
-                    <a href="#dashboard" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4 py-3">
-                        View Live Data
+                    <a href="#dashboard" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4 py-3 hover-lift"
+                       style="border-color: rgba(255,255,255,0.3);">
+                        <i class="fas fa-chart-line me-2"></i> View Live Data
                     </a>
                 </div>
             </div>
@@ -70,55 +96,64 @@
     </div>
 </div>
 
-<section id="dashboard" class="py-5 bg-dark position-relative">
+<section id="dashboard" class="py-5 bg-dark position-relative" style="background-color: #020617 !important;">
     <div class="container py-5">
         <div class="row align-items-end mb-5">
             <div class="col-lg-8">
-                <h6 class="text-success fw-bold text-uppercase small mb-2">Real-Time Impact</h6>
-                <h2 class="text-white fw-bold display-6">Digital Monitoring Log</h2>
+                <div class="d-flex align-items-center mb-2">
+                    <span class="spinner-grow spinner-grow-sm text-success me-2" role="status"></span>
+                    <h6 class="text-success fw-bold text-uppercase small mb-0 ls-1">System Live</h6>
+                </div>
+                <h2 class="text-white fw-bold display-5">Digital Monitoring Log</h2>
                 <p class="text-white-50">Tracking every sapling from nursery to maturity using our internal audit tools.</p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <div class="d-inline-flex align-items-center text-white-50 small border border-secondary rounded-pill px-3 py-1">
-                    <span class="spinner-grow spinner-grow-sm text-success me-2" role="status"></span>
-                    System Live: Updating...
-                </div>
+                <p class="text-white-50 small font-monospace">Last Sync: {% now "H:i:s T" %}</p>
             </div>
         </div>
 
         <div class="row g-4">
             <div class="col-md-3">
-                <div class="counter-card p-4 rounded-4 text-center h-100">
-                    <div class="display-4 fw-bold text-white mb-1">0</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Trees Planted</small>
-                    <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
+                    <div class="display-4 fw-bold text-white mb-2">0</div>
+                    <small class="text-uppercase text-white-50 fw-bold ls-1 mb-3">Trees Planted</small>
+                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <div class="progress-bar bg-success progress-glow" role="progressbar" style="width: 2%"></div>
                     </div>
-                    <small class="d-block mt-2 text-muted" style="font-size: 0.75rem;">Target: 1,000,000</small>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-white-50" style="font-size: 0.7rem;">0%</small>
+                        <small class="text-white-50" style="font-size: 0.7rem;">Goal: 1M</small>
+                    </div>
                 </div>
             </div>
             
             <div class="col-md-3">
-                <div class="counter-card p-4 rounded-4 text-center h-100">
+                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
                     <div class="display-4 fw-bold text-success mb-1">94%</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1">Survival Rate</small>
-                    <p class="mt-2 mb-0 text-white-50 small">Verified via Spot Checks</p>
+                    <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
+                        <i class="fas fa-check-circle me-1 text-success"></i> Verified via Spot Checks
+                    </p>
                 </div>
             </div>
 
             <div class="col-md-3">
-                <div class="counter-card p-4 rounded-4 text-center h-100">
+                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
                     <div class="display-4 fw-bold text-warning mb-1">12</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1">Active Sites</small>
-                    <p class="mt-2 mb-0 text-white-50 small">Maasai Mara, Juja, Ngong...</p>
+                    <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
+                        Maasai Mara, Juja, Ngong...
+                    </p>
                 </div>
             </div>
 
             <div class="col-md-3">
-                <div class="counter-card p-4 rounded-4 text-center h-100">
+                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
                     <div class="display-4 fw-bold text-info mb-1">350</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1">Farmers Supported</small>
-                    <p class="mt-2 mb-0 text-white-50 small">Via Oletai Agro Group</p>
+                    <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
+                        Via Oletai Agro Group
+                    </p>
                 </div>
             </div>
         </div>
@@ -128,27 +163,27 @@
 <section class="py-5 bg-white">
     <div class="container py-5">
         <div class="text-center mb-5">
-            <h2 class="fw-bold text-dark">Our Methodology</h2>
-            <p class="text-muted">We don't just plant; we plan, track, and nurture.</p>
+            <h6 class="text-success fw-bold text-uppercase small mb-2">Our Methodology</h6>
+            <h2 class="fw-bold text-dark display-6">We don't just plant.<br>We plan, track, and nurture.</h2>
         </div>
 
         <div class="row g-5">
-            <div class="col-md-4 text-center">
-                <div class="pillar-icon mx-auto">
+            <div class="col-md-4 text-center px-4">
+                <div class="pillar-icon-box mx-auto">
                     <i class="fas fa-satellite-dish fa-2x"></i>
                 </div>
                 <h4 class="fw-bold mb-3">Digital Verification</h4>
-                <p class="text-muted">Leveraging my background in Computer Technology, we tag batches with GPS coordinates to ensure transparency for our partners.</p>
+                <p class="text-muted">Leveraging Computer Technology, we tag batches with GPS coordinates to ensure total transparency for our partners. No ghost trees.</p>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="pillar-icon mx-auto">
+            <div class="col-md-4 text-center px-4">
+                <div class="pillar-icon-box mx-auto">
                     <i class="fas fa-hands-helping fa-2x"></i>
                 </div>
                 <h4 class="fw-bold mb-3">Community First</h4>
                 <p class="text-muted">Partnering with the <strong>Water4Wildlife Maasai Mara Foundation</strong> to ensure trees protect water sources and empower locals.</p>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="pillar-icon mx-auto">
+            <div class="col-md-4 text-center px-4">
+                <div class="pillar-icon-box mx-auto">
                     <i class="fas fa-seedling fa-2x"></i>
                 </div>
                 <h4 class="fw-bold mb-3">Agro-Tech Integration</h4>
@@ -165,7 +200,7 @@
             <h2 class="fw-bold display-6">Align Your Brand with Impact</h2>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 align-items-center">
             <div class="col-lg-4">
                 <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
                     <h5 class="fw-bold text-success mb-4">Seedling Partner</h5>
@@ -182,19 +217,19 @@
             </div>
             
             <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-lg p-4 rounded-4 bg-dark text-white position-relative overflow-hidden">
-                    <div class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 fw-bold small rounded-bottom-start">RECOMMENDED</div>
-                    <h5 class="fw-bold text-success mb-4">Growth Partner</h5>
+                <div class="card h-100 border-0 shadow-lg p-5 rounded-4 bg-dark text-white position-relative overflow-hidden transform-scale-sm">
+                    <div class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 fw-bold small rounded-bottom-start">POPULAR</div>
+                    <h4 class="fw-bold text-success mb-4">Growth Partner</h4>
                     <h2 class="fw-bold mb-1">20,000 Trees</h2>
                     <p class="text-white-50 small mb-4">For serious CSR goals.</p>
                     <hr class="opacity-25 border-white mb-4">
                     <ul class="list-unstyled mb-4 small">
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Dedicated Site Marker</strong></li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> GPS Co-ordinates Log</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Automated Carbon Certs</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> All Seedling Benefits</li>
+                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>Dedicated Site Marker</strong></li>
+                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> GPS Co-ordinates Log</li>
+                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Automated Carbon Certs</li>
+                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> All Seedling Benefits</li>
                     </ul>
-                    <a href="#partner" class="btn btn-success w-100 rounded-pill fw-bold shadow-lg">Select Tier</a>
+                    <a href="#partner" class="btn btn-success w-100 rounded-pill fw-bold shadow-lg py-3">Select Tier</a>
                 </div>
             </div>
 
@@ -226,20 +261,20 @@
                     <p class="text-muted">Whether you provide funding, technology, or land, we are ready to collaborate.</p>
                 </div>
 
-                <div class="card bg-light border-0 rounded-4 p-4 p-md-5">
+                <div class="card bg-light border-0 rounded-4 p-4 p-md-5 shadow-sm">
                     <form>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Organization Name</label>
-                                <input type="text" class="form-control form-control-lg rounded-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Organization Name</label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white shadow-sm" placeholder="e.g. Acme Corp">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Contact Person</label>
-                                <input type="text" class="form-control form-control-lg rounded-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Contact Person</label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white shadow-sm" placeholder="Your Name">
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-bold text-muted">Partnership Type</label>
-                                <select class="form-select form-select-lg rounded-3">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Partnership Type</label>
+                                <select class="form-select form-select-lg rounded-3 border-0 bg-white shadow-sm">
                                     <option>Corporate Sponsorship (Funding)</option>
                                     <option>Technical Partnership (Hardware/Software)</option>
                                     <option>Agro-Tech / Farming Collaboration</option>
@@ -247,11 +282,13 @@
                                 </select>
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-bold text-muted">Message to the Founder</label>
-                                <textarea class="form-control rounded-3" rows="4"></textarea>
+                                <label class="form-label small fw-bold text-muted text-uppercase">Message to the Founder</label>
+                                <textarea class="form-control rounded-3 border-0 bg-white shadow-sm" rows="4" placeholder="How would you like to get involved?"></textarea>
                             </div>
                             <div class="col-12 mt-4">
-                                <button class="btn btn-dark btn-lg w-100 rounded-pill fw-bold py-3">Submit Partnership Inquiry</button>
+                                <button class="btn btn-dark btn-lg w-100 rounded-pill fw-bold py-3 shadow-lg">
+                                    Submit Partnership Inquiry <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
                             </div>
                         </div>
                     </form>
