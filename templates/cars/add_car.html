@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-4">
+                    <h3 class="fw-bold mb-0"><i class="fas fa-car-side me-2"></i> List a Vehicle</h3>
+                    <p class="text-white-50 mb-0 small">Reach buyers globally. Delivered locally.</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger rounded-3 shadow-sm mb-4">
+                            <h6 class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Please correct the errors below:</h6>
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" id="addCarForm">
+                        {% csrf_token %}
+
+                        <h5 class="fw-bold text-secondary mb-3 text-uppercase small ls-1">1. Location & Currency</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Country</label>
+                                {{ form.country }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">City / Town</label>
+                                {{ form.city }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Listing Currency</label>
+                                {{ form.listing_currency }}
+                            </div>
+                        </div>
+                        
+                        <hr class="opacity-10 my-4">
+
+                        <h5 class="fw-bold text-secondary mb-3 text-uppercase small ls-1">2. Vehicle Details</h5>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Make</label>
+                                {{ form.make }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Model</label>
+                                {{ form.model }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Year</label>
+                                {{ form.year }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Registration (Private)</label>
+                                {{ form.registration_number }}
+                                <div class="form-text small">Only visible to admin for verification.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Mileage (km)</label>
+                                {{ form.mileage }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small">Condition</label>
+                                {{ form.condition }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small">Transmission</label>
+                                {{ form.transmission }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small">Fuel Type</label>
+                                {{ form.fuel_type }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small">Body Type</label>
+                                {{ form.body_type }}
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Engine Size (cc)</label>
+                                {{ form.engine_size }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small">Color</label>
+                                {{ form.color }}
+                            </div>
+                        </div>
+
+                        <hr class="opacity-10 my-4">
+
+                        <h5 class="fw-bold text-secondary mb-3 text-uppercase small ls-1">3. Pricing & Listing Type</h5>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small">Listing Type</label>
+                            {{ form.listing_type }}
+                            <div class="form-text text-muted">Select if this car is for Sale, Rent, or Both.</div>
+                        </div>
+
+                        <div class="row g-3 p-3 rounded-3 bg-light border mb-4">
+                            
+                            <div class="col-md-4" id="div_selling_price">
+                                <label class="form-label fw-bold text-success">Selling Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 fw-bold">$</span>
+                                    {{ form.price }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" id="div_rent_price" style="display:none;">
+                                <label class="form-label fw-bold text-primary">Daily Rate</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 fw-bold">/day</span>
+                                    {{ form.rent_price_per_day }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" id="div_min_days" style="display:none;">
+                                <label class="form-label fw-bold text-primary">Min. Hire Days</label>
+                                {{ form.min_hire_days }}
+                            </div>
+                        </div>
+
+                        <hr class="opacity-10 my-4">
+
+                        <h5 class="fw-bold text-secondary mb-3 text-uppercase small ls-1">4. Images & Description</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Vehicle Images</label>
+                            {{ form.image }}
+                            <div class="form-text">Select multiple images (Max 10). First image will be the cover.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small">Description</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold py-3 shadow-lg">
+                                <i class="fas fa-check-circle me-2"></i> Post Vehicle
+                            </button>
+                            <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary rounded-pill fw-bold py-3">Cancel</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const listingTypeSelect = document.getElementById('id_listing_type');
+    
+    const divSellingPrice = document.getElementById('div_selling_price');
+    const divRentPrice = document.getElementById('div_rent_price');
+    const divMinDays = document.getElementById('div_min_days');
+
+    function toggleFields() {
+        const type = listingTypeSelect.value;
+        
+        // LOGIC:
+        // SALE: Show Price, Hide Rent Fields
+        // RENT: Hide Price, Show Rent Fields
+        // BOTH: Show All
+
+        if (type === 'SALE') {
+            divSellingPrice.style.display = 'block';
+            divRentPrice.style.display = 'none';
+            divMinDays.style.display = 'none';
+        } 
+        else if (type === 'RENT') {
+            divSellingPrice.style.display = 'none';
+            divRentPrice.style.display = 'block';
+            divMinDays.style.display = 'block';
+        } 
+        else if (type === 'BOTH') {
+            divSellingPrice.style.display = 'block';
+            divRentPrice.style.display = 'block';
+            divMinDays.style.display = 'block';
+        }
+    }
+
+    // Run on load
+    toggleFields();
+
+    // Run on change
+    listingTypeSelect.addEventListener('change', toggleFields);
+});
+</script>
+
+{% endblock %}
