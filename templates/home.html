@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load static %}
-{% load currency_tags %}
 
 {% block head_extra %}
 <style>
@@ -202,7 +201,14 @@
                         <div class="hero-content">
                             <span class="badge-premium mb-3">Hot Deal 🔥</span>
                             <h1 class="display-3 fw-bold text-white mb-2">{{ car.year }} {{ car.make }} {{ car.model }}</h1>
-                            <h2 class="text-warning fw-bold mb-4">{% global_price car.price %}</h2>
+                            
+                            <h2 class="text-warning fw-bold mb-1">
+                                <span class="fs-4">{{ car.listing_currency }}</span> {{ car.price|intcomma }}
+                            </h2>
+                            <p class="text-white small mb-4 opacity-75">
+                                <i class="fas fa-map-marker-alt me-1"></i> {{ car.city }}, {{ car.get_country_display }}
+                            </p>
+
                             <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-light rounded-pill px-5 py-2 fw-bold">View This Car</a>
                         </div>
                     </div>
@@ -475,6 +481,11 @@
                     <div class="card-body p-3 d-flex flex-column">
                         <h6 class="fw-bold text-dark mb-2 text-truncate">{{ car.year }} {{ car.make }} {{ car.model }}</h6>
                         
+                        <div class="small text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1 text-danger"></i> 
+                            {{ car.city }}, {{ car.get_country_display }}
+                        </div>
+
                         <div class="d-flex text-muted small mb-3">
                             <span class="me-3"><i class="far fa-calendar me-1"></i>{{ car.year }}</span>
                             <span><i class="fas fa-cog me-1"></i>{{ car.transmission|title }}</span>
@@ -484,13 +495,15 @@
                             
                             {% if car.listing_type == 'RENT' %}
                                 <div>
-                                    <h6 class="text-primary fw-bold mb-0">{% global_price car.rent_price_per_day %}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
+                                    <h6 class="text-primary fw-bold mb-0">
+                                        <small>{{ car.listing_currency }}</small> {{ car.rent_price_per_day|intcomma }}<small class="text-muted" style="font-size:0.7em">/day</small>
+                                    </h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Book</a>
 
                             {% else %}
                                 <h6 class="text-success fw-bold mb-0 fs-5">
-                                    {% global_price car.price %}
+                                    <small style="font-size: 0.7em;">{{ car.listing_currency }}</small> {{ car.price|intcomma }}
                                 </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">View</a>
                             {% endif %}
@@ -554,6 +567,10 @@
                             <h6 class="fw-bold text-dark text-truncate mb-0">{{ car.year }} {{ car.model }}</h6>
                         </div>
 
+                        <div class="small text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1 text-danger"></i> {{ car.city }}, {{ car.get_country_display }}
+                        </div>
+
                         <div class="text-muted small mb-3">
                             <i class="far fa-clock me-1 text-muted"></i> 
                             Listed {{ car.created_at|naturaltime }}
@@ -576,19 +593,23 @@
                             
                             {% if car.listing_type == 'RENT' %}
                                 <div>
-                                    <h6 class="text-primary fw-bold mb-0">{% global_price car.rent_price_per_day %}<small class="text-muted" style="font-size:0.7em">/day</small></h6>
+                                    <h6 class="text-primary fw-bold mb-0">
+                                        <small>{{ car.listing_currency }}</small> {{ car.rent_price_per_day|intcomma }}<small class="text-muted" style="font-size:0.7em">/day</small>
+                                    </h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
                             
                             {% elif car.listing_type == 'BOTH' %}
                                 <div>
-                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% global_price car.price %}</small>
-                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% global_price car.rent_price_per_day %}/day</small>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {{ car.listing_currency }} {{ car.price|intcomma }}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {{ car.listing_currency }} {{ car.rent_price_per_day|intcomma }}/day</small>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
 
                             {% else %}
-                                <h6 class="text-success fw-bold mb-0 fs-5">{% global_price car.price %}</h6>
+                                <h6 class="text-success fw-bold mb-0 fs-5">
+                                    <small style="font-size: 0.7em;">{{ car.listing_currency }}</small> {{ car.price|intcomma }}
+                                </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
                             {% endif %}
 
