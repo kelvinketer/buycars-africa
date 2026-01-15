@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load humanize %}
-{% load currency_tags %} {% block content %}
+{% load currency_tags %}
+
+{% block content %}
 <div class="bg-light min-vh-100 py-5">
     <div class="container">
         <div class="row justify-content-center">
@@ -254,7 +256,6 @@
                         }
                     });
                     
-                    // Timeout after 60 seconds
                     if(attempts > 30) {
                         clearInterval(interval);
                         statusDiv.className = 'alert alert-warning border-0 mb-4 p-3';
@@ -262,7 +263,7 @@
                         btn.disabled = false;
                         btn.innerHTML = 'Retry Payment';
                     }
-                }, 2000); // Check every 2 seconds
+                }, 2000);
 
             } else {
                 statusDiv.className = 'alert alert-danger border-0 mb-4 p-3';
@@ -280,23 +281,57 @@
         });
     });
 
-    // --- 2. FLUTTERWAVE LOGIC (Card) ---
+    // --- 2. FLUTTERWAVE LOGIC (UPDATED FOR BOOKING & SUBSCRIPTION) ---
     function payWithFlutterwave() {
+        const timestamp = Date.now();
+        let txRef = "";
+        let desc = "";
+        
+        // Grab Values from Django Template
+        const bookingId = "{{ booking.id|default:'' }}";
+        const planType = "{{ plan_type|default:'' }}";
+        const userId = "{{ request.user.id }}";
+        const userEmail = "{{ request.user.email }}";
+        const userPhone = "{{ request.user.profile.phone_number }}";
+        const userName = "{{ request.user.get_full_name|default:request.user.username }}";
+        
+        // Fallback for amount (since we use different vars for plan/booking)
+        let amount = 0;
+        {% if booking %}
+            amount = {{ booking.total_price }};
+        {% else %}
+            amount = {{ amount|default:0 }};
+        {% endif %}
+
+        // LOGIC: Build Reference ID based on Type
+        if (bookingId) {
+            // Case A: Car Rental
+            txRef = "BKG-" + timestamp + "-" + bookingId;
+            desc = "Car Booking: {{ booking.car.make }} {{ booking.car.model }}";
+        } else if (planType) {
+            // Case B: Dealer Subscription
+            txRef = "SUB-" + timestamp + "-" + planType + "-" + userId;
+            desc = "Dealer Subscription: " + planType;
+        } else {
+            alert("Error: Unknown payment type.");
+            return;
+        }
+
         FlutterwaveCheckout({
             public_key: "FLWPUBK_TEST-xxxxxxxxxx-X", // REPLACE WITH YOUR REAL KEY
-            tx_ref: "BC-" + Date.now() + "-{{ booking.id }}",
-            amount: {{ booking.total_price|default:amount }}, 
+            tx_ref: txRef,
+            amount: amount,
             currency: "KES",
             payment_options: "card, mobilemoneyghana, ussd",
             redirect_url: "{% url 'verify_flutterwave' %}", 
             customer: {
-                email: "{{ request.user.email }}",
-                phone_number: "{{ request.user.profile.phone_number }}",
-                name: "{{ request.user.get_full_name|default:request.user.username }}",
+                email: userEmail,
+                phone_number: userPhone,
+                name: userName,
             },
             customizations: {
                 title: "BuyCars Africa",
-                description: "Payment for {{ booking.car.make|default:'Subscription' }}",
+                description: desc,
                 logo: "https://buycars-africa.onrender.com/static/images/logo.png",
             },
         });
@@ -304,7 +339,6 @@
 </script>
 
 <style>
-    /* Styling Tabs */
     .nav-tabs .nav-link { border: none; color: #64748b; background: transparent; }
     .nav-tabs .nav-link.active { color: #000; background: #f8f9fa; border-bottom: 3px solid #dc3545; }
     .nav-tabs .nav-link:hover { color: #000; }
