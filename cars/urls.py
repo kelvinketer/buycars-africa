@@ -39,3 +39,5 @@ urlpatterns = [
 # Update diaspora link to point to the correct view test 
 
 # Force update for diaspora page deployment
+
+# Force server update v2
