@@ -7,11 +7,11 @@ from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
 
-# --- SEO IMPORTS (NEW) ---
+# --- SEO IMPORTS ---
 from django.contrib.sitemaps.views import sitemap
 from cars.sitemaps import StaticViewSitemap, CarSitemap
 
-# --- SITEMAP CONFIGURATION (NEW) ---
+# --- SITEMAP CONFIGURATION ---
 sitemaps = {
     'static': StaticViewSitemap,
     'cars': CarSitemap,
@@ -53,6 +53,10 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
+    # --- NEW: 1 MILLION TREES IMPACT PAGE ---
+    path('impact/', car_views.impact_page, name='impact_page'),
+    path('1-million-trees/', car_views.impact_page), # Alias for LinkedIn sharing
+
     # --- DIASPORA LANDING PAGE ---
     path('diaspora/', car_views.diaspora_landing, name='diaspora_landing'),
 
