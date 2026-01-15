@@ -19,6 +19,10 @@ from wallet.models import Wallet, Transaction
 
 # --- HELPER: SEND SMS ---
 def send_sms_notification(phone_number, message):
+    # Safe check: If phone is dummy or empty, skip SMS
+    if not phone_number or phone_number == '0000000000':
+        return
+
     username = settings.AFRICASTALKING_USERNAME
     api_key = settings.AFRICASTALKING_API_KEY
     if not api_key or not username or username == 'sandbox':
@@ -68,7 +72,7 @@ def process_successful_payment(payment):
                 description=f"Rental: {car.make} {car.model}", reference=f"Pay #{payment.id}"
             )
             
-            if dealer.dealer_profile.phone_number:
+            if hasattr(dealer, 'dealer_profile') and dealer.dealer_profile.phone_number:
                 send_sms_notification(dealer.dealer_profile.phone_number, f"Earned KES {dealer_share:,.0f} from booking!")
         except Exception as w_err:
             print(f"Wallet Error: {w_err}")
@@ -82,9 +86,18 @@ def checkout(request, booking_id):
     if booking.status == 'PAID':
         messages.info(request, "Already paid.")
         return redirect('home')
-    return render(request, 'payments/checkout.html', {'booking': booking})
+    
+    # Safe Phone Extraction
+    user_phone = ''
+    if hasattr(request.user, 'dealer_profile') and request.user.dealer_profile.phone_number:
+        user_phone = request.user.dealer_profile.phone_number
 
-# --- VIEW: SUBSCRIPTION CHECKOUT (NEW) ---
+    return render(request, 'payments/checkout.html', {
+        'booking': booking, 
+        'user_phone': user_phone
+    })
+
+# --- VIEW: SUBSCRIPTION CHECKOUT ---
 @login_required
 def subscription_checkout(request, plan_type):
     PRICES = {'STARTER': 1500, 'LITE': 5000, 'PRO': 12000}
@@ -93,17 +106,21 @@ def subscription_checkout(request, plan_type):
     if amount == 0:
         messages.error(request, "Invalid plan selected.")
         return redirect('pricing')
+    
+    # Safe Phone Extraction
+    user_phone = ''
+    if hasattr(request.user, 'dealer_profile') and request.user.dealer_profile.phone_number:
+        user_phone = request.user.dealer_profile.phone_number
 
     return render(request, 'payments/checkout.html', {
         'plan_type': plan_type.upper(),
         'amount': amount,
         'plan_name': f"{plan_type.title()} Plan",
-        # Pass user info for pre-fill
         'user_email': request.user.email,
-        'user_phone': request.user.dealer_profile.phone_number if hasattr(request.user, 'dealer_profile') else ''
+        'user_phone': user_phone
     })
 
-# --- NEW: VERIFY FLUTTERWAVE (HANDLES BOTH) ---
+# --- NEW: VERIFY FLUTTERWAVE (FIXED PHONE LOGIC) ---
 @login_required
 def verify_flutterwave(request):
     status = request.GET.get('status')
@@ -129,11 +146,16 @@ def verify_flutterwave(request):
                 amount = booking.total_price
                 desc = 'Card Payment: Booking'
             elif payment_type == 'SUB':
-                # Format: SUB-Time-PLAN-UserID
                 plan_type = parts[2] 
                 PRICES = {'STARTER': 1500, 'LITE': 5000, 'PRO': 12000}
                 amount = PRICES.get(plan_type, 0)
                 desc = f'Card Payment: {plan_type} Plan'
+
+            # --- CRITICAL FIX: Safe Phone Number ---
+            # If profile exists AND has a number, use it. Otherwise, use dummy.
+            safe_phone = '0000000000'
+            if hasattr(request.user, 'dealer_profile') and request.user.dealer_profile.phone_number:
+                safe_phone = request.user.dealer_profile.phone_number
 
             # Create Record
             payment = Payment.objects.create(
@@ -141,7 +163,7 @@ def verify_flutterwave(request):
                 booking=booking,
                 plan_type=plan_type,
                 amount=amount,
-                phone_number=request.user.dealer_profile.phone_number if hasattr(request.user, 'dealer_profile') else '0000',
+                phone_number=safe_phone, # <--- Now using the safe variable
                 checkout_request_id=tx_ref,
                 status='SUCCESS',
                 description=desc
