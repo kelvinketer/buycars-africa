@@ -25,7 +25,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        opacity: 0.85; /* Slightly dim the image itself */
+        /* UPDATED: Increased opacity for better visibility */
+        opacity: 0.95; 
     }
 
     /* THE MAGIC OVERLAY: Ensures text readability */
@@ -35,8 +36,8 @@
         left: 0;
         width: 100%;
         height: 100%;
-        /* Gradient: Dark at top, transparent middle, Very Dark Blue at bottom to blend with search bar */
-        background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(15, 23, 42, 1) 100%);
+        /* Gradient: Dark at top, clear middle, Very Dark Blue at bottom to blend with search bar */
+        background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 40%, rgba(15, 23, 42, 1) 100%);
         z-index: 1;
     }
 
@@ -48,7 +49,7 @@
         z-index: 2;
         width: 100%;
         text-align: center;
-        text-shadow: 0 4px 15px rgba(0,0,0,0.8); /* Heavy shadow for text pop */
+        text-shadow: 0 4px 15px rgba(0,0,0,0.9); /* Strong shadow for text pop */
     }
 
     /* --- 2. FLOATING SEARCH CARD --- */
@@ -191,7 +192,11 @@
             {% if featured_cars %}
                 {% for car in featured_cars|slice:":3" %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="{{ car.images.first.image.url }}" class="hero-slide-img" alt="{{ car.make }}">
+                    {% if car.images.first %}
+                        <img src="{{ car.images.first.image.url }}" class="hero-slide-img" alt="{{ car.make }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="Red Car">
+                    {% endif %}
                     <div class="hero-overlay"></div>
                     <div class="container">
                         <div class="hero-content">
@@ -206,7 +211,7 @@
             
             {% else %}
                 <div class="carousel-item active">
-                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="Luxury Car">
+                    <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="Vibrant Red Car">
                     <div class="hero-overlay"></div>
                     <div class="container">
                         <div class="hero-content">
@@ -219,7 +224,7 @@
             {% endif %}
 
             <div class="carousel-item {% if not featured_cars %} {% endif %}">
-                <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="SUV">
+                <img src="https://images.unsplash.com/photo-1489824904134-891ab64532f1?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="Bright Dealership">
                 <div class="hero-overlay"></div>
                 <div class="container">
                     <div class="hero-content">
@@ -231,7 +236,7 @@
             </div>
 
             <div class="carousel-item">
-                <img src="https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="Luxury Interior">
+                <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1920&auto=format&fit=crop" class="hero-slide-img" alt="Bright Driving">
                 <div class="hero-overlay"></div>
                 <div class="container">
                     <div class="hero-content">
