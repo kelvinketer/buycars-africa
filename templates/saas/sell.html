@@ -124,66 +124,81 @@
 <section class="py-5" style="background-color: #f8fafc;">
     <div class="container py-4 text-center">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="col-lg-11">
                 <h2 class="fw-bold mb-4 text-dark">Dealer Plans Tailored for Growth</h2>
                 <p class="lead text-muted mb-5">Choose the capacity that fits your stock level.</p>
                 
-                <div class="row g-4 justify-content-center">
+                <div class="row g-4 justify-content-center align-items-center">
                     
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
                             <div class="py-3">
-                                <h5 class="fw-bold text-muted text-uppercase small ls-1">Starter</h5>
-                                <h2 class="fw-bold display-4 text-dark my-3">Free</h2>
-                                <p class="text-muted small">Perfect for trying out the platform.</p>
+                                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill text-uppercase small fw-bold ls-1 mb-3">Starter</span>
+                                <h2 class="fw-bold display-5 text-dark mb-1">KES 1,500</h2>
+                                <p class="text-muted small">/ month</p>
                             </div>
-                            <hr class="opacity-10">
-                            <ul class="list-unstyled text-start my-4 px-3">
-                                <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>3</strong> Active Listings</li>
-                                <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Basic Dashboard</li>
-                                <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Standard Support</li>
-                            </ul>
-                            <div class="mt-auto">
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-2">Get Started</a>
+                            <hr class="opacity-10 my-4">
+                            <div class="text-start">
+                                <h6 class="fw-bold text-uppercase small text-muted mb-3 ls-1">Core Features</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-primary me-3"></i> <strong>5</strong> Active Car Listings</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-primary me-3"></i> <strong>7</strong> Verified Leads/mo</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-primary me-3"></i> Basic Dashboard Access</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fab fa-whatsapp text-success me-3 fa-lg"></i> Direct WhatsApp Integration</li>
+                                    <li class="mb-3 d-flex align-items-center text-muted opacity-50"><i class="fas fa-times-circle me-3"></i> Verified Dealer Badge</li>
+                                </ul>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow p-4 rounded-4 bg-white h-100 position-relative" style="transform: scale(1.02); z-index: 2;">
-                            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-primary px-3 py-2">RECOMMENDED</span>
-                            <div class="py-3">
-                                <h5 class="fw-bold text-primary text-uppercase small ls-1">Standard</h5>
-                                <h2 class="fw-bold display-4 text-dark my-3">1,500<small class="fs-6 text-muted">/mo</small></h2>
-                                <p class="text-muted small">For growing car yards.</p>
-                            </div>
-                            <hr class="opacity-10">
-                            <ul class="list-unstyled text-start my-4 px-3">
-                                <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> <strong>20</strong> Active Listings</li>
-                                <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> WhatsApp Leads</li>
-                                <li class="mb-3"><i class="fas fa-check-circle text-primary me-2"></i> Verified Badge</li>
-                            </ul>
-                            <div class="mt-auto">
-                                <a href="{% url 'signup' %}" class="btn btn-primary rounded-pill w-100 fw-bold py-2">Upgrade Now</a>
+                            <div class="mt-4">
+                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-3">Get Started</a>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div class="card border-danger border-2 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
+                        <div class="card border-0 shadow-lg p-4 rounded-4 text-white h-100 position-relative" style="background-color: #0b1120; transform: scale(1.05); z-index: 2;">
+                            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger px-4 py-2 fw-bold ls-1">MOST POPULAR</span>
                             <div class="py-3">
-                                <h5 class="fw-bold text-danger text-uppercase small ls-1">Premium</h5>
-                                <h2 class="fw-bold display-4 text-dark my-3">2,500<small class="fs-6 text-muted">/mo</small></h2>
-                                <p class="text-muted small">For established volume dealers.</p>
+                                <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 px-3 py-2 rounded-pill text-uppercase small fw-bold ls-1 mb-3">Lite</span>
+                                <h2 class="fw-bold display-5 mb-1">KES 5,000</h2>
+                                <p class="text-white-50 small">/ month</p>
                             </div>
-                            <hr class="opacity-10">
-                            <ul class="list-unstyled text-start my-4 px-3">
-                                <li class="mb-3"><i class="fas fa-check-circle text-danger me-2"></i> <strong>Unlimited</strong> Listings</li>
-                                <li class="mb-3"><i class="fas fa-check-circle text-danger me-2"></i> Priority Placement</li>
-                                <li class="mb-3"><i class="fas fa-check-circle text-danger me-2"></i> Dedicated Manager</li>
-                            </ul>
-                            <div class="mt-auto">
-                                <a href="{% url 'signup' %}" class="btn btn-danger rounded-pill w-100 fw-bold py-2">Go Premium</a>
+                            <hr class="opacity-25 my-4 border-white">
+                            <div class="text-start">
+                                <h6 class="fw-bold text-uppercase small text-white-50 mb-3 ls-1">Growth Features</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-danger me-3"></i> <strong>15</strong> Active Car Listings</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-danger me-3"></i> <strong>16</strong> Verified Leads/mo</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-certificate text-warning me-3"></i> <strong>Verified Dealer Badge</strong></li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-chart-line text-danger me-3"></i> Lead Trend Analytics</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-arrow-up text-success me-3"></i> Priority Search Ranking</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{% url 'signup' %}" class="btn btn-danger rounded-pill w-100 fw-bold py-3 shadow-sm">Go Lite</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
+                             <div class="py-3">
+                                <span class="badge bg-warning bg-opacity-10 text-dark border border-warning px-3 py-2 rounded-pill text-uppercase small fw-bold ls-1 mb-3">Pro</span>
+                                <h2 class="fw-bold display-5 text-dark mb-1">KES 12,000</h2>
+                                <p class="text-muted small">/ month</p>
+                            </div>
+                            <hr class="opacity-10 my-4">
+                            <div class="text-start">
+                                <h6 class="fw-bold text-uppercase small text-muted mb-3 ls-1">Enterprise Features</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-dark me-3"></i> <strong>50</strong> Active Car Listings</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-dark me-3"></i> <strong>30</strong> Verified Leads/mo</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-crown text-warning me-3"></i> Homepage Spotlight</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-calculator text-dark me-3"></i> Full Asset Valuation</li>
+                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-file-pdf text-danger me-3"></i> Exportable Business Reports</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4">
+                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-3">Go Pro</a>
                             </div>
                         </div>
                     </div>
