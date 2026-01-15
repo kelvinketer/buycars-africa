@@ -627,3 +627,10 @@ def platform_dashboard(request):
         }
     }
     return render(request, 'saas/platform_dashboard.html', context)
+
+# --- NEW: IMPACT / 1 MILLION TREES PAGE ---
+def impact_page(request):
+    """
+    Renders the '1 Million Trees' Impact Page.
+    """
+    return render(request, 'pages/impact.html')
