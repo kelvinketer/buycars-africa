@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /payments/
+Disallow: /wallet/
+
+Sitemap: https://buycars-africa.onrender.com/sitemap.xml

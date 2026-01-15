@@ -7,8 +7,22 @@ from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
 
+# --- SEO IMPORTS (NEW) ---
+from django.contrib.sitemaps.views import sitemap
+from cars.sitemaps import StaticViewSitemap, CarSitemap
+
+# --- SITEMAP CONFIGURATION (NEW) ---
+sitemaps = {
+    'static': StaticViewSitemap,
+    'cars': CarSitemap,
+}
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # --- SEO ROUTES (Sitemap & Robots) ---
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     
     # --- SUPER ADMIN (CEO Dashboard) ---
     path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'),
@@ -39,7 +53,7 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
-    # --- NEW: DIASPORA LANDING PAGE ---
+    # --- DIASPORA LANDING PAGE ---
     path('diaspora/', car_views.diaspora_landing, name='diaspora_landing'),
 
     # --- BOOKING PAGE ---
@@ -56,7 +70,7 @@ urlpatterns = [
 
     # --- DEALER SIDE ---
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
-    path('dashboard/add/', car_views.add_car, name='add_car'), # Updated to match dashboard link
+    path('dashboard/add/', car_views.add_car, name='add_car'), 
     
     # MONTHLY REPORT PDF ROUTE
     path('dashboard/report/', car_views.download_report, name='download_report'),

@@ -32,18 +32,22 @@ INSTALLED_APPS = [
     
     # --- UTILITIES ---
     'django.contrib.humanize',
+    
+    # --- SEO MODULES (NEW) ---
+    'django.contrib.sites',    # Required for sitemaps
+    'django.contrib.sitemaps', # Generates the XML map
 
     # Third Party Apps
     'rest_framework', 
-    'crispy_forms',        # <--- ADDED: Critical for forms
-    'crispy_bootstrap5',   # <--- ADDED: Critical for forms styling
+    'crispy_forms',        # Critical for forms
+    'crispy_bootstrap5',   # Critical for forms styling
 
     # Local Apps
     'users.apps.UsersConfig',   
     'cars.apps.CarsConfig',     
     'saas.apps.SaasConfig',
     'payments', # Payment App
-    'wallet',   # <--- NEW WALLET APP ADDED HERE
+    'wallet',   # Wallet App
 ]
 
 MIDDLEWARE = [
@@ -195,3 +199,6 @@ AFRICASTALKING_API_KEY = config('AFRICASTALKING_API_KEY', default='')
 # --- CRISPY FORMS CONFIGURATION (ADDED) ---
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# --- SEO SITE CONFIGURATION (NEW) ---
+SITE_ID = 1
