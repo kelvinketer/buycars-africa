@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.views.decorators.http import require_POST  # <--- NEW IMPORT
+from django.views.decorators.http import require_POST 
 from django.contrib import messages
 from django.db.models import Q, Count, F, Sum
 from django.db.models.functions import TruncDate
@@ -261,6 +261,21 @@ def dealer_showroom(request, username):
         cars = cars.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
     
     return render(request, 'dealer/showroom.html', {'dealer': dealer, 'profile': profile, 'cars': cars})
+
+# --- NEW: DIASPORA LANDING PAGE VIEW ---
+def diaspora_landing(request):
+    """
+    Dedicated landing page for International/Diaspora Ads.
+    Filters for high-value premium cars (Over 3M KES).
+    """
+    featured_cars = Car.objects.filter(
+        status='AVAILABLE', 
+        price__gte=3000000 
+    ).order_by('-created_at')[:4]
+    
+    return render(request, 'cars/diaspora_landing.html', {
+        'featured_cars': featured_cars
+    })
 
 # --- DEALER VIEWS ---
 

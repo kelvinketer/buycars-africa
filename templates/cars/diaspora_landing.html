@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load currency_tags %}
+
+{% block content %}
+<div class="position-relative bg-dark py-5 overflow-hidden">
+    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25" 
+         style="background: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1920') center/cover;">
+    </div>
+    <div class="container position-relative z-1 py-lg-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-white">
+                <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill fw-bold ls-1">FOR KENYANS ABROAD 🌍</span>
+                <h1 class="display-3 fw-bold mb-3">Buy a Car in Kenya,<br>Without the Risk.</h1>
+                <p class="lead text-white-50 mb-4 pe-lg-5">
+                    Stop relying on relatives. We provide independent inspections, secure escrow payments, and verified dealer listings.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'home' %}" class="btn btn-light btn-lg rounded-pill fw-bold px-4">Browse Cars</a>
+                    <a href="#how-it-works" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4">How it Works</a>
+                </div>
+            </div>
+            <div class="col-lg-5 mt-5 mt-lg-0">
+                <div class="card border-0 shadow-lg rounded-4 bg-white p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success me-3">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">100% Secure Process</h5>
+                            <small class="text-muted">Money safe until handover</small>
+                        </div>
+                    </div>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-3 d-flex"><i class="fas fa-check-circle text-primary me-2 mt-1"></i> Independent Mechanic Inspection</li>
+                        <li class="mb-3 d-flex"><i class="fas fa-check-circle text-primary me-2 mt-1"></i> Secure Card Payments (USD/GBP)</li>
+                        <li class="mb-3 d-flex"><i class="fas fa-check-circle text-primary me-2 mt-1"></i> Verified Logbook Transfer</li>
+                    </ul>
+                    <a href="{% url 'home' %}" class="btn btn-danger w-100 rounded-pill fw-bold py-3">Find Your Car Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="py-5 bg-white" id="how-it-works">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Why Diaspora Choose Us</h2>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100">
+                    <i class="fas fa-video fa-3x text-danger mb-3"></i>
+                    <h4 class="fw-bold">Video Walkarounds</h4>
+                    <p class="text-muted">Request a detailed video tour of any car. See the engine, interior, and scratches before you commit.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100">
+                    <i class="fas fa-file-contract fa-3x text-danger mb-3"></i>
+                    <h4 class="fw-bold">Paperwork Handled</h4>
+                    <p class="text-muted">We verify the logbook status with NTSA and handle the transfer to your name or your family member.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 rounded-4 bg-light h-100">
+                    <i class="fas fa-credit-card fa-3x text-danger mb-3"></i>
+                    <h4 class="fw-bold">Pay in Your Currency</h4>
+                    <p class="text-muted">Use your UK/US bank card. No need to send risky wire transfers to personal M-PESA numbers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h3 class="fw-bold mb-0">Popular with Diaspora</h3>
+            <a href="{% url 'home' %}" class="text-danger fw-bold text-decoration-none">View All Inventory <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for car in featured_cars %}
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <img src="{{ car.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-dark">{{ car.year }} {{ car.make }} {{ car.model }}</h6>
+                        <h5 class="text-success fw-bold mb-0">{% global_price car.price %}</h5>
+                    </div>
+                    <div class="card-footer bg-white border-0 pb-3">
+                        <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark w-100 rounded-pill">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-center text-muted">Loading premium inventory...</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

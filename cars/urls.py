@@ -22,6 +22,7 @@ urlpatterns = [
     path('dashboard/add/', views.add_car, name='add_car'),
     path('dashboard/edit/<int:car_id>/', views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', views.delete_car, name='delete_car'),
+    path('diaspora/', views.diaspora_landing, name='diaspora_landing'),
     
     # Image Management
     path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', views.set_main_image, name='set_main_image'),
