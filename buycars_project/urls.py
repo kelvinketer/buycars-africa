@@ -93,7 +93,7 @@ urlpatterns = [
     path('dashboard/add/', car_views.add_car, name='add_car'), 
     path('dashboard/report/', car_views.download_report, name='download_report'),
     
-    # --- NEW: DEALER ACADEMY ---
+    # --- DEALER ACADEMY ---
     path('dashboard/academy/', car_views.dealer_academy, name='dealer_academy'),
     
     # --- PRICING PAGE ---
@@ -115,29 +115,13 @@ urlpatterns = [
     # --- PAYMENTS & FINANCES ---
     path('payments/', include('payments.urls')), 
     path('wallet/', include('wallet.urls')), 
-    
-    # ... inside urlpatterns ...
-    
-    # --- MANUAL REPAIR TOOL ---
-    path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
 
-    # --- MANUAL ADMIN TOOLS ---
+    # --- ADMIN TOOLS (Including the Migration Fixer) ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
-    
-    # ... inside urlpatterns ...
-    
-    # --- EMERGENCY DB FIXER ---
     path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
-    
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
-    
-
-# ... inside urlpatterns ...
-    
-    # --- EMERGENCY DB FIXER ---
-    path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
