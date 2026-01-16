@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block head_extra %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -94,7 +95,7 @@
                     1 Nation. <span class="text-glow-green">Engineered.</span>
                 </h1>
                 <p class="lead text-white-50 mb-5 fs-4 mx-auto fw-light" style="max-width: 750px; line-height: 1.6;">
-                    We are moving beyond traditional planting. Using digital monitoring, GPS tagging, and agro-tech integration, we are <strong class="text-white">engineering</strong> the restoration of East Africa's landscapes.
+                    We are moving beyond traditional planting. Using digital monitoring, GPS tagging, and agro-tech integration, we are <strong class="text-white">engineering</strong> the restoration of Africa's landscapes.
                 </p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
                     <a href="#partner" class="btn btn-success btn-lg rounded-pill fw-bold px-5 py-3 shadow-lg hover-lift" 
@@ -134,10 +135,10 @@
         <div class="row g-4 mb-5">
             <div class="col-md-3">
                 <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-white mb-2">0</div>
+                    <div class="display-4 fw-bold text-white mb-2">{{ trees_planted|intcomma }}</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1 mb-3">Trees Planted</small>
                     <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                        <div class="progress-bar bg-success progress-glow" role="progressbar" style="width: 0%"></div>
+                        <div class="progress-bar bg-success progress-glow" role="progressbar" style="width: {% widthratio trees_planted 1000000 100 %}%"></div>
                     </div>
                     <small class="text-white-50 mt-2" style="font-size: 0.7rem;">Target: 1,000,000</small>
                 </div>
@@ -145,18 +146,18 @@
             
             <div class="col-md-3">
                 <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-success mb-1">94%</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Survival Rate</small>
+                    <div class="display-4 fw-bold text-success mb-1">{{ cars_sold|default:"0" }}</div>
+                    <small class="text-uppercase text-white-50 fw-bold ls-1">Cars Sold</small>
                     <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        Verified via Spot Checks
+                        Verified Contributors
                     </p>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-info mb-1">0.0</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Tons CO₂ Sequestered</small>
+                    <div class="display-4 fw-bold text-info mb-1">{{ co2_offset|floatformat:1 }}</div>
+                    <small class="text-uppercase text-white-50 fw-bold ls-1">Tons CO₂ Offset</small>
                     <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
                         Est. based on Species
                     </p>
@@ -165,10 +166,10 @@
 
             <div class="col-md-3">
                 <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-warning mb-1">350+</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Farmers Supported</small>
+                    <div class="display-4 fw-bold text-warning mb-1">4</div>
+                    <small class="text-uppercase text-white-50 fw-bold ls-1">Active Nations</small>
                     <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        Via Oletai Agro Group
+                        KE, ET, NG, ZA
                     </p>
                 </div>
             </div>
@@ -383,7 +384,7 @@
         
         // 1. Initialize Map
         // Centered roughly on Rift Valley / Kenya
-        var map = L.map('impact-map').setView([-0.3031, 36.0800], 7); 
+        var map = L.map('impact-map').setView([-0.3031, 36.0800], 5); 
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -391,16 +392,17 @@
             maxZoom: 20
         }).addTo(map);
 
-        // Dummy Data: Planting Sites
+        // Pan-African Locations (Expanded as requested)
         var sites = [
-            { lat: -0.3031, lng: 36.0800, title: "Rift Valley Block A", trees: "5,000" },
-            { lat: -1.2921, lng: 36.8219, title: "Ngong Road Nursery", trees: "2,000" },
-            { lat: -3.6333, lng: 39.8500, title: "Coastal Restoration", trees: "3,500" }
+            { lat: -0.3031, lng: 36.0800, title: "Rift Valley Block A (KE)", trees: "{{ trees_planted }}" },
+            { lat: 9.1450, lng: 40.4897, title: "Green Legacy (Ethiopia)", trees: "Starting Phase" },
+            { lat: 6.5244, lng: 3.3792, title: "Lagos Green Belt (Nigeria)", trees: "Planning" },
+            { lat: -33.9249, lng: 18.4241, title: "Western Cape (South Africa)", trees: "Planning" }
         ];
 
         sites.forEach(function(site) {
             L.marker([site.lat, site.lng]).addTo(map)
-                .bindPopup(`<b>${site.title}</b><br>${site.trees} Trees Planted`);
+                .bindPopup(`<b>${site.title}</b><br>${site.trees} Trees Projected`);
         });
 
         // 2. Fetch Live Weather (Nakuru as proxy for Rift Valley)
