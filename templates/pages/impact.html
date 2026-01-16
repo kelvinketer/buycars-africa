@@ -227,7 +227,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-4">
                             <h5 class="text-white fw-bold mb-1">Q1 2026 Fundraising Goal</h5>
-                            <p class="text-white-50 small mb-0">Transparency is our core value.</p>
+                            <p class="text-white-50 small mb-0">Directly support seedling distribution.</p>
                         </div>
                         <div class="col-lg-6">
                             <div class="progress" style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px;">
@@ -239,7 +239,16 @@
                             </div>
                         </div>
                         <div class="col-lg-2 text-end">
-                            <a href="#partner" class="btn btn-sm btn-outline-success rounded-pill fw-bold">Support Us</a>
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+                                <input type="hidden" name="cmd" value="_donations" />
+                                <input type="hidden" name="business" value="kipchirchir101@gmail.com" />
+                                <input type="hidden" name="currency_code" value="USD" />
+                                <input type="hidden" name="item_name" value="BuyCars.Africa 1 Million Trees Initiative" />
+                                
+                                <button type="submit" class="btn btn-success rounded-pill fw-bold shadow-sm w-100">
+                                    <i class="fab fa-paypal me-2"></i> Donate
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
