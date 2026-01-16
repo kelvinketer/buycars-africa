@@ -245,7 +245,6 @@ class Booking(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='bookings')
     
     # --- CRITICAL FIX: MAP 'RENTER' TO 'CUSTOMER_ID' ---
-    # This tells Django: "Use the name 'renter' in Python, but look for 'customer_id' in the DB."
     renter = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
