@@ -50,6 +50,10 @@
                         Financing
                     </a>
 
+                    <a class="btn btn-outline-success nav-btn" href="{% url 'impact_page' %}" style="font-family: 'Poppins', sans-serif;">
+                        <i class="fas fa-tree me-2"></i> Impact
+                    </a>
+
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle nav-btn d-flex align-items-center justify-content-center border-secondary text-light" type="button" data-bs-toggle="dropdown" style="min-width: 100px;">
                             {% if request.session.currency == 'UGX' %} 🇺🇬 UGX
