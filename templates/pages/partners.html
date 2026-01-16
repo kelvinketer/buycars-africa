@@ -2,45 +2,51 @@
 {% load static %}
 
 {% block content %}
-<section class="position-relative py-5 overflow-hidden" style="background-color: #0F172A; min-height: 500px;">
-    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" 
-         style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
-    
-    <div class="container position-relative z-2 h-100 d-flex flex-column justify-content-center pt-5">
+
+<section class="py-5 bg-white border-bottom">
+    <div class="container py-5">
         <div class="row align-items-center">
-            <div class="col-lg-7">
-                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 mb-3 fw-bold ls-2">
-                    ECOSYSTEM INTEGRATION
-                </span>
-                <h1 class="display-3 fw-bold text-white mb-4">
-                    Partner with the <span class="text-success">Future of Trade.</span>
+            <div class="col-lg-6">
+                <div class="d-inline-flex align-items-center mb-3">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold ls-1">
+                        <i class="fas fa-seedling me-2"></i>PARTNERSHIP ECOSYSTEM
+                    </span>
+                </div>
+                <h1 class="display-3 fw-bold text-dark mb-4 ls-tight">
+                    Commerce that <span class="text-success text-decoration-underline">Restores.</span>
                 </h1>
-                <p class="lead text-white-50 mb-5" style="max-width: 600px;">
-                    We are building Africa's first mobility ecosystem that combines secure commerce, asset financing, and ecological restoration. Join us.
+                <p class="lead text-muted mb-5" style="max-width: 500px;">
+                    We are building the infrastructure for Africa's green mobility transition. Join the alliance of banks, dealers, and conservationists driving real change.
                 </p>
+                <div class="d-flex gap-3">
+                    <a href="#partnerTabs" class="btn btn-dark rounded-pill px-5 py-3 fw-bold">
+                        Explore Partnership Models
+                    </a>
+                </div>
             </div>
-            <div class="col-lg-5 d-none d-lg-block">
-                <div class="bg-white bg-opacity-10 rounded-4 p-4 border border-white border-opacity-10 backdrop-blur">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary rounded-circle p-3 text-white me-3"><i class="fas fa-university fa-2x"></i></div>
-                        <div class="text-white">
-                            <h6 class="mb-0 fw-bold">Financial Institutions</h6>
-                            <small class="text-white-50">ESG Compliance & Loan Origination</small>
+            <div class="col-lg-6 mt-5 mt-lg-0">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="p-4 bg-light rounded-4 h-100 border hover-lift">
+                            <i class="fas fa-university fa-2x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Financial<br>Capital</h5>
+                            <small class="text-muted">Banks & Saccos financing assets.</small>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center mb-4 ps-4">
-                        <div class="border-start border-success border-2 h-100 position-absolute" style="left: 45px; height: 50px;"></div>
-                        <div class="bg-warning text-dark rounded-circle p-3 me-3"><i class="fas fa-car fa-2x"></i></div>
-                        <div class="text-white">
-                            <h6 class="mb-0 fw-bold">Verified Dealerships</h6>
-                            <small class="text-white-50">Market Access & Liquidity</small>
+                    <div class="col-6">
+                        <div class="p-4 bg-light rounded-4 h-100 border hover-lift">
+                            <i class="fas fa-tree fa-2x text-success mb-3"></i>
+                            <h5 class="fw-bold">Ecological<br>Assets</h5>
+                            <small class="text-muted">Landowners hosting forests.</small>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="bg-success rounded-circle p-3 text-white me-3"><i class="fas fa-tree fa-2x"></i></div>
-                        <div class="text-white">
-                            <h6 class="mb-0 fw-bold">Conservation & Land</h6>
-                            <small class="text-white-50">Carbon Sequestration Sites</small>
+                    <div class="col-12">
+                        <div class="p-4 bg-dark text-white rounded-4 border hover-lift d-flex align-items-center justify-content-between">
+                            <div>
+                                <h5 class="fw-bold mb-1">The Engine</h5>
+                                <small class="text-white-50">Verified Dealerships driving revenue.</small>
+                            </div>
+                            <i class="fas fa-car fa-2x text-white-50"></i>
                         </div>
                     </div>
                 </div>
@@ -49,22 +55,50 @@
     </div>
 </section>
 
-<section class="py-5 bg-light">
-    <div class="container" style="margin-top: -80px; position: relative; z-index: 10;">
+<section class="py-5 bg-success text-white position-relative overflow-hidden">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3;"></div>
+    
+    <div class="container py-4 position-relative z-2 text-center">
+        <i class="fas fa-quote-left fa-3x text-white opacity-25 mb-4"></i>
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <h2 class="display-6 fw-bold mb-4 lh-base">
+                    "If you are using BuyCars.Africa to buy cars, you are not just buying cars. You are funding our mission to plant <span class="text-warning">1 million trees</span> in 2026."
+                </h2>
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                    <div class="bg-white text-success fw-bold px-3 py-1 rounded-pill small">
+                        <i class="fas fa-check-circle me-1"></i> Impact Verified
+                    </div>
+                    <div class="bg-white text-success fw-bold px-3 py-1 rounded-pill small">
+                        <i class="fas fa-sync me-1"></i> Sustainable Model
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light" id="partnerTabsSection">
+    <div class="container py-5">
         
-        <ul class="nav nav-pills nav-fill bg-white shadow-sm rounded-pill p-2 mb-5" id="partnerTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded-pill fw-bold py-3" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button" role="tab">
+        <div class="text-center mb-5">
+            <h6 class="text-uppercase text-muted fw-bold ls-2 small">Collaborate With Us</h6>
+            <h2 class="fw-bold text-dark">Choose Your Impact Path</h2>
+        </div>
+
+        <ul class="nav nav-pills justify-content-center mb-5" id="partnerTabs" role="tablist">
+            <li class="nav-item mx-2" role="presentation">
+                <button class="nav-link active rounded-pill px-4 py-2 fw-bold" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button">
                     <i class="fas fa-briefcase me-2"></i> Financial Institutions
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill fw-bold py-3" id="dealers-tab" data-bs-toggle="tab" data-bs-target="#dealers" type="button" role="tab">
+            <li class="nav-item mx-2" role="presentation">
+                <button class="nav-link rounded-pill px-4 py-2 fw-bold" id="dealers-tab" data-bs-toggle="tab" data-bs-target="#dealers" type="button">
                     <i class="fas fa-car me-2"></i> Auto Dealerships
                 </button>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill fw-bold py-3" id="conservation-tab" data-bs-toggle="tab" data-bs-target="#conservation" type="button" role="tab">
+            <li class="nav-item mx-2" role="presentation">
+                <button class="nav-link rounded-pill px-4 py-2 fw-bold" id="conservation-tab" data-bs-toggle="tab" data-bs-target="#conservation" type="button">
                     <i class="fas fa-leaf me-2"></i> Land & Conservation
                 </button>
             </li>
@@ -73,43 +107,38 @@
         <div class="tab-content" id="partnerTabsContent">
             
             <div class="tab-pane fade show active" id="finance" role="tabpanel">
-                <div class="row g-5 align-items-center">
-                    <div class="col-lg-6">
-                        <h2 class="fw-bold text-dark mb-3">De-Risk Your Auto Loan Portfolio</h2>
-                        <p class="text-muted mb-4">
-                            BuyCars.Africa acts as your digital origination and verification layer. We ensure the asset exists, the price is fair, and the dealer is verified before the loan application reaches your desk.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li class="mb-3 d-flex align-items-start">
-                                <i class="fas fa-check-circle text-primary mt-1 me-3"></i>
-                                <div><strong>Verified Asset Collateral:</strong> No more "ghost cars." Our digital inventory system tracks vehicles via GPS and VIN.</div>
-                            </li>
-                            <li class="mb-3 d-flex align-items-start">
-                                <i class="fas fa-check-circle text-primary mt-1 me-3"></i>
-                                <div><strong>ESG & CSR Reporting:</strong> Every loan financed through us plants trees. We provide you with quarterly Carbon Offset Certificates for your annual reports.</div>
-                            </li>
-                            <li class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-primary mt-1 me-3"></i>
-                                <div><strong>Direct Disbursement:</strong> Funds are released securely via our escrow protocol.</div>
-                            </li>
-                        </ul>
-                        <a href="mailto:finance@buycars.africa" class="btn btn-primary rounded-pill px-5 fw-bold">
-                            Request Banking API Access
-                        </a>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="bg-white p-4 rounded-4 shadow-sm border border-light text-center">
-                            <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
-                            <h4>Sample Partner Impact</h4>
-                            <hr>
-                            <div class="row text-start mt-4">
-                                <div class="col-6 mb-3">
-                                    <small class="text-muted text-uppercase">Loans Originated</small>
-                                    <div class="h3 fw-bold text-dark">Ksh 45M+</div>
+                <div class="bg-white rounded-5 p-5 shadow-sm border">
+                    <div class="row align-items-center">
+                        <div class="col-lg-5 border-end border-light">
+                            <h2 class="fw-bold text-dark mb-3">Green Financing.<br>De-Risked.</h2>
+                            <p class="text-muted mb-4">
+                                Partner with us to access a pipeline of verified asset buyers while hitting your ESG targets. We handle the Digital Origination and Asset Verification.
+                            </p>
+                            <a href="mailto:finance@buycars.africa" class="btn btn-outline-dark rounded-pill px-4 fw-bold">Request Banking Integration</a>
+                        </div>
+                        <div class="col-lg-7 ps-lg-5 mt-4 mt-lg-0">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary me-3 h-100">
+                                            <i class="fas fa-shield-alt fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">Asset Verification</h6>
+                                            <small class="text-muted">GPS & VIN tracking ensures no "ghost cars" enter your loan book.</small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-6 mb-3">
-                                    <small class="text-muted text-uppercase">Trees Planted</small>
-                                    <div class="h3 fw-bold text-success">1,250</div>
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <div class="bg-success bg-opacity-10 p-3 rounded-circle text-success me-3 h-100">
+                                            <i class="fas fa-file-contract fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">ESG Reporting</h6>
+                                            <small class="text-muted">Receive quarterly Carbon Offset Certificates for every loan disbursed.</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -118,61 +147,73 @@
             </div>
 
             <div class="tab-pane fade" id="dealers" role="tabpanel">
-                <div class="row g-5 align-items-center">
-                    <div class="col-lg-6 order-lg-2">
-                        <h2 class="fw-bold text-dark mb-3">Stop Competing on Price. Compete on Trust.</h2>
-                        <p class="text-muted mb-4">
-                            The "Verified Dealer" badge on BuyCars.Africa isn't just a sticker; it's a passport to international buyers and instant financing.
-                        </p>
-                        <div class="d-flex gap-3 mb-4">
-                            <div class="bg-white p-3 rounded-3 shadow-sm text-center w-50">
-                                <h3 class="fw-bold text-dark mb-0">30%</h3>
-                                <small class="text-muted">Faster Sales Velocity</small>
-                            </div>
-                            <div class="bg-white p-3 rounded-3 shadow-sm text-center w-50">
-                                <h3 class="fw-bold text-dark mb-0">0%</h3>
-                                <small class="text-muted">Upfront Listing Fees</small>
+                <div class="bg-white rounded-5 p-5 shadow-sm border">
+                    <div class="row align-items-center">
+                        <div class="col-lg-5 border-end border-light">
+                            <h2 class="fw-bold text-dark mb-3">Compete on Trust.<br>Win on Volume.</h2>
+                            <p class="text-muted mb-4">
+                                The "Verified Dealer" badge is your passport to international Diaspora buyers and instant bank financing. Stop fighting price wars.
+                            </p>
+                            <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill px-4 fw-bold">Get Verified Today</a>
+                        </div>
+                        <div class="col-lg-7 ps-lg-5 mt-4 mt-lg-0">
+                            <div class="row g-4 text-center">
+                                <div class="col-4">
+                                    <h3 class="fw-bold text-success mb-0">30%</h3>
+                                    <small class="text-muted">Faster Sales</small>
+                                </div>
+                                <div class="col-4 border-start border-end">
+                                    <h3 class="fw-bold text-dark mb-0">0%</h3>
+                                    <small class="text-muted">Upfront Fees</small>
+                                </div>
+                                <div class="col-4">
+                                    <h3 class="fw-bold text-primary mb-0">100%</h3>
+                                    <small class="text-muted">Digital Payment</small>
+                                </div>
                             </div>
                         </div>
-                        <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill px-5 fw-bold">
-                            Register Showroom
-                        </a>
-                    </div>
-                    <div class="col-lg-6 order-lg-1">
-                        <img src="https://images.unsplash.com/photo-1560252829-804f1aedf1be?q=80&w=800&auto=format&fit=crop" class="img-fluid rounded-4 shadow-sm" alt="Dealership">
                     </div>
                 </div>
             </div>
 
             <div class="tab-pane fade" id="conservation" role="tabpanel">
-                <div class="row g-5 align-items-center">
-                    <div class="col-lg-6">
-                        <h2 class="fw-bold text-dark mb-3">Do You Have Idle Land?</h2>
-                        <h5 class="text-success mb-4">Turn it into a Certified Restoration Zone.</h5>
-                        <p class="text-muted mb-4">
-                            We are looking for partners with <strong>5+ acres</strong> of land to host our reforestation projects. We provide the seedlings (Indigenous, Fruit, or Commercial Timber) and the digital monitoring.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li class="mb-3"><i class="fas fa-seedling text-success me-2"></i> <strong>Free Seedlings:</strong> Funded by vehicle sales.</li>
-                            <li class="mb-3"><i class="fas fa-satellite text-success me-2"></i> <strong>Digital Monitoring:</strong> We map your land and track survival rates.</li>
-                            <li><i class="fas fa-hand-holding-usd text-success me-2"></i> <strong>Future Carbon Credits:</strong> Position your land for the emerging carbon market.</li>
-                        </ul>
-                        <div class="bg-warning bg-opacity-10 border border-warning rounded-3 p-3 mb-4">
-                            <small class="text-dark fw-bold"><i class="fas fa-info-circle me-2"></i> Current Focus Regions: Kajiado, Narok, Laikipia, and Kiambu.</small>
-                        </div>
-                        <a href="mailto:impact@buycars.africa?subject=Land Partnership Inquiry" class="btn btn-success rounded-pill px-5 fw-bold">
-                            Submit Land for Review
-                        </a>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="position-relative">
-                            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop" class="img-fluid rounded-4 shadow-sm" alt="Kenyan Landscape">
-                            <div class="position-absolute bottom-0 start-0 m-3 bg-white p-3 rounded-3 shadow-sm">
-                                <div class="d-flex align-items-center">
-                                    <div class="pulse-dot me-2"></div>
-                                    <small class="fw-bold text-dark">Live Monitoring Active</small>
-                                </div>
+                <div class="bg-white rounded-5 p-5 shadow-sm border">
+                    <div class="row align-items-center">
+                        <div class="col-lg-5 border-end border-light">
+                            <h2 class="fw-bold text-dark mb-3">Your Land.<br>Our Seedlings.</h2>
+                            <p class="text-muted mb-4">
+                                Turn idle acreage into a certified carbon sink. We provide indigenous seedlings and digital monitoring technology at no cost to you.
+                            </p>
+                            <div class="alert alert-success d-inline-block py-2 px-3 rounded-3 small fw-bold mb-4">
+                                <i class="fas fa-map-pin me-2"></i>Focus: Kajiado, Narok, Laikipia
                             </div>
+                            <br>
+                            <a href="mailto:impact@buycars.africa" class="btn btn-success rounded-pill px-4 fw-bold">Register Land</a>
+                        </div>
+                        <div class="col-lg-7 ps-lg-5 mt-4 mt-lg-0">
+                            <ul class="list-unstyled">
+                                <li class="mb-3 d-flex align-items-center p-3 bg-light rounded-3">
+                                    <i class="fas fa-hand-holding-water text-success me-3 fa-lg"></i>
+                                    <div>
+                                        <strong>Free Seedlings</strong>
+                                        <div class="small text-muted">Funded directly by car sales revenue.</div>
+                                    </div>
+                                </li>
+                                <li class="mb-3 d-flex align-items-center p-3 bg-light rounded-3">
+                                    <i class="fas fa-satellite text-success me-3 fa-lg"></i>
+                                    <div>
+                                        <strong>Satellite Monitoring</strong>
+                                        <div class="small text-muted">We track survival rates from space.</div>
+                                    </div>
+                                </li>
+                                <li class="d-flex align-items-center p-3 bg-light rounded-3">
+                                    <i class="fas fa-coins text-warning me-3 fa-lg"></i>
+                                    <div>
+                                        <strong>Carbon Credits</strong>
+                                        <div class="small text-muted">Future revenue share for landowners.</div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -182,12 +223,37 @@
     </div>
 </section>
 
+<section class="py-5 border-top bg-white">
+    <div class="container text-center">
+        <h3 class="fw-bold mb-3">Ready to join the ecosystem?</h3>
+        <p class="text-muted mb-4">Whether you have capital, cars, or land—there is a place for you.</p>
+        <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill px-5">Get Started</a>
+    </div>
+</section>
+
 <style>
-    .nav-pills .nav-link { color: #64748b; transition: all 0.3s; }
-    .nav-pills .nav-link:hover { background-color: #f1f5f9; }
-    .nav-pills .nav-link.active { background-color: #0F172A; color: white; box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.4); }
-    .backdrop-blur { backdrop-filter: blur(10px); }
+    .ls-1 { letter-spacing: 1px; }
     .ls-2 { letter-spacing: 2px; }
-    .pulse-dot { width: 10px; height: 10px; background-color: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+    .ls-tight { letter-spacing: -1px; }
+    
+    /* Custom Tab Styling */
+    .nav-pills .nav-link { 
+        color: #6c757d; 
+        background-color: transparent;
+        transition: all 0.3s ease;
+    }
+    .nav-pills .nav-link:hover {
+        color: #198754; 
+        background-color: #f8f9fa;
+    }
+    .nav-pills .nav-link.active { 
+        background-color: #198754; 
+        color: white; 
+        box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+    }
+
+    .hover-lift { transition: transform 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-5px); }
 </style>
+
 {% endblock %}
