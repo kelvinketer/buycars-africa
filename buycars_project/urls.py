@@ -55,10 +55,13 @@ urlpatterns = [
     
     # --- NEW: 1 MILLION TREES IMPACT PAGE ---
     path('impact/', car_views.impact_page, name='impact_page'),
-    path('1-million-trees/', car_views.impact_page), # Alias for LinkedIn sharing
+    path('1-million-trees/', car_views.impact_page), 
 
     # --- NEW: FINANCING PAGE ---
     path('financing/', car_views.financing_page, name='financing_page'),
+
+    # --- ADDED: DEALERSHIP NETWORK PAGE ---
+    path('network/', car_views.dealership_network, name='dealership_network'),
 
     # --- DIASPORA LANDING PAGE ---
     path('diaspora/', car_views.diaspora_landing, name='diaspora_landing'),
@@ -72,14 +75,13 @@ urlpatterns = [
     # --- LEAD TRACKING ---
     path('track/<int:car_id>/<str:action_type>/', car_views.track_action, name='track_action'),
 
-    # --- AUTHENTICATION (Delegated to users/urls.py) ---
+    # --- AUTHENTICATION & RENTER DASHBOARD ---
     path('', include('users.urls')), 
+    path('renter/dashboard/', user_views.renter_dashboard, name='renter_dashboard'),
 
     # --- DEALER SIDE ---
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('dashboard/add/', car_views.add_car, name='add_car'), 
-    
-    # MONTHLY REPORT PDF ROUTE
     path('dashboard/report/', car_views.download_report, name='download_report'),
     
     # --- PRICING PAGE ---
@@ -87,23 +89,19 @@ urlpatterns = [
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
-    path('dashboard/support/', user_views.support_view, name='dealer_support'),
+    path('dashboard/support/', user_views.dealer_support, name='dealer_support'),
     
     # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
     path('dashboard/delete/<int:car_id>/', car_views.delete_car, name='delete_car'),
-    
-    # --- MARK AS SOLD ---
     path('dashboard/car/<int:car_id>/mark-sold/', car_views.mark_as_sold, name='mark_as_sold'),
 
     # --- IMAGE MANAGEMENT ---
     path('dashboard/car/<int:car_id>/image/<int:image_id>/set-main/', car_views.set_main_image, name='set_main_image'),
     path('dashboard/image/delete/<int:image_id>/', car_views.delete_car_image, name='delete_car_image'),
 
-    # --- PAYMENTS (M-PESA) ---
+    # --- PAYMENTS & FINANCES ---
     path('payments/', include('payments.urls')), 
-
-    # --- WALLET (EARNINGS) ---
     path('wallet/', include('wallet.urls')), 
 
     # --- MANUAL ADMIN TOOLS ---
@@ -111,7 +109,6 @@ urlpatterns = [
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
 ]
 
-# Allow images to load in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
