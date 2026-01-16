@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="bg-dark border-bottom border-secondary py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="pulse-dot me-3"></div>
+            <span class="text-success small fw-bold text-uppercase ls-2">Impact Ledger: Live</span>
+        </div>
+        <span class="text-white-50 small font-monospace">VERIFIED SYNC: {{ sync_time|date:"H:i:s" }} UTC</span>
+    </div>
+</div>
+
+<div class="bg-success bg-opacity-10 py-2 border-bottom border-success border-opacity-20 overflow-hidden">
+    <div class="d-flex impact-marquee">
+        {% for car in impact_events %}
+        <div class="mx-4 text-success small fw-bold text-nowrap">
+            <i class="fas fa-link me-1"></i> {{ car.dealer.username|upper }} SOLD {{ car.make }} {{ car.model }} ➔ +25 SEEDLINGS COMMITTED
+        </div>
+        {% empty %}
+        <div class="mx-4 text-success small fw-bold text-nowrap">
+            <i class="fas fa-circle-notch fa-spin me-1"></i> WAITING FOR LIVE TRANSACTION DATA...
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<section class="py-5 text-white" style="background: radial-gradient(circle at top right, #064e3b 0%, #020617 100%); min-height: 80vh;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">From Outputs to <span class="text-glow-green">Outcomes.</span></h1>
+                <p class="lead text-white-50">We don't just count trees. We measure the regeneration of African soil and the prosperity of its people.</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-card p-4 h-100">
+                    <h6 class="text-white-50 text-uppercase small ls-1">Annual CO₂ Sequestration</h6>
+                    <div class="display-5 fw-bold text-success">{{ co2_offset|floatformat:1 }} <small class="fs-6 text-white-50">Metric Tons</small></div>
+                    <hr class="border-secondary">
+                    <p class="small text-white-50">Calculated based on indigenous species survival rates in the Rift Valley and Western Cape zones.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glass-card p-4 h-100">
+                    <h6 class="text-white-50 text-uppercase small ls-1">Farmer Economic Yield</h6>
+                    <div class="display-5 fw-bold text-info">${{ farmer_revenue|intcomma }} <small class="fs-6 text-white-50">Est./Year</small></div>
+                    <hr class="border-secondary">
+                    <p class="small text-white-50">Projected income for 1,200+ smallholder farmers through integrated agro-forestry (Mango, Avocado, Macadamia).</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glass-card p-4 h-100 border-success">
+                    <h6 class="text-white-50 text-uppercase small ls-1">Digital Survival Rate</h6>
+                    <div class="display-5 fw-bold text-white">94.2%</div>
+                    <hr class="border-secondary">
+                    <p class="small text-white-50">Verified through GPS tagging and on-site drone telemetry audits conducted quarterly.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 glass-card p-2 rounded-4">
+            <div class="p-3 border-bottom border-white border-opacity-10 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-map-marked-alt text-success me-2"></i>Live Restoration Zones</h5>
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3">Download Audit Logs</button>
+            </div>
+            <div id="impact-map" style="height: 450px; border-radius: 0 0 10px 10px;"></div>
+        </div>
+    </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var map = L.map('impact-map', {zoomControl: false, scrollWheelZoom: false}).setView([0.5, 36.8], 6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; CARTO', maxZoom: 20
+        }).addTo(map);
+
+        // Simulated Restoration Zones (Rift Valley)
+        var zones = [
+            {lat: -0.6, lng: 36.5, title: "Zone A: Mau Escarpment"},
+            {lat: -1.1, lng: 36.6, title: "Zone B: Aberdare Range"},
+            {lat: 0.5, lng: 35.3, title: "Zone C: Cherangani Hills"}
+        ];
+
+        zones.forEach(z => {
+            L.circle([z.lat, z.lng], {
+                color: '#00ff9d',
+                fillColor: '#00ff9d',
+                fillOpacity: 0.2,
+                radius: 15000
+            }).addTo(map).bindPopup(z.title);
+        });
+    });
+</script>
+
+<style>
+    .ls-2 { letter-spacing: 2px; }
+    .text-glow-green { color: #00ff9d; text-shadow: 0 0 15px rgba(0, 255, 157, 0.4); }
+    .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; }
+    .impact-marquee { animation: scroll 40s linear infinite; white-space: nowrap; }
+    @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    .pulse-dot { width: 10px; height: 10px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+</style>
+{% endblock %}

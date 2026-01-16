@@ -57,6 +57,9 @@ urlpatterns = [
     path('impact/', car_views.impact_page, name='impact_page'),
     path('1-million-trees/', car_views.impact_page), 
 
+    # --- NEW: TRANSPARENCY HUB (Live Ledger) ---
+    path('transparency/', car_views.transparency_hub, name='transparency_hub'),
+
     # --- NEW: FINANCING PAGE ---
     path('financing/', car_views.financing_page, name='financing_page'),
 

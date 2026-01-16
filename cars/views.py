@@ -628,6 +628,35 @@ def impact_page(request):
     }
     return render(request, 'pages/impact.html', context)
 
+# --- NEW: TRANSPARENCY HUB ---
+def transparency_hub(request):
+    """
+    Renders the live transparency dashboard with real-time sales-to-impact tracking.
+    """
+    # 1. Evidence of Action: Fetch last 10 'SOLD' cars as Proof of Impact
+    # We use updated_at to show when the sale was finalized
+    impact_events = Car.objects.filter(status='SOLD').order_by('-updated_at')[:10]
+    
+    # 2. Aggregated Outcome Data
+    total_cars_sold = Car.objects.filter(status='SOLD').count()
+    trees_planted = total_cars_sold * 25
+    
+    # OUTCOME 1: Carbon Sequestration (Approx 22kg CO2 per tree/year)
+    co2_offset_tons = (trees_planted * 22) / 1000 
+    
+    # OUTCOME 2: Economic Benefit (Assuming 30% are fruit trees for farmers)
+    # Estimated $5 per tree in annual yield for the community
+    farmer_revenue_est = (trees_planted * 0.30) * 5 
+
+    context = {
+        'impact_events': impact_events,
+        'trees_planted': trees_planted,
+        'co2_offset': co2_offset_tons,
+        'farmer_revenue': farmer_revenue_est,
+        'sync_time': timezone.now(),
+    }
+    return render(request, 'pages/transparency.html', context)
+
 # --- NEW: DEALERSHIP NETWORK PAGE ---
 def dealership_network(request):
     """
