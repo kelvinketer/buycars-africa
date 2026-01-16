@@ -424,34 +424,40 @@ def run_migrations_view(request):
     except Exception as e:
         return HttpResponse(f"<h1>Error Running Migration</h1><p>{e}</p>")
     
-    # --- ADD AT THE VERY BOTTOM OF cars/views.py ---
 
-from django.core.management import call_command
-import io
+# --- ADD AT THE VERY BOTTOM OF cars/views.py ---
+from django.db import connection
 
 def run_migrations_view(request):
     """
-    SUPER FIXER: Forces 'makemigrations' then 'migrate'.
-    Use this when the database column is missing but standard migrate doesn't fix it.
+    ULTIMATE FIXER: Manually creates the missing column using Raw SQL.
+    Bypasses migration conflicts.
     """
     if not request.user.is_superuser:
         return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
 
-    output = io.StringIO()
     try:
-        output.write("--- STEP 1: MAKING MIGRATIONS ---\n")
-        # Force Django to look for changes in the 'cars' app and create the file
-        call_command('makemigrations', 'cars', interactive=False, stdout=output)
-        
-        output.write("\n--- STEP 2: MIGRATING DATABASE ---\n")
-        # Apply the new file to the database
-        call_command('migrate', interactive=False, stdout=output)
-        
-        return HttpResponse(f"""
-            <h1 style='color:green'>REPAIR COMPLETE</h1>
-            <pre style='background:#eee; padding:15px; border-radius:5px;'>{output.getvalue()}</pre>
+        with connection.cursor() as cursor:
+            # 1. Fix the Booking Table (The cause of the Dashboard Crash)
+            cursor.execute("""
+                ALTER TABLE cars_booking 
+                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+            """)
+            
+            # 2. Fix the Car Table (Just in case 'city' is actually missing for some reason, ignore if exists)
+            # We use 'IF NOT EXISTS' to prevent the error you just saw.
+            cursor.execute("""
+                ALTER TABLE cars_car 
+                ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';
+            """)
+
+        return HttpResponse("""
+            <h1 style='color:green'>DATABASE PATCHED SUCCESSFULLY</h1>
+            <p>The 'updated_at' column was forced into the database.</p>
             <br>
-            <a href='/dashboard/' style='font-size:20px; font-weight:bold;'>&larr; Return to Dashboard (It will work now)</a>
+            <a href='/dashboard/' style='font-size:20px; font-weight:bold; background: #eee; padding: 10px; border-radius: 5px; text-decoration: none;'>
+                &larr; Return to Dashboard (Should work now)
+            </a>
         """)
     except Exception as e:
-        return HttpResponse(f"<h1 style='color:red'>ERROR</h1><pre>{e}</pre>")
+        return HttpResponse(f"<h1 style='color:red'>SQL ERROR</h1><pre>{e}</pre>")
