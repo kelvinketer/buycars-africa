@@ -22,11 +22,14 @@ from .utils import render_to_pdf
 
 User = get_user_model() 
 
-# --- CONFIGURATION: PLAN LIMITS ---
+# --- CONFIGURATION: PLAN LIMITS (UPDATED) ---
+# STARTER = Digital Showroom (Entry)
+# LITE    = Gold Partner (Financing Enabled)
+# PRO     = Platinum Partner (Diaspora & Verified)
 PLAN_LIMITS = {
-    'STARTER': {'cars': 5, 'images': 6},   # Free Tier
-    'LITE':    {'cars': 15, 'images': 10}, # Paid Tier 1
-    'PRO':     {'cars': 50, 'images': 15}  # Paid Tier 2
+    'STARTER': {'cars': 10, 'images': 8},   # Increased car limit to justify price hike
+    'LITE':    {'cars': 40, 'images': 15},  # Gold Tier
+    'PRO':     {'cars': 150, 'images': 30}  # Platinum Tier (Unlimited feel)
 }
 
 def sanitize_phone(phone):

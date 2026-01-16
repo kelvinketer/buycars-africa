@@ -1,148 +1,118 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load humanize %}
 
 {% block content %}
-<div class="bg-light py-5 min-vh-100 font-sans">
-    <div class="container py-lg-5">
-        
-        <div class="text-center mb-5 mw-800 mx-auto">
-            <h6 class="text-brand-red fw-bold text-uppercase letter-spacing-2 small">Dealer Solutions</h6>
-            <h1 class="display-5 fw-bold text-brand-dark mb-3">Professional Plans for Modern Dealers</h1>
-            <p class="text-muted lead">
-                Manage your inventory, track asset value, and connect with high-intent buyers. <br>Join Kenya's most trusted digital showroom.
-            </p>
+<section class="py-5 bg-dark position-relative overflow-hidden" style="background-color: #0F172A !important;">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 20%);"></div>
+
+    <div class="container py-5 position-relative z-2 text-center">
+        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-3">DEALER PARTNERSHIP</span>
+        <h1 class="display-3 fw-bold text-white mb-4">Sell Faster. <span class="text-success">Scale Bigger.</span></h1>
+        <p class="lead text-white-50 mb-5 mx-auto" style="max-width: 700px;">
+            Join the ecosystem that connects your inventory to <strong>Bank Financing</strong>, <strong>Diaspora Buyers</strong>, and our <strong>Green Impact</strong> network.
+        </p>
+
+        <div class="d-inline-flex bg-white bg-opacity-10 rounded-pill p-1 mb-5 border border-white border-opacity-10">
+            <button class="btn btn-success rounded-pill px-4 fw-bold btn-sm">Monthly Billing</button>
+            <button class="btn btn-transparent text-white rounded-pill px-4 fw-bold btn-sm">Annual (Save 20%)</button>
         </div>
 
-        <div class="row g-4 align-items-center justify-content-center">
+        <div class="row g-4 align-items-center">
             
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift bg-white">
-                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
-                        <div class="mb-4">
-                            <span class="badge bg-light text-dark rounded-pill px-3 py-2 fw-bold small">STARTER</span>
-                        </div>
-                        <h2 class="fw-bold mb-0 text-brand-dark">KES 1,500</h2>
-                        <span class="text-muted small">/ month</span>
-                        <hr class="my-4 opacity-10">
+            <div class="col-lg-4">
+                <div class="card bg-white border-0 rounded-4 shadow-lg h-100 position-relative" style="opacity: 0.9;">
+                    <div class="card-body p-5">
+                        <h5 class="fw-bold text-muted text-uppercase small ls-2 mb-3">Standard</h5>
+                        <div class="display-6 fw-bold text-dark mb-2">KES 2,500<small class="fs-6 text-muted">/mo</small></div>
+                        <p class="text-muted small mb-4">For brokers & starters.</p>
                         
-                        <p class="text-dark fw-bold small mb-3 text-uppercase opacity-75">Core Features</p>
-                        <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
-                            <li><i class="fas fa-check-circle text-brand-blue me-2"></i> <strong>5</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-brand-blue me-2"></i> <strong>7</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-chart-bar text-muted me-2"></i> Basic Dashboard Access</li>
-                            <li><i class="fab fa-whatsapp text-success me-2"></i> Direct WhatsApp Integration</li>
-                            <li class="opacity-50 text-decoration-line-through"><i class="fas fa-certificate me-2"></i> Verified Dealer Badge</li>
+                        <hr class="opacity-10 mb-4">
+                        
+                        <ul class="list-unstyled text-start mb-5 space-y-3">
+                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i> <strong>10 Vehicles</strong> Listing Limit</li>
+                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i> 8 HD Photos per Car</li>
+                            <li class="mb-3"><i class="fas fa-check text-success me-2"></i> Basic Dealer Dashboard</li>
+                            <li class="text-muted"><i class="fas fa-times me-2"></i> No Financing Badge</li>
+                            <li class="text-muted"><i class="fas fa-times me-2"></i> No Diaspora Access</li>
                         </ul>
 
-                        <div class="mt-auto d-grid">
+                        <div class="d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'STARTER' %}
-                                    <button class="btn btn-soft-dark rounded-pill py-3 fw-bold disabled">
-                                        <i class="fas fa-check-circle me-2"></i> Current Plan
-                                    </button>
+                                    <button class="btn btn-secondary rounded-pill fw-bold disabled">Current Plan</button>
                                 {% else %}
-                                    <a href="{% url 'subscription_checkout' 'STARTER' %}" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">
-                                        Select Starter
-                                    </a>
+                                    <a href="{% url 'subscription_checkout' 'STARTER' %}" class="btn btn-outline-dark rounded-pill fw-bold py-2">Select Standard</a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark border-2 rounded-pill py-3 fw-bold hover-scale">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill fw-bold py-2">Start Standard</a>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden hover-lift bg-brand-dark text-white" style="transform: scale(1.02); z-index: 2;">
-                    <div class="position-absolute top-0 end-0 bg-brand-red text-white fw-bold px-3 py-1 small rounded-bottom-start shadow-sm">
-                        MOST POPULAR
+            <div class="col-lg-4">
+                <div class="card bg-white border-0 rounded-4 shadow-lg h-100 position-relative transform-scale">
+                    <div class="position-absolute top-0 start-50 translate-middle">
+                        <span class="badge bg-success px-3 py-2 rounded-pill shadow fw-bold">MOST POPULAR</span>
                     </div>
 
-                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
-                        <div class="mb-4">
-                            <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 rounded-pill px-3 py-2 fw-bold small">LITE</span>
-                        </div>
-                        <h2 class="fw-bold mb-0">KES 5,000</h2>
-                        <span class="text-white-50 ms-2">/ month</span>
-                        <hr class="my-4 border-white opacity-10">
+                    <div class="card-body p-5">
+                        <h5 class="fw-bold text-warning text-uppercase small ls-2 mb-3">Gold Partner</h5>
+                        <div class="display-5 fw-bold text-dark mb-2">KES 8,000<small class="fs-6 text-muted">/mo</small></div>
+                        <p class="text-muted small mb-4">For established yards.</p>
                         
-                        <p class="text-white fw-bold small mb-3 text-uppercase opacity-75">Growth Features</p>
-                        <ul class="list-unstyled mb-5 d-flex flex-column gap-3 small">
-                            <li><i class="fas fa-check-circle text-brand-red me-2"></i> <strong>15</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-brand-red me-2"></i> <strong>16</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-certificate text-warning me-2"></i> <strong>Verified Dealer Badge</strong></li>
-                            <li><i class="fas fa-chart-line text-info me-2"></i> Lead Trend Analytics</li>
-                            <li><i class="fas fa-arrow-up text-success me-2"></i> Priority Search Ranking</li>
+                        <hr class="opacity-10 mb-4">
+                        
+                        <ul class="list-unstyled text-start mb-5">
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>40 Vehicles</strong> Listing Limit</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>"Finance Ready" Badge</strong> <span class="badge bg-primary bg-opacity-10 text-primary ms-1" style="font-size: 0.65rem;">FASTER SALES</span></li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> 15 HD Photos per Car</li>
+                            <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Direct Lead WhatsApp</li>
+                            <li class="text-muted"><i class="fas fa-times me-2"></i> No Diaspora Access</li>
                         </ul>
 
-                        <div class="mt-auto d-grid">
+                        <div class="d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'LITE' %}
-                                    <button class="btn btn-white text-brand-dark rounded-pill py-3 fw-bold disabled shadow-sm">
-                                        <i class="fas fa-check-circle me-2"></i> Current Plan
-                                    </button>
+                                    <button class="btn btn-success bg-opacity-25 text-success border-0 rounded-pill py-3 fw-bold disabled">Current Plan</button>
                                 {% else %}
-                                    <a href="{% url 'subscription_checkout' 'LITE' %}" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">
-                                        Upgrade to Lite
-                                    </a>
+                                    <a href="{% url 'subscription_checkout' 'LITE' %}" class="btn btn-success rounded-pill fw-bold py-3 shadow-lg hover-lift">Upgrade to Gold</a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-brand-red fw-bold rounded-pill py-3 shadow-lg hover-scale">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-success rounded-pill fw-bold py-3 shadow-lg hover-lift">Get Started</a>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm rounded-4 bg-white position-relative overflow-hidden hover-lift border-top-pro">
-                    <div class="card-body p-4 p-lg-5 d-flex flex-column">
-                        <div class="mb-4">
-                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3 py-2 fw-bold small">PRO</span>
-                        </div>
-                        <h2 class="fw-bold mb-0 text-brand-dark">KES 12,000</h2>
-                        <span class="text-muted ms-2">/ month</span>
-                        <hr class="my-4 opacity-10">
+            <div class="col-lg-4">
+                <div class="card bg-dark border border-secondary border-opacity-50 rounded-4 shadow-lg h-100 text-white">
+                    <div class="card-body p-5">
+                        <h5 class="fw-bold text-info text-uppercase small ls-2 mb-3">Platinum</h5>
+                        <div class="display-6 fw-bold text-white mb-2">KES 25,000<small class="fs-6 text-white-50">/mo</small></div>
+                        <p class="text-white-50 small mb-4">For market leaders.</p>
                         
-                        <p class="text-dark fw-bold small mb-3 text-uppercase opacity-75">Enterprise Features</p>
-                        <ul class="list-unstyled mb-5 d-flex flex-column gap-3 text-muted small">
-                            <li><i class="fas fa-check-circle text-brand-dark me-2"></i> <strong>50</strong> Active Car Listings</li>
-                            <li><i class="fas fa-check-circle text-brand-dark me-2"></i> <strong>30</strong> Verified Leads/mo</li>
-                            <li><i class="fas fa-crown text-warning me-2"></i> <strong>Homepage Spotlight</strong></li>
-                            <li><i class="fas fa-calculator text-brand-dark me-2"></i> Full Asset Valuation</li>
-                            <li><i class="fas fa-file-pdf text-danger me-2"></i> Exportable Business Reports</li>
+                        <hr class="border-secondary mb-4">
+                        
+                        <ul class="list-unstyled text-start mb-5">
+                            <li class="mb-3"><i class="fas fa-check text-info me-2"></i> <strong>150 Vehicles</strong> (Bulk Upload)</li>
+                            <li class="mb-3"><i class="fas fa-check text-info me-2"></i> <strong>Diaspora Market Access</strong> <span class="badge bg-light text-dark ms-1" style="font-size: 0.65rem;">USD BUYERS</span></li>
+                            <li class="mb-3"><i class="fas fa-check text-info me-2"></i> <strong>"Verified Dealer"</strong> Blue Tick</li>
+                            <li class="mb-3"><i class="fas fa-check text-info me-2"></i> Priority Search Ranking</li>
+                            <li class="mb-3"><i class="fas fa-check text-info me-2"></i> Dedicated Account Manager</li>
                         </ul>
 
-                        <div class="mt-auto d-grid gap-3">
+                        <div class="d-grid">
                             {% if user.is_authenticated %}
                                 {% if user.dealer_profile.plan_type == 'PRO' %}
-                                    <button class="btn btn-brand-dark rounded-pill py-3 fw-bold disabled shadow-sm d-flex align-items-center justify-content-center">
-                                        <i class="fas fa-check-circle text-success me-2"></i> Current Plan
-                                    </button>
-                                    
-                                    <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20a%20Pro%20dealer%20and%20I%20need%20Enterprise%20support." 
-                                       target="_blank" 
-                                       class="btn btn-white border-2 border-dark text-brand-dark rounded-pill py-3 fw-bold small text-nowrap d-flex align-items-center justify-content-center hover-scale shadow-sm transition-all">
-                                        <i class="fab fa-whatsapp text-success me-2 fa-lg"></i> Contact Enterprise Support
-                                    </a>
-
+                                    <button class="btn btn-outline-light rounded-pill py-2 fw-bold disabled">Current Plan</button>
                                 {% else %}
-                                    <a href="{% url 'subscription_checkout' 'PRO' %}" class="btn btn-brand-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">
-                                        Upgrade to Pro
-                                    </a>
-                                    
-                                    <div class="text-center mt-2">
-                                        <a href="https://wa.me/254727025050?text=Hello%20BuyCars%20Africa,%20I%20am%20interested%20in%20your%20Enterprise%20solutions." 
-                                           target="_blank" 
-                                           class="text-muted text-decoration-none small fw-bold opacity-75 hover-opacity-100 transition-all">
-                                            Need a custom Enterprise plan?
-                                        </a>
-                                    </div>
+                                    <a href="{% url 'subscription_checkout' 'PRO' %}" class="btn btn-light text-dark rounded-pill fw-bold py-2">Go Platinum</a>
                                 {% endif %}
                             {% else %}
-                                <a href="{% url 'signup' %}" class="btn btn-brand-dark rounded-pill py-3 fw-bold hover-scale shadow-lg">Get Started</a>
+                                <a href="{% url 'signup' %}" class="btn btn-light text-dark rounded-pill fw-bold py-2">Contact Sales</a>
                             {% endif %}
                         </div>
                     </div>
@@ -150,88 +120,74 @@
             </div>
 
         </div>
+        
+        <div class="row justify-content-center mt-5 pt-4">
+            <div class="col-lg-8">
+                <p class="text-white-50 mb-3 small">TRUSTED BY OVER 150 DEALERSHIPS ACROSS KENYA</p>
+                <div class="d-flex justify-content-center gap-4 opacity-50 grayscale">
+                    <i class="fas fa-car fa-2x text-white"></i>
+                    <i class="fas fa-hand-holding-usd fa-2x text-white"></i>
+                    <i class="fas fa-university fa-2x text-white"></i>
+                    <i class="fas fa-shield-alt fa-2x text-white"></i>
+                </div>
+            </div>
+        </div>
+
     </div>
-</div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <h3 class="fw-bold text-center mb-5">Frequently Asked Questions</h3>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion accordion-flush shadow-sm rounded-4 bg-white" id="faqAccordion">
+                    <div class="accordion-item rounded-top-4">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How does the "Finance Ready" badge work?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                Gold and Platinum dealers have their inventory pre-screened by our banking partners. This allows buyers to apply for loans directly on your car listing, speeding up the sale process by 3x.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                What is Diaspora Access?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                We actively market Platinum inventory to Kenyans living in the UK, USA, and Dubai. We handle the inspection and payment escrow so you get paid safely in KES while they pay in foreign currency.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item rounded-bottom-4">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can I change plans later?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted">
+                                Absolutely. You can upgrade or downgrade your plan at any time from your dashboard settings.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-    /* BRAND COLORS */
-    :root {
-        --brand-red: #E31E24;  
-        --brand-dark: #0B132B; 
-        --brand-blue: #0d6efd; 
-        --brand-gold: #ffc107; 
-    }
-
-    .font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-    
-    /* Custom Colors */
-    .text-brand-red { color: var(--brand-red) !important; }
-    .text-brand-dark { color: var(--brand-dark) !important; }
-    .text-brand-blue { color: var(--brand-blue) !important; }
-    .bg-brand-dark { background-color: var(--brand-dark) !important; }
-    .bg-brand-red { background-color: var(--brand-red) !important; }
-
-    /* Brand Buttons */
-    .btn-brand-red {
-        background-color: var(--brand-red);
-        color: white;
-        border: none;
-    }
-    .btn-brand-red:hover {
-        background-color: #c4191f; 
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    .btn-brand-dark {
-        background-color: var(--brand-dark);
-        color: white;
-        border: none;
-    }
-    .btn-brand-dark:hover {
-        background-color: #162247; 
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    /* Soft Buttons */
-    .btn-soft-dark, .btn-soft-dark.disabled {
-        background-color: #e2e8f0 !important;
-        color: #1e293b !important;
-        border: none;
-        opacity: 1 !important;
-    }
-
-    /* Glass Button */
-    .btn-soft-light {
-        background-color: rgba(255, 255, 255, 0.15);
-        color: #ffffff;
-        border: 1px solid rgba(255,255,255,0.2);
-        backdrop-filter: blur(5px);
-    }
-    .btn-soft-light:hover {
-        background-color: rgba(255, 255, 255, 0.25);
-        color: #ffffff;
-        transform: translateY(-2px);
-    }
-    
-    .btn-white, .btn-white.disabled {
-        background-color: #ffffff !important;
-        color: var(--brand-dark) !important;
-        border: 1px solid white !important;
-        opacity: 1 !important;
-    }
-    .btn-white:hover {
-        background-color: #f8f9fa;
-        color: black;
-        transform: translateY(-2px);
-    }
-
-    /* Utilities */
-    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; }
-    
-    .border-top-pro { border-top: 5px solid var(--brand-gold) !important; }
-    .border-2 { border-width: 2px !important; }
+    .transform-scale { transform: scale(1.05); z-index: 10; }
+    .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; transition: all 0.3s; }
+    .ls-2 { letter-spacing: 2px; }
+    .grayscale { filter: grayscale(100%); }
 </style>
 {% endblock %}
