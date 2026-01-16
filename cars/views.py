@@ -700,3 +700,23 @@ def partners_page(request):
     Renders the dedicated Partnership Portal for Banks, Dealers, and Landowners.
     """
     return render(request, 'pages/partners.html')
+
+# --- NEW: DRIVING CHANGE (MANIFESTO) ---
+def driving_change_page(request):
+    """
+    Renders the 'Driving Change' Manifesto Page with real-time impact metrics.
+    """
+    # 1. Real Data Points
+    total_dealers = DealerProfile.objects.count()
+    cars_sold = Car.objects.filter(status='SOLD').count()
+    
+    # 2. Impact Calculations
+    trees_planted = cars_sold * 25  # The Promise: 1 Car = 25 Trees
+    capital_unlocked = cars_sold * 1500000 # Approx 1.5M KES per car avg value
+    
+    context = {
+        'dealers_empowered': total_dealers,
+        'trees_planted': trees_planted,
+        'capital_unlocked': capital_unlocked,
+    }
+    return render(request, 'pages/driving_change.html', context)

@@ -53,20 +53,23 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
-    # --- NEW: 1 MILLION TREES IMPACT PAGE ---
+    # --- MISSION & IMPACT ---
     path('impact/', car_views.impact_page, name='impact_page'),
     path('1-million-trees/', car_views.impact_page), 
+    
+    # --- NEW: DRIVING CHANGE MANIFESTO ---
+    path('driving-change/', car_views.driving_change_page, name='driving_change'),
 
-    # --- NEW: TRANSPARENCY HUB (Live Ledger) ---
+    # --- TRANSPARENCY HUB (Live Ledger) ---
     path('transparency/', car_views.transparency_hub, name='transparency_hub'),
 
-    # --- NEW: FINANCING PAGE ---
+    # --- FINANCING PAGE ---
     path('financing/', car_views.financing_page, name='financing_page'),
 
-    # --- ADDED: DEALERSHIP NETWORK PAGE ---
+    # --- DEALERSHIP NETWORK PAGE ---
     path('network/', car_views.dealership_network, name='dealership_network'),
 
-    # --- ADDED: PARTNERSHIP PORTAL ---
+    # --- PARTNERSHIP PORTAL ---
     path('partners/', car_views.partners_page, name='partners_page'),
 
     # --- DIASPORA LANDING PAGE ---
@@ -90,13 +93,13 @@ urlpatterns = [
     path('dashboard/add/', car_views.add_car, name='add_car'), 
     path('dashboard/report/', car_views.download_report, name='download_report'),
     
-    # --- PRICING PAGE ---
+    # --- PRICING PAGE (Updated Template) ---
     path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing'),
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
     
-    # --- FIXED LINE BELOW (Changed dealer_support -> support_view) ---
+    # --- SUPPORT VIEW FIX ---
     path('dashboard/support/', user_views.support_view, name='dealer_support'),
     
     # --- EDIT & DELETE ROUTES ---
@@ -119,4 +122,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
