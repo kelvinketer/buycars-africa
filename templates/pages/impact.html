@@ -4,251 +4,179 @@
 
 {% block head_extra %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://cdn.jsdelivr.net/npm/countup.js@2.0.7/dist/countUp.umd.js"></script>
 {% endblock %}
 
 {% block content %}
 <style>
-    /* --- CUSTOM TECH-NATURE THEME --- */
+    /* --- THEME: COMMAND CENTER --- */
     :root {
         --neon-green: #00ff9d;
-        --deep-forest: #022c22;
-        --slate-dark: #0f172a;
+        --deep-space: #0b1120; 
+        --panel-bg: rgba(15, 23, 42, 0.6);
     }
 
-    .bg-tech-nature {
-        background: radial-gradient(circle at top right, #064e3b 0%, #020617 100%);
-    }
-    
-    .text-glow-green {
-        color: var(--neon-green);
-        text-shadow: 0 0 25px rgba(0, 255, 157, 0.4);
+    body { background-color: var(--deep-space); }
+
+    .bg-grid-pattern {
+        background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 30px 30px;
     }
 
-    .glass-card {
-        background: rgba(255, 255, 255, 0.05);
+    .glass-panel {
+        background: var(--panel-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: transform 0.3s ease, border-color 0.3s ease;
-    }
-    
-    .glass-card:hover {
-        transform: translateY(-5px);
-        border-color: var(--neon-green);
-        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .pillar-icon-box {
-        width: 80px; 
-        height: 80px; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
-        background: rgba(34, 197, 94, 0.1);
-        color: #4ade80;
-        border-radius: 50%;
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(34, 197, 94, 0.2);
+    .stat-value {
+        font-family: 'Inter', sans-serif; /* Monospace-ish for data */
+        letter-spacing: -1px;
+        background: -webkit-linear-gradient(45deg, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    /* Live Pulse Animation for "System Active" */
-    .pulse-dot {
-        width: 10px;
-        height: 10px;
-        background-color: #22c55e;
+    .live-dot {
+        width: 8px; height: 8px;
+        background-color: var(--neon-green);
         border-radius: 50%;
         display: inline-block;
-        animation: pulse-animation 2s infinite;
-        margin-right: 8px;
+        box-shadow: 0 0 10px var(--neon-green);
+        animation: blink 2s infinite;
     }
 
-    @keyframes pulse-animation {
-        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
+    @keyframes blink { 50% { opacity: 0.4; } }
 
     #impact-map {
-        height: 400px;
+        height: 500px;
         width: 100%;
-        border-radius: 1rem;
-        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        z-index: 1;
     }
 </style>
 
-<div class="position-relative text-white overflow-hidden d-flex align-items-center bg-tech-nature" style="min-height: 85vh;">
-    <div class="position-absolute top-0 start-0 w-100 h-100" 
-         style="background: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat; opacity: 0.15;">
-    </div>
+<div class="position-relative overflow-hidden bg-grid-pattern pb-5">
     
-    <div class="container position-relative z-2 pt-5">
-        <div class="row justify-content-center text-center">
-            <div class="col-lg-10">
-                <div class="d-inline-block mb-4">
-                    <span class="badge rounded-pill px-3 py-2 border border-success border-opacity-50 text-uppercase ls-2" 
-                          style="background: rgba(22, 163, 74, 0.2); color: #86efac; letter-spacing: 2px;">
-                        The 2026 Initiative
-                    </span>
+    <div class="container pt-4 pb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-1 rounded-pill d-flex align-items-center small fw-bold">
+                    <span class="live-dot me-2"></span> LIVE OPERATIONS
                 </div>
-                <h1 class="display-2 fw-bold mb-4 ls-tight text-white">
-                    1 Million Trees. <br>
-                    1 Nation. <span class="text-glow-green">Engineered.</span>
-                </h1>
-                <p class="lead text-white-50 mb-5 fs-4 mx-auto fw-light" style="max-width: 750px; line-height: 1.6;">
-                    We are moving beyond traditional planting. Using digital monitoring, GPS tagging, and agro-tech integration, we are <strong class="text-white">engineering</strong> the restoration of Africa's landscapes.
-                </p>
-                <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <a href="#partner" class="btn btn-success btn-lg rounded-pill fw-bold px-5 py-3 shadow-lg hover-lift" 
-                       style="background-color: #22c55e; border: none;">
-                        Become a Partner
-                    </a>
-                    <a href="#dashboard" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4 py-3 hover-lift"
-                       style="border-color: rgba(255,255,255,0.3);">
-                        View Live Data
-                    </a>
-                </div>
+                <h5 class="text-white mb-0 fw-normal border-start border-secondary ps-3 ms-1 border-opacity-25">Project: Green Lung</h5>
+            </div>
+            <div class="text-white-50 small font-monospace d-none d-md-block">
+                SYS.TIME: <span id="clock">--:--:--</span> UTC
             </div>
         </div>
     </div>
-</div>
 
-<section id="dashboard" class="py-5 bg-dark position-relative" style="background-color: #020617 !important;">
-    <div class="container py-5">
-        
-        <div class="row align-items-end mb-5">
-            <div class="col-lg-8">
-                <div class="d-flex align-items-center mb-2">
-                    <span class="pulse-dot"></span>
-                    <h6 class="text-success fw-bold text-uppercase small mb-0 ls-1">System Live</h6>
-                </div>
-                <h2 class="text-white fw-bold display-6">Digital Monitoring Log</h2>
-                <p class="text-white-50">Real-time telemetry from our active restoration sites.</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <p class="text-white-50 small font-monospace">
-                    <i class="fas fa-server me-2"></i>Status: <span class="text-success">Online</span><br>
-                    Sync: {% now "H:i:s T" %}
-                </p>
-            </div>
-        </div>
-
-        <div class="row g-4 mb-5">
-            <div class="col-md-3">
-                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-white mb-2">{{ trees_planted|intcomma }}</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1 mb-3">Trees Planted</small>
-                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                        <div class="progress-bar bg-success progress-glow" role="progressbar" style="width: {% widthratio trees_planted 1000000 100 %}%"></div>
-                    </div>
-                    <small class="text-white-50 mt-2" style="font-size: 0.7rem;">Target: 1,000,000</small>
-                </div>
-            </div>
-            
-            <div class="col-md-3">
-                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-success mb-1">{{ cars_sold|default:"0" }}</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Cars Sold</small>
-                    <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        Verified Contributors
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-info mb-1">{{ co2_offset|floatformat:1 }}</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Tons CO₂ Offset</small>
-                    <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        Est. based on Species
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-warning mb-1">4</div>
-                    <small class="text-uppercase text-white-50 fw-bold ls-1">Active Nations</small>
-                    <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        KE, ET, NG, ZA
-                    </p>
-                </div>
-            </div>
-        </div>
-
+    <div class="container position-relative z-2">
         <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="glass-card p-4 rounded-4 h-100">
-                    <h5 class="text-white fw-bold mb-4"><i class="fas fa-satellite me-2 text-success"></i>Live Site Conditions</h5>
-                    
-                    <div class="mb-4">
-                        <small class="text-white-50 text-uppercase fw-bold">Active Zone</small>
-                        <h4 class="text-white">Rift Valley Block A</h4>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-panel p-4 h-100">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-white-50 text-uppercase fw-bold ls-1">Trees Planted</small>
+                        <i class="fas fa-tree text-success"></i>
                     </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-6">
-                            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.05);">
-                                <i class="fas fa-temperature-high text-warning mb-2"></i>
-                                <div class="h3 text-white mb-0" id="live-temp">--°C</div>
-                                <small class="text-white-50">Temperature</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.05);">
-                                <i class="fas fa-tint text-info mb-2"></i>
-                                <div class="h3 text-white mb-0" id="live-humid">--%</div>
-                                <small class="text-white-50">Humidity</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <small class="text-white-50 text-uppercase fw-bold">Soil Moisture Analysis</small>
-                        <div class="d-flex align-items-center mt-2">
-                            <div class="progress flex-grow-1 me-3" style="height: 8px; background: rgba(255,255,255,0.1);">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 65%"></div>
-                            </div>
-                            <span class="text-white fw-bold">Optimal</span>
-                        </div>
+                    <div class="display-4 fw-bold stat-value" id="tree-counter">{{ trees_planted|default:"0" }}</div>
+                    <div class="mt-3 text-success small">
+                        <i class="fas fa-arrow-up me-1"></i> <strong>25</strong> added this hour
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-8">
-                <div class="glass-card p-2 rounded-4 h-100">
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-panel p-4 h-100">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-white-50 text-uppercase fw-bold ls-1">Carbon Offset</small>
+                        <i class="fas fa-cloud text-info"></i>
+                    </div>
+                    <div class="display-4 fw-bold stat-value">{{ co2_offset|floatformat:1 }} <span class="fs-4 text-muted">t</span></div>
+                    <div class="mt-3 text-white-50 small">
+                        ~20kg CO₂ / tree / year
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-panel p-4 h-100">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-white-50 text-uppercase fw-bold ls-1">Active Sites</small>
+                        <i class="fas fa-map-marker-alt text-warning"></i>
+                    </div>
+                    <div class="display-4 fw-bold stat-value">4</div>
+                    <div class="mt-3 text-warning small">
+                        <i class="fas fa-satellite-dish me-1"></i> Monitoring Active
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="glass-panel p-4 h-100 position-relative overflow-hidden">
+                    <div class="position-relative z-2">
+                        <small class="text-white-50 text-uppercase fw-bold ls-1">Community Fund</small>
+                        <h4 class="text-white mt-2 mb-3">Accelerate the Mission</h4>
+                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+                            <input type="hidden" name="cmd" value="_donations" />
+                            <input type="hidden" name="business" value="kipchirchir101@gmail.com" /> <input type="hidden" name="currency_code" value="USD" />
+                            <input type="hidden" name="item_name" value="1 Million Trees Fund" />
+                            <button class="btn btn-success w-100 fw-bold rounded-pill shadow-lg">
+                                Donate $10 <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 translate-middle-y bg-success rounded-circle opacity-10" style="width: 100px; height: 100px; filter: blur(40px);"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-9">
+                <div class="glass-panel p-1">
                     <div id="impact-map"></div>
                 </div>
             </div>
-        </div>
+            
+            <div class="col-lg-3">
+                <div class="glass-panel p-4 h-100 d-flex flex-column">
+                    <h6 class="text-white fw-bold mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                        <i class="fas fa-history me-2 text-primary"></i>Recent Activity
+                    </h6>
+                    
+                    <div class="flex-grow-1 overflow-hidden">
+                        <ul class="list-unstyled text-white-50 small space-y-3" id="feed-list">
+                            <li class="mb-3 d-flex gap-2">
+                                <span class="text-success">●</span> 
+                                <div>
+                                    <strong class="text-white">New Sale (Nairobi)</strong><br>
+                                    Funded 25 Seedlings
+                                </div>
+                            </li>
+                            <li class="mb-3 d-flex gap-2">
+                                <span class="text-success">●</span> 
+                                <div>
+                                    <strong class="text-white">Partner Joined</strong><br>
+                                    AutoHub Mombasa
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
 
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="glass-card p-4 rounded-4">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4">
-                            <h5 class="text-white fw-bold mb-1">Q1 2026 Fundraising Goal</h5>
-                            <p class="text-white-50 small mb-0">Directly support seedling distribution.</p>
+                    <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-white-50 small">Target: Q1 2026</span>
+                            <span class="text-white fw-bold small">15%</span>
                         </div>
-                        <div class="col-lg-6">
-                            <div class="progress" style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px;">
-                                <div class="progress-bar bg-gradient-success" role="progressbar" style="width: 15%"></div>
-                            </div>
-                            <div class="d-flex justify-content-between mt-2 text-white-50 small">
-                                <span>Raised: $2,500</span>
-                                <span>Goal: $50,000</span>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 text-end">
-                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-                                <input type="hidden" name="cmd" value="_donations" />
-                                <input type="hidden" name="business" value="kipchirchir101@gmail.com" />
-                                <input type="hidden" name="currency_code" value="USD" />
-                                <input type="hidden" name="item_name" value="BuyCars.Africa 1 Million Trees Initiative" />
-                                <input type="hidden" name="no_note" value="0" />
-                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill fw-bold w-100 shadow-sm">
-                                    <i class="fab fa-paypal me-2"></i> Donate
-                                </button>
-                            </form>
+                        <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.1);">
+                            <div class="progress-bar bg-success" style="width: 15%"></div>
                         </div>
                     </div>
                 </div>
@@ -256,131 +184,57 @@
         </div>
 
     </div>
-</section>
+</div>
 
 <section class="py-5 bg-white">
     <div class="container py-5">
-        <div class="text-center mb-5">
-            <h6 class="text-success fw-bold text-uppercase small mb-2">Our Methodology</h6>
-            <h2 class="fw-bold text-dark display-6">We don't just plant.<br>We plan, track, and nurture.</h2>
-        </div>
-
-        <div class="row g-5">
-            <div class="col-md-4 text-center px-4">
-                <div class="pillar-icon-box mx-auto">
-                    <i class="fas fa-satellite-dish fa-2x"></i>
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5">
+                <h6 class="text-success fw-bold text-uppercase ls-2 mb-3">Our Methodology</h6>
+                <h2 class="display-5 fw-bold text-dark mb-4">Not Just Planting.<br>Engineering.</h2>
+                <p class="lead text-muted mb-4">
+                    Most tree-planting projects fail because they plant and walk away. We use a 3-step verification process to ensure survival.
+                </p>
+                
+                <div class="d-flex gap-4 mb-4">
+                    <div class="text-center">
+                        <div class="bg-light p-3 rounded-circle mb-2 d-inline-block">
+                            <i class="fas fa-satellite fa-2x text-primary"></i>
+                        </div>
+                        <p class="small fw-bold">Sat-Nav<br>Monitoring</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-light p-3 rounded-circle mb-2 d-inline-block">
+                            <i class="fas fa-hand-holding-water fa-2x text-info"></i>
+                        </div>
+                        <p class="small fw-bold">Community<br>Stewards</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-light p-3 rounded-circle mb-2 d-inline-block">
+                            <i class="fas fa-chart-pie fa-2x text-warning"></i>
+                        </div>
+                        <p class="small fw-bold">Survival<br>Audits</p>
+                    </div>
                 </div>
-                <h4 class="fw-bold mb-3">Digital Verification</h4>
-                <p class="text-muted">Leveraging proprietary tracking systems and GPS tagging to ensure total transparency for our global partners. No ghost trees.</p>
-            </div>
-            <div class="col-md-4 text-center px-4">
-                <div class="pillar-icon-box mx-auto">
-                    <i class="fas fa-hands-helping fa-2x"></i>
-                </div>
-                <h4 class="fw-bold mb-3">Community First</h4>
-                <p class="text-muted">Collaborating with local conservation bodies and community leaders to ensure trees protect vital water sources and empower sustainable rural livelihoods.</p>
-            </div>
-            <div class="col-md-4 text-center px-4">
-                <div class="pillar-icon-box mx-auto">
-                    <i class="fas fa-seedling fa-2x"></i>
-                </div>
-                <h4 class="fw-bold mb-3">Agro-Tech Integration</h4>
-                <p class="text-muted">Through our partnership with <strong>Oletai Agro Group</strong>, we integrate high-yield fruit trees into farms, boosting food security while restoring canopy cover.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="py-5" style="background-color: #f8fafc;">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h6 class="text-success fw-bold text-uppercase small mb-2">Corporate Partnership</h6>
-            <h2 class="fw-bold display-6">Align Your Brand with Impact</h2>
-        </div>
-
-        <div class="row g-4 align-items-center">
-            <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
-                    <h5 class="fw-bold text-success mb-4">Seedling Partner</h5>
-                    <h2 class="fw-bold mb-1">5,000 Trees</h2>
-                    <p class="text-muted small mb-4">Entry-level impact.</p>
-                    <hr class="opacity-10 mb-4">
-                    <ul class="list-unstyled mb-4 text-muted small">
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Logo on Digital Wall</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Quarterly Impact Report</li>
-                    </ul>
-                    <a href="#partner" class="btn btn-outline-success w-100 rounded-pill fw-bold">Select Tier</a>
-                </div>
+                
+                <a href="{% url 'transparency_hub' %}" class="btn btn-outline-dark rounded-pill px-4 fw-bold">
+                    Audit Our Ledger
+                </a>
             </div>
             
-            <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-lg p-5 rounded-4 bg-dark text-white position-relative overflow-hidden transform-scale-sm">
-                    <div class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 fw-bold small rounded-bottom-start">RECOMMENDED</div>
-                    <h4 class="fw-bold text-success mb-4">Growth Partner</h4>
-                    <h2 class="fw-bold mb-1">20,000 Trees</h2>
-                    <p class="text-white-50 small mb-4">For serious CSR goals.</p>
-                    <hr class="opacity-25 border-white mb-4">
-                    <ul class="list-unstyled mb-4 small">
-                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>Dedicated Site Marker</strong></li>
-                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> GPS Co-ordinates Log</li>
-                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> All Seedling Benefits</li>
-                    </ul>
-                    <a href="#partner" class="btn btn-success w-100 rounded-pill fw-bold shadow-lg py-3">Select Tier</a>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
-                    <h5 class="fw-bold text-dark mb-4">Ecosystem Leader</h5>
-                    <h2 class="fw-bold mb-1">50,000+ Trees</h2>
-                    <p class="text-muted small mb-4">National-scale legacy.</p>
-                    <hr class="opacity-10 mb-4">
-                    <ul class="list-unstyled mb-4 text-muted small">
-                        <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> <strong>Exclusive Forest Block Naming</strong></li>
-                        <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> Video Case Study Production</li>
-                        <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> VIP Site Visit</li>
-                    </ul>
-                    <a href="#partner" class="btn btn-outline-dark w-100 rounded-pill fw-bold">Contact Founder</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="partner" class="py-5 bg-white">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold display-6">Join the Mission</h2>
-                    <p class="text-muted">Whether you provide funding, technology, or land, we are ready to collaborate.</p>
-                </div>
-
-                <div class="card bg-light border-0 rounded-4 p-4 p-md-5 shadow-sm">
-                    <form>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Organization</label>
-                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white" placeholder="Company Name">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted">Contact Person</label>
-                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white" placeholder="Your Name">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small fw-bold text-muted">Partnership Type</label>
-                                <select class="form-select form-select-lg rounded-3 border-0 bg-white">
-                                    <option>Corporate Sponsorship</option>
-                                    <option>Technical Partnership</option>
-                                    <option>Agro-Tech Collaboration</option>
-                                    <option>Volunteer</option>
-                                </select>
-                            </div>
-                            <div class="col-12 mt-4">
-                                <button class="btn btn-dark btn-lg w-100 rounded-pill fw-bold py-3">Submit Inquiry</button>
-                            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=1000&auto=format&fit=crop" class="img-fluid rounded-4 shadow-sm mb-3" alt="Sapling">
+                        <img src="https://images.unsplash.com/photo-1448375240586-dfd8f37933ff?q=80&w=1000&auto=format&fit=crop" class="img-fluid rounded-4 shadow-sm" alt="Forest">
+                    </div>
+                    <div class="col-6 pt-5">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb7d5fa5?q=80&w=1000&auto=format&fit=crop" class="img-fluid rounded-4 shadow-sm mb-3" alt="Planting">
+                        <div class="p-4 bg-light rounded-4">
+                            <h3 class="fw-bold text-success mb-0">94%</h3>
+                            <small class="text-muted text-uppercase fw-bold">Survival Rate</small>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -391,102 +245,66 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // --- 1. INITIALIZE MAP (UPDATED FOR PAN-AFRICAN VIEW) ---
-        // Changed center to [2.0, 18.0] (Central Africa) and Zoom to 3 (Continent View)
-        var map = L.map('impact-map', {
-            zoomControl: false, // Cleaner look
-            scrollWheelZoom: false // Prevents accidental scrolling
-        }).setView([2.0, 18.0], 3); 
+        // 1. CLOCK
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toISOString().slice(11, 19);
+        }, 1000);
 
-        // Add Zoom Control to bottom right
-        L.control.zoom({
-            position: 'bottomright'
-        }).addTo(map);
+        // 2. COUNTER ANIMATION
+        const countUp = new countUp.CountUp('tree-counter', {{ trees_planted|default:0 }});
+        if (!countUp.error) countUp.start();
+
+        // 3. MAP INIT
+        var map = L.map('impact-map', {
+            zoomControl: false,
+            scrollWheelZoom: false,
+            dragging: !L.Browser.mobile 
+        }).setView([0.5, 20.0], 4); // Pan-Africa View
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution: 'CARTO',
             subdomains: 'abcd',
-            maxZoom: 20
+            maxZoom: 10
         }).addTo(map);
 
-        // --- 2. DEFINE LOCATIONS & DATA ---
+        // 4. LOCATIONS
         var sites = [
-            { 
-                lat: -0.3031, lng: 36.0800, 
-                title: "🇰🇪 Kenya: Rift Valley Block A", 
-                stat: "{{ trees_planted|intcomma }} Trees",
-                status: "Active"
-            },
-            { 
-                lat: 9.1450, lng: 40.4897, 
-                title: "🇪🇹 Ethiopia: Green Legacy", 
-                stat: "Site Preparation",
-                status: "Pending"
-            },
-            { 
-                lat: 6.5244, lng: 3.3792, 
-                title: "🇳🇬 Nigeria: Lagos Green Belt", 
-                stat: "Partner: Lagos State",
-                status: "Planning"
-            },
-            { 
-                lat: -33.9249, lng: 18.4241, 
-                title: "🇿🇦 South Africa: Western Cape", 
-                stat: "Restoration Phase",
-                status: "Active"
-            }
+            { lat: -1.2921, lng: 36.8219, title: "🇰🇪 Nairobi HQ", type: "Active" },
+            { lat: -0.3031, lng: 36.0800, title: "🇰🇪 Rift Valley A", type: "Active" },
+            { lat: 9.1450, lng: 40.4897, title: "🇪🇹 Ethiopia Pilot", type: "Pending" }
         ];
 
-        // --- 3. ADD PINS WITH PULSING ANIMATION ---
-        sites.forEach(function(site) {
-            // Determine color based on status
-            var pinColor = site.status === "Active" ? "#22c55e" : "#3b82f6"; // Green vs Blue
+        sites.forEach(site => {
+            let color = site.type === "Active" ? "#22c55e" : "#3b82f6";
+            let pulseHtml = `<div style="width:12px;height:12px;background:${color};border-radius:50%;box-shadow:0 0 0 4px ${color}40;animation:pulse 2s infinite;"></div>`;
             
-            var customIcon = L.divIcon({
-                className: 'custom-pin',
-                html: `<div style="
-                    width: 15px; 
-                    height: 15px; 
-                    background-color: ${pinColor}; 
-                    border-radius: 50%; 
-                    border: 2px solid white;
-                    box-shadow: 0 0 0 4px ${pinColor}40;
-                    animation: pulse 2s infinite;
-                "></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            });
-
-            L.marker([site.lat, site.lng], {icon: customIcon}).addTo(map)
-                .bindPopup(`
-                    <div style="font-family: 'Poppins', sans-serif;">
-                        <strong style="color: #0f172a;">${site.title}</strong><br>
-                        <span style="color: #64748b; font-size: 0.9em;">${site.stat}</span>
-                    </div>
-                `);
+            L.marker([site.lat, site.lng], {
+                icon: L.divIcon({ className: 'custom-pin', html: pulseHtml, iconSize: [20,20] })
+            }).addTo(map).bindPopup(`<b style="color:#333">${site.title}</b><br>${site.type}`);
         });
 
-        // --- 4. LIVE WEATHER DATA ---
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=-0.3031&longitude=36.0800&current_weather=true')
-            .then(response => response.json())
-            .then(data => {
-                const temp = data.current_weather.temperature;
-                document.getElementById('live-temp').innerText = `${temp}°C`;
-                const humid = 45 + Math.floor(Math.random() * 10); 
-                document.getElementById('live-humid').innerText = `${humid}%`;
-            })
-            .catch(err => console.log('Weather sync paused'));
-            
-        // CSS Animation for the pins
-        var styleSheet = document.createElement("style");
-        styleSheet.innerText = `
-            @keyframes pulse {
-                0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-                70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-            }
-        `;
-        document.head.appendChild(styleSheet);
+        // 5. LIVE FEED SIMULATION (Social Proof)
+        const feed = document.getElementById('feed-list');
+        const actions = [
+            "New Partner: Apex Motors", "25 Trees Planted (Sale #4920)", "Donation Received: $50", 
+            "Site Update: Rain reported in Narok", "New Broker Joined: Sarah K."
+        ];
+        
+        let i = 0;
+        setInterval(() => {
+            const item = document.createElement('li');
+            item.className = "mb-3 d-flex gap-2 animate-fade-in";
+            item.innerHTML = `<span class="text-success">●</span> <div class="text-white-50">${actions[i % actions.length]}</div>`;
+            feed.prepend(item);
+            if(feed.children.length > 5) feed.lastElementChild.remove();
+            i++;
+        }, 5000);
     });
 </script>
+
+<style>
+    .animate-fade-in { animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
 {% endblock %}
