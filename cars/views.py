@@ -634,8 +634,8 @@ def transparency_hub(request):
     Renders the live transparency dashboard with real-time sales-to-impact tracking.
     """
     # 1. Evidence of Action: Fetch last 10 'SOLD' cars as Proof of Impact
-    # We use updated_at to show when the sale was finalized
-    impact_events = Car.objects.filter(status='SOLD').order_by('-updated_at')[:10]
+    # FIXED: Use 'created_at' since 'updated_at' is missing in the model
+    impact_events = Car.objects.filter(status='SOLD').order_by('-created_at')[:10]
     
     # 2. Aggregated Outcome Data
     total_cars_sold = Car.objects.filter(status='SOLD').count()
