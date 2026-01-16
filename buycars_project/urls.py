@@ -66,6 +66,9 @@ urlpatterns = [
     # --- ADDED: DEALERSHIP NETWORK PAGE ---
     path('network/', car_views.dealership_network, name='dealership_network'),
 
+    # --- ADDED: PARTNERSHIP PORTAL ---
+    path('partners/', car_views.partners_page, name='partners_page'),
+
     # --- DIASPORA LANDING PAGE ---
     path('diaspora/', car_views.diaspora_landing, name='diaspora_landing'),
 

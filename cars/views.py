@@ -690,3 +690,10 @@ def financing_page(request):
     Renders the Asset Financing & Loans page.
     """
     return render(request, 'pages/financing.html')
+
+# --- NEW: PARTNERSHIP PORTAL ---
+def partners_page(request):
+    """
+    Renders the dedicated Partnership Portal for Banks, Dealers, and Landowners.
+    """
+    return render(request, 'pages/partners.html')
