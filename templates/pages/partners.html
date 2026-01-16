@@ -3,13 +3,17 @@
 
 {% block content %}
 
-<section class="py-5 bg-white border-bottom">
-    <div class="container py-5">
+<section class="py-5 bg-white border-bottom position-relative overflow-hidden">
+    <div class="position-absolute top-0 end-0 mt-n5 me-n5 opacity-10">
+        <i class="fas fa-network-wired fa-10x text-success"></i>
+    </div>
+
+    <div class="container py-5 position-relative z-2">
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="d-inline-flex align-items-center mb-3">
                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold ls-1">
-                        <i class="fas fa-seedling me-2"></i>PARTNERSHIP ECOSYSTEM
+                        <i class="fas fa-handshake me-2"></i>PARTNERSHIP ECOSYSTEM
                     </span>
                 </div>
                 <h1 class="display-3 fw-bold text-dark mb-4 ls-tight">
@@ -19,34 +23,39 @@
                     We are building the infrastructure for Africa's green mobility transition. Join the alliance of banks, dealers, and conservationists driving real change.
                 </p>
                 <div class="d-flex gap-3">
-                    <a href="#partnerTabs" class="btn btn-dark rounded-pill px-5 py-3 fw-bold">
-                        Explore Partnership Models
+                    <a href="#partnerTabsSection" class="btn btn-dark rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">
+                        Explore Models
                     </a>
                 </div>
             </div>
+            
             <div class="col-lg-6 mt-5 mt-lg-0">
                 <div class="row g-3">
                     <div class="col-6">
                         <div class="p-4 bg-light rounded-4 h-100 border hover-lift">
-                            <i class="fas fa-university fa-2x text-primary mb-3"></i>
-                            <h5 class="fw-bold">Financial<br>Capital</h5>
-                            <small class="text-muted">Banks & Saccos financing assets.</small>
+                            <div class="bg-white p-3 rounded-circle d-inline-block shadow-sm mb-3">
+                                <i class="fas fa-university fa-lg text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark">Financial<br>Capital</h5>
+                            <small class="text-muted">Banks & Saccos financing verified assets.</small>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="p-4 bg-light rounded-4 h-100 border hover-lift">
-                            <i class="fas fa-tree fa-2x text-success mb-3"></i>
-                            <h5 class="fw-bold">Ecological<br>Assets</h5>
-                            <small class="text-muted">Landowners hosting forests.</small>
+                            <div class="bg-white p-3 rounded-circle d-inline-block shadow-sm mb-3">
+                                <i class="fas fa-tree fa-lg text-success"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark">Ecological<br>Assets</h5>
+                            <small class="text-muted">Landowners hosting our forests.</small>
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="p-4 bg-dark text-white rounded-4 border hover-lift d-flex align-items-center justify-content-between">
-                            <div>
+                        <div class="p-4 bg-dark text-white rounded-4 border hover-lift d-flex align-items-center justify-content-between position-relative overflow-hidden">
+                            <div class="position-relative z-2">
                                 <h5 class="fw-bold mb-1">The Engine</h5>
-                                <small class="text-white-50">Verified Dealerships driving revenue.</small>
+                                <small class="text-white-50">Verified Dealerships driving the revenue.</small>
                             </div>
-                            <i class="fas fa-car fa-2x text-white-50"></i>
+                            <i class="fas fa-car fa-3x text-white opacity-25 position-absolute end-0 me-4"></i>
                         </div>
                     </div>
                 </div>
@@ -63,7 +72,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-9">
                 <h2 class="display-6 fw-bold mb-4 lh-base">
-                    "If you are using BuyCars.Africa to buy cars, you are not just buying cars. You are funding our mission to plant <span class="text-warning">1 million trees</span> in 2026."
+                    "If you are using BuyCars.Africa to buy cars, you are not just buying cars. You are funding our mission to plant <span class="text-warning">1 million trees</span>."
                 </h2>
                 <div class="d-flex justify-content-center align-items-center gap-3">
                     <div class="bg-white text-success fw-bold px-3 py-1 rounded-pill small">
@@ -114,7 +123,7 @@
                             <p class="text-muted mb-4">
                                 Partner with us to access a pipeline of verified asset buyers while hitting your ESG targets. We handle the Digital Origination and Asset Verification.
                             </p>
-                            <a href="mailto:finance@buycars.africa" class="btn btn-outline-dark rounded-pill px-4 fw-bold">Request Banking Integration</a>
+                            <a href="mailto:finance@buycars.africa" class="btn btn-dark rounded-pill px-4 fw-bold">Request Banking Integration</a>
                         </div>
                         <div class="col-lg-7 ps-lg-5 mt-4 mt-lg-0">
                             <div class="row g-4">
@@ -227,7 +236,7 @@
     <div class="container text-center">
         <h3 class="fw-bold mb-3">Ready to join the ecosystem?</h3>
         <p class="text-muted mb-4">Whether you have capital, cars, or land—there is a place for you.</p>
-        <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill px-5">Get Started</a>
+        <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill px-5 fw-bold">Get Started</a>
     </div>
 </section>
 
