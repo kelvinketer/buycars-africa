@@ -293,8 +293,8 @@ def dealer_dashboard(request):
     recent_leads = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:10]
     total_leads_count = Lead.objects.filter(car__dealer=request.user).count()
 
-    # 4. Fetch Bookings (Rental Requests) - NEW!
-    # We fetch bookings for cars owned by this dealer
+    # 4. Fetch Bookings (Rental Requests) - FIXED!
+    # Explicitly order by created_at to avoid "updated_at does not exist" error
     rental_bookings = Booking.objects.filter(car__dealer=request.user).order_by('-created_at')
     pending_bookings = rental_bookings.filter(status='PENDING').count()
 
