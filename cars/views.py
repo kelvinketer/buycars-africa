@@ -782,3 +782,19 @@ def dealer_academy(request):
         'completion_rate': 35 # Calculated avg
     }
     return render(request, 'dealer/academy.html', context)
+
+# --- ADD THESE IMPORTS AT THE TOP OF cars/views.py ---
+from django.core.management import call_command
+
+# --- ADD THIS VIEW AT THE VERY BOTTOM ---
+def run_migrations_view(request):
+    """
+    Emergency view to trigger database migrations via URL
+    since we don't have shell access.
+    """
+    try:
+        # This forces the server to run 'python manage.py migrate'
+        call_command('migrate')
+        return HttpResponse("<h1>SUCCESS! Database Updated.</h1><p>The 'updated_at' column has been created. You can now go back to the Dashboard.</p><a href='/dashboard/'>Go to Dashboard</a>")
+    except Exception as e:
+        return HttpResponse(f"<h1>Error</h1><p>{e}</p>")

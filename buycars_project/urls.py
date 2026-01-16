@@ -115,6 +115,11 @@ urlpatterns = [
     # --- PAYMENTS & FINANCES ---
     path('payments/', include('payments.urls')), 
     path('wallet/', include('wallet.urls')), 
+    
+    # ... inside urlpatterns ...
+    
+    # --- MANUAL REPAIR TOOL ---
+    path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
 
     # --- MANUAL ADMIN TOOLS ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
