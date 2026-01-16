@@ -367,8 +367,8 @@
                     <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle mb-3" style="width: 70px; height: 70px;">
                         <i class="fas fa-globe-africa fa-2x"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mt-2">Built for Diaspora</h5>
-                    <p class="text-muted small px-3">Switch currencies instantly. We handle the paperwork and verification so you don't have to rely on relatives.</p>
+                    <h5 class="fw-bold text-dark mt-2">East Africa's Best</h5>
+                    <p class="text-muted small px-3">Switch currencies instantly between KES, UGX, TZS, and RWF. We handle the paperwork.</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -380,13 +380,14 @@
                     <p class="text-muted small px-3">Don't buy a ghost car. Our partners physically inspect every vehicle before your funds are released.</p>
                 </div>
             </div>
+            
             <div class="col-md-4">
                 <div class="p-3">
                     <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3" style="width: 70px; height: 70px;">
-                        <i class="fas fa-lock fa-2x"></i>
+                        <i class="fas fa-hand-holding-usd fa-2x"></i>
                     </div>
-                    <h5 class="fw-bold text-dark mt-2">Secure Payments</h5>
-                    <p class="text-muted small px-3">Pay securely via Visa/Mastercard. We hold your payment in escrow until the car is handed over.</p>
+                    <h5 class="fw-bold text-dark mt-2">Financing & Escrow</h5>
+                    <p class="text-muted small px-3">Pay securely or access loans. We partner with local Saccos for asset finance and hold funds in escrow.</p>
                 </div>
             </div>
         </div>
@@ -438,6 +439,42 @@
                 <a href="{% url 'home' %}?make=Volkswagen" class="card brand-card text-decoration-none">
                     <img src="{% static 'images/brands/volkswagen.png' %}" class="brand-logo" alt="VW">
                     <div class="small fw-bold text-dark">Volkswagen</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="container position-relative z-2">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 border-end border-white border-opacity-10">
+                <span class="badge bg-success mb-3">Asset Finance Ready</span>
+                <h2 class="fw-bold mb-3">Don't let cash flow stop you.</h2>
+                <p class="lead text-white-50 mb-4">We partner with leading Saccos and Banks to offer up to <strong>80% financing</strong>. Get pre-approved in minutes.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'financing_page' %}" class="btn btn-light rounded-pill fw-bold px-4">
+                        <i class="fas fa-calculator me-2"></i> Loan Calculator
+                    </a>
+                    <a href="{% url 'financing_page' %}#apply" class="btn btn-outline-success rounded-pill fw-bold px-4">
+                        Apply Now
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 ps-lg-5">
+                <h3 class="fw-bold mb-3">For Financial Institutions</h3>
+                <p class="text-white-50 mb-4">
+                    Are you a Sacco or Bank? Partner with BuyCars.Africa to access verified asset buyers and support our 
+                    <span class="text-success fw-bold">1 Million Trees Initiative</span>.
+                </p>
+                <ul class="list-unstyled text-white-50 mb-4 small">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Access verified vehicle collateral</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Digital loan origination</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> CSR Impact (Tree planting per loan)</li>
+                </ul>
+                <a href="mailto:partners@buycars.africa" class="btn btn-outline-light rounded-pill btn-sm fw-bold">
+                    Become a Partner <i class="fas fa-arrow-right ms-2"></i>
                 </a>
             </div>
         </div>
@@ -645,9 +682,9 @@
     <div class="container py-4">
         <div class="text-center mb-5">
             <h6 class="text-danger fw-bold text-uppercase small mb-2">Success Stories</h6>
-            <h2 class="fw-bold text-dark display-6">Trusted by Kenyans Globally</h2>
+            <h2 class="fw-bold text-dark display-6">Trusted by the East African Community</h2>
             <p class="text-muted mx-auto" style="max-width: 600px;">
-                From London to Nairobi, we help thousands of buyers find verified vehicles without the headache.
+                From Kampala to Dar es Salaam, we help thousands of buyers find verified vehicles without the headache.
             </p>
         </div>
 
