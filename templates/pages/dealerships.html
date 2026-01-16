@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .network-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: white;
+        padding: 80px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Glowing Map Nodes */
+    .pulse-blue {
+        width: 15px; height: 15px;
+        background-color: #3b82f6;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+        animation: pulse-blue 2s infinite;
+    }
+    @keyframes pulse-blue {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+
+    .stat-box {
+        border-left: 4px solid #3b82f6;
+        padding-left: 20px;
+        margin-bottom: 30px;
+    }
+
+    .dealer-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid #f1f5f9;
+    }
+    .dealer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border-color: #3b82f6;
+    }
+
+    #dealer-map {
+        height: 500px;
+        width: 100%;
+        border-radius: 16px;
+        z-index: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="network-hero">
+    <div class="container position-relative z-2">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 mb-3 px-3">PAN-AFRICAN NETWORK</span>
+                <h1 class="display-4 fw-bold mb-4">Africa's Largest Digital Showroom.</h1>
+                <p class="lead text-white-50 mb-5">
+                    Join over <strong class="text-white">{{ dealers.count }} verified dealerships</strong> using our platform to access global buyers, asset financing, and digital inventory management.
+                </p>
+                
+                <div class="d-flex gap-3">
+                    <a href="{% url 'select_account' %}" class="btn btn-primary rounded-pill px-5 py-3 fw-bold shadow-lg">
+                        List Your Yard
+                    </a>
+                    <a href="#directory" class="btn btn-outline-light rounded-pill px-4 py-3 fw-bold">
+                        Find a Dealer
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 offset-lg-1 mt-5 mt-lg-0">
+                <div class="bg-white bg-opacity-5 p-4 rounded-4 border border-white border-opacity-10 backdrop-blur">
+                    <h5 class="fw-bold mb-4"><i class="fas fa-chart-pie me-2 text-info"></i> Network Velocity</h5>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-white-50">Active Inventory Value</span>
+                        <h4 class="fw-bold text-white mb-0">KES {{ total_value|intword }}</h4>
+                    </div>
+                    <div class="progress mb-4" style="height: 6px; background: rgba(255,255,255,0.1);">
+                        <div class="progress-bar bg-info" style="width: 75%"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-white-50">Buyer Leads Generated</span>
+                        <h4 class="fw-bold text-white mb-0">{{ total_leads|intcomma }}</h4>
+                    </div>
+                    <div class="progress mb-4" style="height: 6px; background: rgba(255,255,255,0.1);">
+                        <div class="progress-bar bg-success" style="width: 60%"></div>
+                    </div>
+
+                    <div class="alert alert-info bg-opacity-10 border-0 mb-0 d-flex align-items-center">
+                        <i class="fas fa-globe-africa fs-4 me-3"></i>
+                        <small class="text-white-50">
+                            <strong>Global Reach:</strong> Your cars are viewed by buyers in the UK, US, and UAE daily.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold small text-uppercase">Live Presence</h6>
+            <h2 class="fw-bold">We Are Everywhere You Are</h2>
+        </div>
+        
+        <div class="card border-0 shadow-lg p-2 rounded-4">
+            <div id="dealer-map"></div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" style="background-color: #f8fafc;">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="stat-box">
+                    <h3 class="fw-bold">Digital financing.</h3>
+                    <p class="text-muted">Don't lose sales because clients lack cash. Our integrated Sacco partners offer financing directly on your listings.</p>
+                </div>
+                <div class="stat-box" style="border-color: #10b981;">
+                    <h3 class="fw-bold">Diaspora Trust.</h3>
+                    <p class="text-muted">International buyers fear scams. Our "Verified Dealer" badge and escrow service gives them the confidence to pay.</p>
+                </div>
+                <div class="stat-box" style="border-color: #f59e0b;">
+                    <h3 class="fw-bold">Inventory SaaS.</h3>
+                    <p class="text-muted">Manage your stock, print window stickers, and track leads from one powerful dashboard. Free for starters.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-8" id="directory">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <h4 class="fw-bold text-dark mb-0">Partner Directory</h4>
+                    <span class="badge bg-dark rounded-pill">{{ dealers.count }} Partners</span>
+                </div>
+
+                <div class="row g-3">
+                    {% for dealer in dealers %}
+                    <div class="col-md-6">
+                        <div class="card dealer-card h-100 p-3 bg-white rounded-3">
+                            <div class="d-flex align-items-center">
+                                {% if dealer.logo %}
+                                    <img src="{{ dealer.logo.url }}" class="rounded-circle me-3 border" width="60" height="60" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-light me-3 d-flex align-items-center justify-content-center border" style="width: 60px; height: 60px;">
+                                        <span class="fw-bold text-muted">{{ dealer.business_name|slice:":1" }}</span>
+                                    </div>
+                                {% endif %}
+                                
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">
+                                        {{ dealer.business_name }}
+                                        {% if dealer.user.is_verified %}
+                                            <i class="fas fa-check-circle text-primary small" title="Verified"></i>
+                                        {% endif %}
+                                    </h6>
+                                    <div class="small text-muted mb-1">
+                                        <i class="fas fa-map-marker-alt me-1"></i> {{ dealer.city }}, {{ dealer.country }}
+                                    </div>
+                                    <a href="{% url 'dealer_showroom' dealer.user.username %}" class="small fw-bold text-decoration-none text-primary">View Showroom <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">No public dealerships yet. Be the first!</p>
+                        <a href="{% url 'select_account' %}" class="btn btn-outline-dark rounded-pill btn-sm">Join Now</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-dark text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Own a Car Yard?</h2>
+        <p class="lead text-white-50 mb-4">Digitize your inventory today and start selling to the world.</p>
+        <a href="{% url 'select_account' %}" class="btn btn-success rounded-pill px-5 py-3 fw-bold shadow-lg">
+            Register Dealership
+        </a>
+    </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize Map
+        var map = L.map('dealer-map').setView([0.0236, 37.9062], 5); // Centered on Kenya/East Africa
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            maxZoom: 19
+        }).addTo(map);
+
+        // City Coordinates Database
+        const cityCoords = {
+            'Nairobi': [-1.2921, 36.8219],
+            'Mombasa': [-4.0435, 39.6682],
+            'Kisumu': [-0.0917, 34.7680],
+            'Nakuru': [-0.3031, 36.0800],
+            'Eldoret': [0.5143, 35.2698],
+            'Kampala': [0.3476, 32.5825],
+            'Dar es Salaam': [-6.7924, 39.2083],
+            'Kigali': [-1.9441, 30.0619],
+            'Addis Ababa': [8.9806, 38.7578],
+            'Lagos': [6.5244, 3.3792],
+            'Accra': [5.6037, -0.1870],
+            'Johannesburg': [-26.2041, 28.0473]
+        };
+
+        // Real Data injected from Django View
+        const cityData = {{ city_counts|safe }};
+
+        cityData.forEach(function(data) {
+            let coords = cityCoords[data.city];
+            if (!coords) return; 
+
+            // Custom Count Icon
+            var customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background-color:#3b82f6; color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; font-weight:bold; border:2px solid white; box-shadow:0 4px 6px rgba(0,0,0,0.1);">${data.count}</div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+
+            L.marker(coords, {icon: customIcon}).addTo(map)
+                .bindPopup(`<b>${data.city}</b><br>${data.count} Active Dealership(s)`);
+        });
+    });
+</script>
+{% endblock %}

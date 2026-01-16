@@ -620,3 +620,29 @@ def financing_page(request):
     Renders the Asset Financing & Loans page.
     """
     return render(request, 'pages/financing.html')
+
+# --- NEW: DEALERSHIP NETWORK PAGE ---
+def dealership_network(request):
+    """
+    Renders the 'Live Network' page showing verified dealers and platform stats.
+    """
+    # 1. Fetch Verified Dealers (active)
+    dealers = DealerProfile.objects.filter(user__is_active=True).select_related('user')
+    
+    # 2. Stats for the "Why Join?" section
+    # Use Count and Sum from django.db.models
+    total_inventory_val = Car.objects.filter(status='AVAILABLE').aggregate(Sum('price'))['price__sum'] or 0
+    total_leads_generated = Lead.objects.count()
+    active_stock_count = Car.objects.filter(status='AVAILABLE').count()
+    
+    # 3. Map Data (Group by city)
+    city_counts = dealers.values('city', 'country').annotate(count=Count('id'))
+
+    context = {
+        'dealers': dealers,
+        'total_value': total_inventory_val,
+        'total_leads': total_leads_generated,
+        'active_stock': active_stock_count,
+        'city_counts': list(city_counts), # Convert QuerySet to list for JS
+    }
+    return render(request, 'pages/dealerships.html', context)
