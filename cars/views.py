@@ -423,3 +423,35 @@ def run_migrations_view(request):
         return HttpResponse("<h1>SUCCESS! Database Updated.</h1><p>The 'updated_at' column has been created. <br> <a href='/dashboard/'>Go back to Dashboard</a></p>")
     except Exception as e:
         return HttpResponse(f"<h1>Error Running Migration</h1><p>{e}</p>")
+    
+    # --- ADD AT THE VERY BOTTOM OF cars/views.py ---
+
+from django.core.management import call_command
+import io
+
+def run_migrations_view(request):
+    """
+    SUPER FIXER: Forces 'makemigrations' then 'migrate'.
+    Use this when the database column is missing but standard migrate doesn't fix it.
+    """
+    if not request.user.is_superuser:
+        return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
+
+    output = io.StringIO()
+    try:
+        output.write("--- STEP 1: MAKING MIGRATIONS ---\n")
+        # Force Django to look for changes in the 'cars' app and create the file
+        call_command('makemigrations', 'cars', interactive=False, stdout=output)
+        
+        output.write("\n--- STEP 2: MIGRATING DATABASE ---\n")
+        # Apply the new file to the database
+        call_command('migrate', interactive=False, stdout=output)
+        
+        return HttpResponse(f"""
+            <h1 style='color:green'>REPAIR COMPLETE</h1>
+            <pre style='background:#eee; padding:15px; border-radius:5px;'>{output.getvalue()}</pre>
+            <br>
+            <a href='/dashboard/' style='font-size:20px; font-weight:bold;'>&larr; Return to Dashboard (It will work now)</a>
+        """)
+    except Exception as e:
+        return HttpResponse(f"<h1 style='color:red'>ERROR</h1><pre>{e}</pre>")
