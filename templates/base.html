@@ -114,27 +114,32 @@
                             <li><h6 class="dropdown-header text-warning small fw-bold">East Africa</h6></li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="KES" class="dropdown-item rounded-2 fw-bold small" type="submit"><span class="me-2">🇰🇪</span> KES (Kenya)</button>
+                                    <input type="hidden" name="currency" value="KES">
+                                    <button type="submit" class="dropdown-item rounded-2 fw-bold small"><span class="me-2">🇰🇪</span> KES (Kenya)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="UGX" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇺🇬</span> UGX (Uganda)</button>
+                                    <input type="hidden" name="currency" value="UGX">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇺🇬</span> UGX (Uganda)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="TZS" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇹🇿</span> TZS (Tanzania)</button>
+                                    <input type="hidden" name="currency" value="TZS">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇹🇿</span> TZS (Tanzania)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="RWF" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇷🇼</span> RWF (Rwanda)</button>
+                                    <input type="hidden" name="currency" value="RWF">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇷🇼</span> RWF (Rwanda)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="ETB" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇪🇹</span> ETB (Ethiopia)</button>
+                                    <input type="hidden" name="currency" value="ETB">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇪🇹</span> ETB (Ethiopia)</button>
                                 </form>
                             </li>
 
@@ -142,12 +147,14 @@
                             <li><h6 class="dropdown-header text-success small fw-bold">West Africa</h6></li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="NGN" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇳🇬</span> NGN (Nigeria)</button>
+                                    <input type="hidden" name="currency" value="NGN">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇳🇬</span> NGN (Nigeria)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="GHS" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇬🇭</span> GHS (Ghana)</button>
+                                    <input type="hidden" name="currency" value="GHS">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇬🇭</span> GHS (Ghana)</button>
                                 </form>
                             </li>
 
@@ -155,17 +162,20 @@
                             <li><h6 class="dropdown-header text-info small fw-bold">South & North</h6></li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="ZAR" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇿🇦</span> ZAR (South Africa)</button>
+                                    <input type="hidden" name="currency" value="ZAR">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇿🇦</span> ZAR (South Africa)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="NAD" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇳🇦</span> NAD (Namibia)</button>
+                                    <input type="hidden" name="currency" value="NAD">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇳🇦</span> NAD (Namibia)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="EGP" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇪🇬</span> EGP (Egypt)</button>
+                                    <input type="hidden" name="currency" value="EGP">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇪🇬</span> EGP (Egypt)</button>
                                 </form>
                             </li>
 
@@ -173,17 +183,20 @@
                             <li><h6 class="dropdown-header text-primary small fw-bold">Global</h6></li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="USD" class="dropdown-item rounded-2 fw-bold small" type="submit"><span class="me-2">🇺🇸</span> USD (Global)</button>
+                                    <input type="hidden" name="currency" value="USD">
+                                    <button type="submit" class="dropdown-item rounded-2 fw-bold small"><span class="me-2">🇺🇸</span> USD (Global)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="GBP" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇬🇧</span> GBP (UK)</button>
+                                    <input type="hidden" name="currency" value="GBP">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇬🇧</span> GBP (UK)</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
-                                    <button name="currency" value="AED" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇦🇪</span> AED (Dubai)</button>
+                                    <input type="hidden" name="currency" value="AED">
+                                    <button type="submit" class="dropdown-item rounded-2 small"><span class="me-2">🇦🇪</span> AED (Dubai)</button>
                                 </form>
                             </li>
                         </ul>
@@ -203,8 +216,10 @@
                                 {% if user.dealer_profile %}
                                     <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'dealer_dashboard' %}"><i class="fas fa-th-large me-2 text-primary"></i> Dashboard</a></li>
                                     <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'dealer_showroom' user.username %}"><i class="fas fa-store me-2 text-success"></i> My Showroom</a></li>
+                                    <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'profile_settings' %}"><i class="fas fa-cog me-2 text-muted"></i> Settings</a></li>
                                 {% else %}
                                     <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'renter_dashboard' %}"><i class="fas fa-user me-2"></i> My Account</a></li>
+                                    <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'renter_dashboard' %}"><i class="fas fa-cog me-2 text-muted"></i> Profile</a></li>
                                 {% endif %}
                                 
                                 {% if user.is_staff %}
@@ -240,6 +255,7 @@
                     <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-3 border-0" role="alert">
                         {% if message.tags == 'success' %}<i class="fas fa-check-circle me-2"></i>{% endif %}
                         {% if message.tags == 'error' %}<i class="fas fa-exclamation-circle me-2"></i>{% endif %}
+                        {% if message.tags == 'warning' %}<i class="fas fa-exclamation-triangle me-2"></i>{% endif %}
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
@@ -253,37 +269,77 @@
     <footer class="bg-dark text-white pt-5 pb-2 mt-auto border-top border-secondary" style="background-color: #0b1120 !important;">
         <div class="container">
             <div class="row g-4 justify-content-between">
+                
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif;">BuyCars<span class="text-danger">.Africa</span></h5>
-                    <p class="small text-white-50 mb-4" style="line-height: 1.6; max-width: 320px;">The trusted platform for Africa & the World to buy, inspect, and manage vehicles securely.</p>
+                    <h5 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif;">
+                        BuyCars<span class="text-danger">.Africa</span>
+                    </h5>
+                    <p class="small text-white-50 mb-4" style="line-height: 1.6; max-width: 320px;">
+                        The trusted platform for Africa & the World to buy, inspect, and manage vehicles securely.
+                    </p>
                     <div class="d-flex gap-3">
+                        <a href="https://web.facebook.com/buy.carsafrica" target="_blank" class="social-icon-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://x.com/BuyCarsAfrica" target="_blank" class="social-icon-link"><i class="fab fa-twitter"></i></a>
                         <a href="https://www.instagram.com/buy.carsafrica/" target="_blank" class="social-icon-link"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.linkedin.com/company/buycars-africa/" target="_blank" class="social-icon-link"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
+
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Quick Links</h6>
                     <ul class="list-unstyled small text-white-50 gap-2 d-flex flex-column">
-                        <li><a href="{% url 'impact_page' %}" class="footer-link text-success">1 Million Trees</a></li>
+                        <li><a href="#" class="footer-link">About Us</a></li>
+                        <li><a href="{% url 'impact_page' %}" class="footer-link text-success fw-bold">1 Million Trees</a></li>
                         <li><a href="{% url 'sell_page' %}" class="footer-link">Sell Your Car</a></li>
                         <li><a href="{% url 'partners_page' %}" class="footer-link">Partners</a></li>
+                        <li><a href="#" class="footer-link">Terms of Service</a></li>
+                        <li><a href="#" class="footer-link">Privacy Policy</a></li>
                     </ul>
                 </div>
+
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Contact</h6>
+                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Contact Us</h6>
                     <ul class="list-unstyled small text-white-50 gap-3 d-flex flex-column">
-                        <li class="d-flex align-items-center"><i class="fas fa-envelope me-2 text-danger"></i> <a href="mailto:support@buycars.africa" class="text-white-50 text-decoration-none">support@buycars.africa</a></li>
-                        <li class="d-flex align-items-center"><i class="fas fa-phone-alt me-2 text-danger"></i> +254 727 025 050</li>
+                        <li class="d-flex align-items-start">
+                            <i class="fas fa-map-marker-alt mt-1 me-2 text-danger"></i>
+                            <span>Ngong Road, Nairobi<br>Kenya</span>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="fas fa-envelope me-2 text-danger"></i>
+                            <a href="mailto:support@buycars.africa" class="text-white-50 text-decoration-none">support@buycars.africa</a>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt me-2 text-danger"></i>
+                            <span>+254 727 025 050</span>
+                        </li>
                     </ul>
                 </div>
+
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Community</h6>
-                    <p class="small text-white-50 mb-3">Join our newsletter for exclusive deals.</p>
-                    <div class="input-group"><input type="email" class="form-control form-control-sm bg-transparent text-white border-secondary" placeholder="Email"><button class="btn btn-danger btn-sm fw-bold">Join</button></div>
+                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Join the Community</h6>
+                    <p class="small text-white-50 mb-3">Exclusive deals and market insights for Africa.</p>
+                    <form action="#" method="POST">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="email" class="form-control form-control-sm bg-transparent text-white border-secondary" placeholder="Enter email" style="border-right: none;">
+                            <button class="btn btn-danger btn-sm fw-bold" type="button">Join List</button>
+                        </div>
+                    </form>
                 </div>
             </div>
+
             <hr class="border-secondary opacity-25 my-4">
-            <div class="text-center small text-white-50">&copy; {% now "Y" %} BuyCars.Africa. Secure Global Payments.</div>
+
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-white-50 mb-0">&copy; {% now "Y" %} BuyCars.Africa. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <p class="small text-white-50 mb-0">
+                        <i class="fas fa-lock me-1"></i> Secure Global Payments (Card & M-PESA)
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -313,6 +369,16 @@
         .social-icon-link:hover { background-color: #dc3545; color: white; transform: translateY(-3px); }
         .footer-link { text-decoration: none; color: rgba(255, 255, 255, 0.5); transition: all 0.2s; }
         .footer-link:hover { color: #fff; padding-left: 5px; }
+        
+        .form-control::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+        .form-control:focus {
+            background-color: rgba(255,255,255,0.05);
+            box-shadow: none;
+            border-color: #dc3545;
+            color: white;
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
