@@ -610,16 +610,23 @@ def platform_dashboard(request):
 # --- NEW: IMPACT / 1 MILLION TREES PAGE ---
 def impact_page(request):
     """
-    Renders the '1 Million Trees' Impact Page.
+    Renders the '1 Million Trees' Impact Page with live transparency data.
     """
-    return render(request, 'pages/impact.html')
+    # 1. Calculate Real Impact based on Sales
+    total_cars_sold = Car.objects.filter(status='SOLD').count()
+    
+    # THE FORMULA: 1 Car Sold = 25 Trees Planted
+    trees_planted = total_cars_sold * 25
+    
+    # Calculate Carbon Offset (Approx 20kg CO2 per tree/year)
+    co2_offset_tons = (trees_planted * 20) / 1000 
 
-# --- NEW: FINANCING PAGE ---
-def financing_page(request):
-    """
-    Renders the Asset Financing & Loans page.
-    """
-    return render(request, 'pages/financing.html')
+    context = {
+        'trees_planted': trees_planted,
+        'co2_offset': co2_offset_tons,
+        'cars_sold': total_cars_sold,
+    }
+    return render(request, 'pages/impact.html', context)
 
 # --- NEW: DEALERSHIP NETWORK PAGE ---
 def dealership_network(request):
@@ -646,3 +653,10 @@ def dealership_network(request):
         'city_counts': list(city_counts), # Convert QuerySet to list for JS
     }
     return render(request, 'pages/dealerships.html', context)
+
+# --- NEW: FINANCING PAGE ---
+def financing_page(request):
+    """
+    Renders the Asset Financing & Loans page.
+    """
+    return render(request, 'pages/financing.html')
