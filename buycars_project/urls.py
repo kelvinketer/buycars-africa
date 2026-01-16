@@ -124,6 +124,12 @@ urlpatterns = [
     # --- MANUAL ADMIN TOOLS ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
+    
+    # ... inside urlpatterns ...
+    
+    # --- EMERGENCY DB FIXER ---
+    path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
+    
 ]
 
 if settings.DEBUG:
