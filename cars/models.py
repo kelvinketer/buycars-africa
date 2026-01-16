@@ -244,13 +244,10 @@ class Booking(models.Model):
 
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='bookings')
     
-    # --- CRITICAL FIX: MAP 'RENTER' TO 'CUSTOMER_ID' ---
-    renter = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        related_name='rentals',
-        db_column='customer_id' 
-    )
+    # --- REVERTED TO STANDARD: NO DB_COLUMN ---
+    # This expects a column named 'renter_id' in the database.
+    # We will create this column in the next step using the migration file.
+    renter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rentals')
     
     start_date = models.DateField()
     end_date = models.DateField()
