@@ -10,6 +10,7 @@
         --slate-dark: #0f172a;
     }
 
+    /* Fixed: Dark gradient to make white text pop */
     .bg-tech-nature {
         background: radial-gradient(circle at top right, #064e3b 0%, #020617 100%);
     }
@@ -19,31 +20,32 @@
         text-shadow: 0 0 25px rgba(0, 255, 157, 0.4);
     }
 
+    /* Glassmorphism for better readability */
     .glass-card {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         transition: transform 0.3s ease, border-color 0.3s ease;
     }
     
     .glass-card:hover {
         transform: translateY(-5px);
         border-color: var(--neon-green);
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .pillar-icon-box {
-        width: 90px; 
-        height: 90px; 
+        width: 80px; 
+        height: 80px; 
         display: flex; 
         align-items: center; 
         justify-content: center;
-        background: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%);
-        color: #166534;
-        border-radius: 24px;
+        background: rgba(34, 197, 94, 0.1);
+        color: #4ade80;
+        border-radius: 50%;
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 30px -10px rgba(22, 101, 52, 0.3);
+        border: 1px solid rgba(34, 197, 94, 0.2);
     }
 
     /* Animated Counter Bar */
@@ -55,13 +57,9 @@
 <div class="position-relative text-white overflow-hidden d-flex align-items-center bg-tech-nature" style="min-height: 85vh;">
     
     <div class="position-absolute top-0 start-0 w-100 h-100" 
-         style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=2000&auto=format&fit=crop'); opacity: 0.15; background-size: cover; background-position: center;">
+         style="background: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat; opacity: 0.15;">
     </div>
     
-    <div class="position-absolute bottom-0 start-0 w-100 h-50" 
-         style="background: linear-gradient(to top, #020617 0%, transparent 100%);">
-    </div>
-
     <div class="container position-relative z-2 pt-5">
         <div class="row justify-content-center text-center">
             <div class="col-lg-10">
@@ -72,13 +70,13 @@
                     </span>
                 </div>
 
-                <h1 class="display-1 fw-bold mb-4 ls-tight text-white">
+                <h1 class="display-2 fw-bold mb-4 ls-tight text-white">
                     1 Million Trees. <br>
                     1 Nation. <span class="text-glow-green">Engineered.</span>
                 </h1>
 
                 <p class="lead text-white-50 mb-5 fs-4 mx-auto fw-light" style="max-width: 750px; line-height: 1.6;">
-                    We are moving beyond traditional planting. Using digital monitoring, GPS tagging, and agro-tech integration, we are <strong class="text-white">engineering</strong> the restoration of our landscapes.
+                    We are moving beyond traditional planting. Using digital monitoring, GPS tagging, and agro-tech integration, we are <strong class="text-white">engineering</strong> the restoration of East Africa's landscapes.
                 </p>
 
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
@@ -88,7 +86,7 @@
                     </a>
                     <a href="#dashboard" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4 py-3 hover-lift"
                        style="border-color: rgba(255,255,255,0.3);">
-                        <i class="fas fa-chart-line me-2"></i> View Live Data
+                        View Live Data
                     </a>
                 </div>
             </div>
@@ -104,11 +102,11 @@
                     <span class="spinner-grow spinner-grow-sm text-success me-2" role="status"></span>
                     <h6 class="text-success fw-bold text-uppercase small mb-0 ls-1">System Live</h6>
                 </div>
-                <h2 class="text-white fw-bold display-5">Digital Monitoring Log</h2>
-                <p class="text-white-50">Tracking every sapling from nursery to maturity using our internal audit tools.</p>
+                <h2 class="text-white fw-bold display-6">Digital Monitoring Log</h2>
+                <p class="text-white-50">Tracking sapling survival rates across our active restoration sites.</p>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <p class="text-white-50 small font-monospace">Last Sync: {% now "H:i:s T" %}</p>
+                <p class="text-white-50 small font-monospace">Region: East Africa</p>
             </div>
         </div>
 
@@ -118,12 +116,9 @@
                     <div class="display-4 fw-bold text-white mb-2">0</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1 mb-3">Trees Planted</small>
                     <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                        <div class="progress-bar bg-success progress-glow" role="progressbar" style="width: 2%"></div>
+                        <div class="progress-bar bg-success progress-glow" role="progressbar" style="width: 0%"></div>
                     </div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <small class="text-white-50" style="font-size: 0.7rem;">0%</small>
-                        <small class="text-white-50" style="font-size: 0.7rem;">Goal: 1M</small>
-                    </div>
+                    <small class="text-white-50 mt-2" style="font-size: 0.7rem;">Target: 1,000,000</small>
                 </div>
             </div>
             
@@ -132,7 +127,7 @@
                     <div class="display-4 fw-bold text-success mb-1">94%</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1">Survival Rate</small>
                     <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        <i class="fas fa-check-circle me-1 text-success"></i> Verified via Spot Checks
+                        Verified via Spot Checks
                     </p>
                 </div>
             </div>
@@ -142,14 +137,14 @@
                     <div class="display-4 fw-bold text-warning mb-1">12</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1">Active Sites</small>
                     <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
-                        Maasai Mara, Juja, Ngong...
+                        Rift Valley, Central, Coast
                     </p>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="glass-card p-4 rounded-4 text-center h-100 d-flex flex-column justify-content-center">
-                    <div class="display-4 fw-bold text-info mb-1">350</div>
+                    <div class="display-4 fw-bold text-info mb-1">350+</div>
                     <small class="text-uppercase text-white-50 fw-bold ls-1">Farmers Supported</small>
                     <p class="mt-2 mb-0 text-white-50 small border-top border-secondary pt-2 mt-2 border-opacity-25">
                         Via Oletai Agro Group
@@ -173,14 +168,14 @@
                     <i class="fas fa-satellite-dish fa-2x"></i>
                 </div>
                 <h4 class="fw-bold mb-3">Digital Verification</h4>
-                <p class="text-muted">Leveraging proprietary tracking systems, we tag batches with GPS coordinates to ensure total transparency for our global partners. No ghost trees.</p>
+                <p class="text-muted">Leveraging proprietary tracking systems and GPS tagging to ensure total transparency for our partners. We eliminate ghost projects by providing verifiable data.</p>
             </div>
             <div class="col-md-4 text-center px-4">
                 <div class="pillar-icon-box mx-auto">
                     <i class="fas fa-hands-helping fa-2x"></i>
                 </div>
                 <h4 class="fw-bold mb-3">Community First</h4>
-                <p class="text-muted">Collaborating with local communities and conservation bodies to ensure trees protect vital water sources and empower sustainable livelihoods.</p>
+                <p class="text-muted">Collaborating with local conservation bodies and community leaders to ensure trees protect vital water sources and empower sustainable rural livelihoods.</p>
             </div>
             <div class="col-md-4 text-center px-4">
                 <div class="pillar-icon-box mx-auto">
@@ -210,7 +205,6 @@
                     <ul class="list-unstyled mb-4 text-muted small">
                         <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Logo on Digital Wall</li>
                         <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Quarterly Impact Report</li>
-                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Social Media Mention</li>
                     </ul>
                     <a href="#partner" class="btn btn-outline-success w-100 rounded-pill fw-bold">Select Tier</a>
                 </div>
@@ -218,7 +212,7 @@
             
             <div class="col-lg-4">
                 <div class="card h-100 border-0 shadow-lg p-5 rounded-4 bg-dark text-white position-relative overflow-hidden transform-scale-sm">
-                    <div class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 fw-bold small rounded-bottom-start">POPULAR</div>
+                    <div class="position-absolute top-0 end-0 bg-success text-white px-3 py-1 fw-bold small rounded-bottom-start">RECOMMENDED</div>
                     <h4 class="fw-bold text-success mb-4">Growth Partner</h4>
                     <h2 class="fw-bold mb-1">20,000 Trees</h2>
                     <p class="text-white-50 small mb-4">For serious CSR goals.</p>
@@ -226,7 +220,6 @@
                     <ul class="list-unstyled mb-4 small">
                         <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> <strong>Dedicated Site Marker</strong></li>
                         <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> GPS Co-ordinates Log</li>
-                        <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> Automated Carbon Certs</li>
                         <li class="mb-3"><i class="fas fa-check-circle text-success me-2"></i> All Seedling Benefits</li>
                     </ul>
                     <a href="#partner" class="btn btn-success w-100 rounded-pill fw-bold shadow-lg py-3">Select Tier</a>
@@ -242,8 +235,7 @@
                     <ul class="list-unstyled mb-4 text-muted small">
                         <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> <strong>Exclusive Forest Block Naming</strong></li>
                         <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> Video Case Study Production</li>
-                        <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> API Access to Raw Data</li>
-                        <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> VIP Site Visit for Leadership</li>
+                        <li class="mb-2"><i class="fas fa-check text-dark me-2"></i> VIP Site Visit</li>
                     </ul>
                     <a href="#partner" class="btn btn-outline-dark w-100 rounded-pill fw-bold">Contact Founder</a>
                 </div>
@@ -265,30 +257,24 @@
                     <form>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted text-uppercase">Organization Name</label>
-                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white shadow-sm" placeholder="e.g. Acme Corp">
+                                <label class="form-label small fw-bold text-muted">Organization</label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white" placeholder="Company Name">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted text-uppercase">Contact Person</label>
-                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white shadow-sm" placeholder="Your Name">
+                                <label class="form-label small fw-bold text-muted">Contact Person</label>
+                                <input type="text" class="form-control form-control-lg rounded-3 border-0 bg-white" placeholder="Your Name">
                             </div>
                             <div class="col-12">
-                                <label class="form-label small fw-bold text-muted text-uppercase">Partnership Type</label>
-                                <select class="form-select form-select-lg rounded-3 border-0 bg-white shadow-sm">
-                                    <option>Corporate Sponsorship (Funding)</option>
-                                    <option>Technical Partnership (Hardware/Software)</option>
-                                    <option>Agro-Tech / Farming Collaboration</option>
-                                    <option>Volunteer / Community</option>
+                                <label class="form-label small fw-bold text-muted">Partnership Type</label>
+                                <select class="form-select form-select-lg rounded-3 border-0 bg-white">
+                                    <option>Corporate Sponsorship</option>
+                                    <option>Technical Partnership</option>
+                                    <option>Agro-Tech Collaboration</option>
+                                    <option>Volunteer</option>
                                 </select>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label small fw-bold text-muted text-uppercase">Message to the Founder</label>
-                                <textarea class="form-control rounded-3 border-0 bg-white shadow-sm" rows="4" placeholder="How would you like to get involved?"></textarea>
-                            </div>
                             <div class="col-12 mt-4">
-                                <button class="btn btn-dark btn-lg w-100 rounded-pill fw-bold py-3 shadow-lg">
-                                    Submit Partnership Inquiry <i class="fas fa-paper-plane ms-2"></i>
-                                </button>
+                                <button class="btn btn-dark btn-lg w-100 rounded-pill fw-bold py-3">Submit Inquiry</button>
                             </div>
                         </div>
                     </form>

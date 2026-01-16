@@ -8,29 +8,28 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 class Car(models.Model):
-    # --- GLOBAL DROPDOWN CHOICES (NEW) ---
+    # --- GLOBAL DROPDOWN CHOICES (UPDATED FOR EAST AFRICA PIVOT) ---
     COUNTRY_CHOICES = [
         ('KE', 'Kenya'),
-        ('ZA', 'South Africa'),
-        ('GB', 'United Kingdom'),
-        ('JP', 'Japan'),
-        ('AE', 'United Arab Emirates'),
         ('UG', 'Uganda'),
         ('TZ', 'Tanzania'),
         ('RW', 'Rwanda'),
-        ('NG', 'Nigeria'),
-        ('GH', 'Ghana'),
+        ('SS', 'South Sudan'),
+        ('ZA', 'South Africa'),       # Key Import Source
+        ('GB', 'United Kingdom'),     # Key Import Source
+        ('JP', 'Japan'),              # Key Import Source
+        ('AE', 'United Arab Emirates'), # Dubai (Key Import Source)
     ]
 
     CURRENCY_CHOICES = [
         ('KES', 'Kenyan Shilling (KES)'),
-        ('ZAR', 'South African Rand (ZAR)'),
-        ('GBP', 'British Pound (GBP)'),
-        ('USD', 'US Dollar (USD)'),
-        ('AED', 'UAE Dirham (AED)'),
-        ('JPY', 'Japanese Yen (JPY)'),
-        ('NGN', 'Nigerian Naira (NGN)'),
-        ('GHS', 'Ghanaian Cedi (GHS)'),
+        ('UGX', 'Ugandan Shilling (UGX)'),
+        ('TZS', 'Tanzanian Shilling (TZS)'),
+        ('RWF', 'Rwandan Franc (RWF)'),
+        ('USD', 'US Dollar (USD)'),      # Global Standard
+        ('GBP', 'British Pound (GBP)'),  # UK Imports
+        ('AED', 'UAE Dirham (AED)'),     # Dubai Imports
+        ('ZAR', 'South African Rand (ZAR)'), # SA Imports
     ]
 
     # --- EXISTING DROPDOWN CHOICES ---
@@ -91,7 +90,7 @@ class Car(models.Model):
     
     # === NEW GLOBAL FIELDS ===
     country = models.CharField(max_length=2, choices=COUNTRY_CHOICES, default='KE', help_text="The country where this car is physically located.")
-    city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Cape Town)")
+    city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Kampala, Arusha)")
     listing_currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='KES', help_text="Currency for the listed price.")
     
     # Note: 'location' kept for legacy support/display, but 'city' & 'country' are preferred for logic
