@@ -8,28 +8,63 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 class Car(models.Model):
-    # --- GLOBAL DROPDOWN CHOICES (UPDATED FOR EAST AFRICA PIVOT) ---
+    # --- GLOBAL DROPDOWN CHOICES (PAN-AFRICAN EXPANSION) ---
     COUNTRY_CHOICES = [
+        # East Africa (EAC & Horn)
         ('KE', 'Kenya'),
         ('UG', 'Uganda'),
         ('TZ', 'Tanzania'),
         ('RW', 'Rwanda'),
         ('SS', 'South Sudan'),
-        ('ZA', 'South Africa'),       # Key Import Source
-        ('GB', 'United Kingdom'),     # Key Import Source
-        ('JP', 'Japan'),              # Key Import Source
-        ('AE', 'United Arab Emirates'), # Dubai (Key Import Source)
+        ('ET', 'Ethiopia'),
+
+        # West Africa (The Giants)
+        ('NG', 'Nigeria'),
+        ('GH', 'Ghana'),
+
+        # North Africa
+        ('EG', 'Egypt'),
+
+        # Southern Africa
+        ('ZA', 'South Africa'),
+        ('NA', 'Namibia'),
+        ('AO', 'Angola'),
+
+        # Key Import Sources
+        ('GB', 'United Kingdom'),
+        ('JP', 'Japan'),
+        ('AE', 'United Arab Emirates'), # Dubai
     ]
 
     CURRENCY_CHOICES = [
+        # East Africa
         ('KES', 'Kenyan Shilling (KES)'),
         ('UGX', 'Ugandan Shilling (UGX)'),
         ('TZS', 'Tanzanian Shilling (TZS)'),
         ('RWF', 'Rwandan Franc (RWF)'),
-        ('USD', 'US Dollar (USD)'),      # Global Standard
-        ('GBP', 'British Pound (GBP)'),  # UK Imports
-        ('AED', 'UAE Dirham (AED)'),     # Dubai Imports
-        ('ZAR', 'South African Rand (ZAR)'), # SA Imports
+        ('ETB', 'Ethiopian Birr (ETB)'),
+
+        # West Africa
+        ('NGN', 'Nigerian Naira (NGN)'),
+        ('GHS', 'Ghanaian Cedi (GHS)'),
+
+        # North & South
+        ('EGP', 'Egyptian Pound (EGP)'),
+        ('ZAR', 'South African Rand (ZAR)'),
+        ('NAD', 'Namibian Dollar (NAD)'),
+        ('AOA', 'Angolan Kwanza (AOA)'),
+
+        # International Trade
+        ('USD', 'US Dollar (USD)'),
+        ('GBP', 'British Pound (GBP)'),
+        ('AED', 'UAE Dirham (AED)'),
+        ('JPY', 'Japanese Yen (JPY)'),
+    ]
+
+    # --- NEW: DRIVE SIDE (Crucial for Cross-Border) ---
+    DRIVE_SIDE_CHOICES = [
+        ('RHD', 'Right-Hand Drive (RHD)'), # Kenya, SA, UK, Japan, Uganda, TZ
+        ('LHD', 'Left-Hand Drive (LHD)'),  # Nigeria, Ghana, US, Europe, Ethiopia, Rwanda
     ]
 
     # --- EXISTING DROPDOWN CHOICES ---
@@ -80,7 +115,7 @@ class Car(models.Model):
     # --- DATABASE FIELDS ---
     dealer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cars')
     
-    # Identify the car uniquely (Added for Duplicate Checks)
+    # Identify the car uniquely
     registration_number = models.CharField(max_length=20, blank=True, null=True, help_text="e.g. KDA 123X (Hidden from public)")
 
     make = models.CharField(max_length=50) 
@@ -90,13 +125,21 @@ class Car(models.Model):
     
     # === NEW GLOBAL FIELDS ===
     country = models.CharField(max_length=2, choices=COUNTRY_CHOICES, default='KE', help_text="The country where this car is physically located.")
-    city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Kampala, Arusha)")
+    city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Lagos, Accra)")
     listing_currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='KES', help_text="Currency for the listed price.")
     
-    # Note: 'location' kept for legacy support/display, but 'city' & 'country' are preferred for logic
+    # New Field for Traffic Laws
+    drive_side = models.CharField(
+        max_length=3, 
+        choices=DRIVE_SIDE_CHOICES, 
+        default='RHD', 
+        help_text="Select LHD for Nigeria/Ghana/Ethiopia. RHD for Kenya/SA/UK."
+    )
+
+    # Note: 'location' kept for legacy support/display
     location = models.CharField(max_length=100, default='Nairobi')
 
-    # === NEW RENTAL FIELDS ===
+    # === RENTAL FIELDS ===
     listing_type = models.CharField(
         max_length=10, 
         choices=LISTING_TYPE_CHOICES, 
@@ -135,25 +178,19 @@ class Car(models.Model):
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # --- NEW: AUTO-CLEANUP LOGIC ---
+    # --- AUTO-CLEANUP LOGIC ---
     def save(self, *args, **kwargs):
         """
         Intercepts the save process to standardize Make and Model names.
-        Prevents duplicates like 'Toyota' vs 'TOYOTA'.
         """
-        # 1. Standardize Make
         if self.make:
-            self.make = self.make.strip().title() # "toyota" -> "Toyota"
-            
-            # Special Case: Keep BMW uppercase
+            self.make = self.make.strip().title()
             if self.make.lower() == 'bmw':
                 self.make = 'BMW'
 
-        # 2. Standardize Model
         if self.model:
-            self.model = self.model.strip().title() # "corolla" -> "Corolla"
+            self.model = self.model.strip().title()
 
-        # 3. Proceed with normal save
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -168,28 +205,17 @@ class CarImage(models.Model):
         return f"Image for {self.car.model}"
 
     def save(self, *args, **kwargs):
-        # 1. Opening the image
         if self.image:
             try:
                 img = Image.open(self.image)
-                
-                # 2. Convert to RGB (in case it's PNG/RGBA) to save as JPEG
                 if img.mode != 'RGB':
                     img = img.convert('RGB')
-                
-                # 3. Resize if too massive (Max width 1200px is usually enough for web)
                 if img.width > 1200:
                     output_size = (1200, (1200 * img.height) // img.width)
                     img.thumbnail(output_size)
-
-                # 4. Compress
                 output = BytesIO()
-                # Saving as JPEG with 75% quality (sweet spot for web)
                 img.save(output, format='JPEG', quality=75, optimize=True)
                 output.seek(0)
-
-                # 5. Replace the file in memory
-                # Note: We rename to .jpg to match the format
                 new_name = f"{self.image.name.split('.')[0]}.jpg"
                 self.image = InMemoryUploadedFile(
                     output, 
@@ -201,7 +227,6 @@ class CarImage(models.Model):
                 )
             except Exception as e:
                 print(f"Image compression failed: {e}")
-                # Pass silently and save original if compression fails
 
         super().save(*args, **kwargs)
 
@@ -223,12 +248,10 @@ class Booking(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     
-    # We store the calculated price so if the dealer changes the daily rate later,
-    # the old booking history remains accurate.
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    message = models.TextField(blank=True, null=True) # Optional note from renter
+    message = models.TextField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -238,14 +261,12 @@ class Booking(models.Model):
 
     @property
     def total_days(self):
-        """Calculate duration for display"""
         delta = self.end_date - self.start_date
-        return delta.days + 1  # +1 because if you rent 1st to 1st, it's 1 day
+        return delta.days + 1
 
 # --- ANALYTICS MODELS ---
 
 class CarView(models.Model):
-    """Tracks simple page views (Traffic)."""
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='views')
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -254,7 +275,6 @@ class CarView(models.Model):
         return f"View on {self.car} at {self.timestamp}"
 
 class Lead(models.Model):
-    """Tracks valuable actions (Call/WhatsApp clicks)."""
     ACTION_CHOICES = [
         ('CALL', 'Phone Call'),
         ('WHATSAPP', 'WhatsApp Message'),
@@ -269,7 +289,6 @@ class Lead(models.Model):
     def __str__(self):
         return f"{self.get_action_type_display()} for {self.car} at {self.timestamp}"
 
-# --- SEARCH ANALYTICS ---
 class SearchTerm(models.Model):
     term = models.CharField(max_length=100, unique=True)
     count = models.IntegerField(default=1)

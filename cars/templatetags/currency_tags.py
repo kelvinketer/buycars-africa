@@ -3,17 +3,34 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 
 register = template.Library()
 
-# Approximate Exchange Rates (Base: 1 KES)
-# You can update these later or connect to a live API
+# Approximate Exchange Rates (Base: 1 KES) - Updated for Pan-African Expansion
+# NOTE: In a production environment, fetch these from an API (e.g., OpenExchangeRates)
 RATES = {
     'KES': 1.0,
-    'UGX': 28.5,  # 1 KES = 28.5 UGX
-    'TZS': 19.8,  # 1 KES = 19.8 TZS
-    'RWF': 9.2,   # 1 KES = 9.2 RWF
-    'USD': 0.0076, # 1 KES = 0.0076 USD
-    'GBP': 0.0060, # 1 KES = 0.0060 GBP
-    'AED': 0.028,  # 1 KES = 0.028 AED
-    'ZAR': 0.14,   # 1 KES = 0.14 ZAR
+    
+    # East Africa (EAC & Horn)
+    'UGX': 28.5,   # 1 KES ~ 28.5 Uganda Shillings
+    'TZS': 19.8,   # 1 KES ~ 19.8 Tanzania Shillings
+    'RWF': 9.2,    # 1 KES ~ 9.2 Rwanda Francs
+    'ETB': 0.95,   # 1 KES ~ 0.95 Ethiopian Birr
+    
+    # West Africa
+    'NGN': 11.5,   # 1 KES ~ 11.5 Nigerian Naira
+    'GHS': 0.12,   # 1 KES ~ 0.12 Ghanaian Cedis
+    
+    # North Africa
+    'EGP': 0.37,   # 1 KES ~ 0.37 Egyptian Pounds
+    
+    # Southern Africa
+    'ZAR': 0.14,   # 1 KES ~ 0.14 South African Rand
+    'NAD': 0.14,   # 1 KES ~ 0.14 Namibian Dollar (Pegged to ZAR)
+    'AOA': 6.5,    # 1 KES ~ 6.5 Angolan Kwanza
+    
+    # International Trade
+    'USD': 0.0076, # 1 KES ~ 0.0076 US Dollars
+    'GBP': 0.0060, # 1 KES ~ 0.0060 British Pounds
+    'AED': 0.028,  # 1 KES ~ 0.028 UAE Dirhams
+    'JPY': 1.15,   # 1 KES ~ 1.15 Japanese Yen
 }
 
 @register.simple_tag(takes_context=True)
@@ -35,23 +52,16 @@ def convert_price(context, price, listing_currency):
 
     # 3. Perform Conversion
     try:
-        # Convert original price to KES first (Base)
-        # Formula: Price / Rate_of_Listing_Currency = Price_in_KES
-        # Note: This assumes listing_currency is in the RATES dict. 
-        # For simplicity, we assume the input price is KES for now as mostly Kenyan cars.
-        # If your cars are mixed, we need a two-step conversion (From X to KES, then KES to Y).
+        base_price_in_kes = float(price) 
         
-        base_price_in_kes = float(price) # Assuming car price is stored in KES for the MVP
-        
-        # If the car itself was listed in USD, we'd need to handle that. 
-        # For now, let's assume your database prices are normalized to KES or handle the conversion:
+        # If the car itself was NOT listed in KES, normalize it to KES first
         if listing_currency != 'KES':
-            # Convert TO KES first
-            base_price_in_kes = float(price) / RATES.get(listing_currency, 1)
+            base_rate = RATES.get(listing_currency, 1.0)
+            base_price_in_kes = float(price) / base_rate
 
         # Convert FROM KES to Target
-        rate = RATES.get(target_currency, 1)
-        final_value = base_price_in_kes * rate
+        target_rate = RATES.get(target_currency, 1.0)
+        final_value = base_price_in_kes * target_rate
         
         return f"{target_currency} {intcomma(int(final_value))}"
 
