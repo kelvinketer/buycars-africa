@@ -243,7 +243,15 @@ class Booking(models.Model):
     )
 
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='bookings')
-    renter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rentals')
+    
+    # --- CRITICAL FIX: MAP 'RENTER' TO 'CUSTOMER_ID' ---
+    # This tells Django: "Use the name 'renter' in Python, but look for 'customer_id' in the DB."
+    renter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='rentals',
+        db_column='customer_id' 
+    )
     
     start_date = models.DateField()
     end_date = models.DateField()
