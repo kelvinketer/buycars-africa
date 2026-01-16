@@ -11,15 +11,26 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # This adds the column 'renter_id' to the database
+        # 1. Add the missing 'renter' column
         migrations.AddField(
             model_name='booking',
             name='renter',
             field=models.ForeignKey(
-                default=1, # Temporary default to handle existing rows if any
+                default=1, 
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='rentals',
                 to=settings.AUTH_USER_MODEL
+            ),
+            preserve_default=False,
+        ),
+        # 2. Add the missing 'total_price' column
+        migrations.AddField(
+            model_name='booking',
+            name='total_price',
+            field=models.DecimalField(
+                decimal_places=2,
+                default=0.00,
+                max_digits=10
             ),
             preserve_default=False,
         ),
