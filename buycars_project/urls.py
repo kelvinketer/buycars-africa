@@ -57,7 +57,7 @@ urlpatterns = [
     path('impact/', car_views.impact_page, name='impact_page'),
     path('1-million-trees/', car_views.impact_page), 
     
-    # --- NEW: DRIVING CHANGE MANIFESTO ---
+    # --- DRIVING CHANGE MANIFESTO ---
     path('driving-change/', car_views.driving_change_page, name='driving_change'),
 
     # --- TRANSPARENCY HUB (Live Ledger) ---
@@ -93,13 +93,14 @@ urlpatterns = [
     path('dashboard/add/', car_views.add_car, name='add_car'), 
     path('dashboard/report/', car_views.download_report, name='download_report'),
     
-    # --- PRICING PAGE (Updated Template) ---
+    # --- NEW: DEALER ACADEMY ---
+    path('dashboard/academy/', car_views.dealer_academy, name='dealer_academy'),
+    
+    # --- PRICING PAGE ---
     path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing'),
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
-    
-    # --- SUPPORT VIEW FIX ---
     path('dashboard/support/', user_views.support_view, name='dealer_support'),
     
     # --- EDIT & DELETE ROUTES ---

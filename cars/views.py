@@ -720,3 +720,65 @@ def driving_change_page(request):
         'capital_unlocked': capital_unlocked,
     }
     return render(request, 'pages/driving_change.html', context)
+
+# --- NEW: DEALER ACADEMY (LMS) ---
+@login_required
+def dealer_academy(request):
+    """
+    Renders the Learning Management System for dealers/brokers.
+    Includes Training Modules, Research Reports, and Downloadable Tools.
+    """
+    # In a future V2, these could be database models (Course, Lesson, Progress).
+    # For now, we define the structure statically to launch fast.
+    
+    modules = [
+        {
+            'id': 1,
+            'title': 'The Digital Broker Mindset',
+            'desc': 'Understanding the BuyCars ecosystem and business ethics.',
+            'duration': '15 min',
+            'status': 'COMPLETED',
+            'progress': 100,
+            'icon': 'fas fa-brain'
+        },
+        {
+            'id': 2,
+            'title': 'Sourcing & Verification',
+            'desc': 'How to spot a "lemon", check logbooks, and verify VINs.',
+            'duration': '45 min',
+            'status': 'IN_PROGRESS',
+            'progress': 40,
+            'icon': 'fas fa-search-plus'
+        },
+        {
+            'id': 3,
+            'title': 'The Perfect Listing',
+            'desc': 'Photography guides, writing descriptions, and AI pricing.',
+            'duration': '30 min',
+            'status': 'LOCKED',
+            'progress': 0,
+            'icon': 'fas fa-camera'
+        },
+        {
+            'id': 4,
+            'title': 'Closing the Deal',
+            'desc': 'Handling WhatsApp leads, negotiation, and safe payment.',
+            'duration': '60 min',
+            'status': 'LOCKED',
+            'progress': 0,
+            'icon': 'fas fa-handshake'
+        }
+    ]
+    
+    resources = [
+        {'name': 'KRA Sale Agreement Template', 'type': 'PDF', 'size': '1.2 MB'},
+        {'name': 'Vehicle Inspection Checklist', 'type': 'PDF', 'size': '0.8 MB'},
+        {'name': 'Q4 2025 Market Price Index', 'type': 'PDF', 'size': '3.5 MB'}, # Research Asset
+    ]
+
+    context = {
+        'modules': modules,
+        'resources': resources,
+        'completion_rate': 35 # Calculated avg
+    }
+    return render(request, 'dealer/academy.html', context)
