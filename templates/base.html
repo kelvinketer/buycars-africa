@@ -51,7 +51,7 @@
                     </a>
 
                     <div class="dropdown mx-lg-2">
-                        <button class="btn btn-sm btn-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-sm btn-success rounded-pill px-3 py-2 fw-bold d-flex align-items-center shadow-lg" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #198754; border: none;">
                             <i class="fas fa-globe-africa me-2"></i> Ecosystem <i class="fas fa-chevron-down ms-2" style="font-size: 0.7em;"></i>
                         </button>
                         
@@ -109,30 +109,81 @@
                         <button class="nav-link-custom fw-bold border-0 bg-transparent text-white-50 dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             {% if request.session.currency %}{{ request.session.currency }}{% else %}KES{% endif %}
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2" style="max-height: 400px; overflow-y: auto;">
+                            
+                            <li><h6 class="dropdown-header text-warning small fw-bold">East Africa</h6></li>
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <button name="currency" value="KES" class="dropdown-item rounded-2 fw-bold small" type="submit">🇰🇪 KES</button>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="KES" class="dropdown-item rounded-2 fw-bold small" type="submit"><span class="me-2">🇰🇪</span> KES (Kenya)</button>
                                 </form>
                             </li>
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <button name="currency" value="USD" class="dropdown-item rounded-2 fw-bold small" type="submit">🇺🇸 USD</button>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="UGX" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇺🇬</span> UGX (Uganda)</button>
                                 </form>
                             </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="TZS" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇹🇿</span> TZS (Tanzania)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="RWF" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇷🇼</span> RWF (Rwanda)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="ETB" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇪🇹</span> ETB (Ethiopia)</button>
+                                </form>
+                            </li>
+
                             <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header text-success small fw-bold">West Africa</h6></li>
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <button name="currency" value="UGX" class="dropdown-item rounded-2 small" type="submit">🇺🇬 UGX</button>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="NGN" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇳🇬</span> NGN (Nigeria)</button>
                                 </form>
                             </li>
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <button name="currency" value="TZS" class="dropdown-item rounded-2 small" type="submit">🇹🇿 TZS</button>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="GHS" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇬🇭</span> GHS (Ghana)</button>
+                                </form>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header text-info small fw-bold">South & North</h6></li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="ZAR" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇿🇦</span> ZAR (South Africa)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="NAD" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇳🇦</span> NAD (Namibia)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="EGP" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇪🇬</span> EGP (Egypt)</button>
+                                </form>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header text-primary small fw-bold">Global</h6></li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="USD" class="dropdown-item rounded-2 fw-bold small" type="submit"><span class="me-2">🇺🇸</span> USD (Global)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="GBP" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇬🇧</span> GBP (UK)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">{% csrf_token %}
+                                    <button name="currency" value="AED" class="dropdown-item rounded-2 small" type="submit"><span class="me-2">🇦🇪</span> AED (Dubai)</button>
                                 </form>
                             </li>
                         </ul>
@@ -155,6 +206,12 @@
                                 {% else %}
                                     <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'renter_dashboard' %}"><i class="fas fa-user me-2"></i> My Account</a></li>
                                 {% endif %}
+                                
+                                {% if user.is_staff %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item rounded-2 mb-1 text-danger fw-bold" href="{% url 'admin_dashboard' %}"><i class="fas fa-crown me-2"></i> Admin Panel</a></li>
+                                {% endif %}
+
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form action="{% url 'logout' %}" method="post">
