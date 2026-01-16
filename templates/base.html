@@ -29,277 +29,148 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3" style="background-color: #0f172a;"> 
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3" style="background-color: #0f172a; border-bottom: 1px solid rgba(255,255,255,0.05);"> 
         <div class="container">
-            <a class="navbar-brand fw-bold fs-3" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: -0.5px;">
+            <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: -0.5px;">
                 BuyCars<span class="text-danger">.Africa</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 ms-auto mt-3 mt-lg-0">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-1 ms-auto mt-3 mt-lg-0">
                     
-                    <a class="btn btn-outline-light nav-btn border-opacity-10 fw-normal" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif;">
+                    <a class="nav-link-custom fw-medium text-white" href="{% url 'home' %}">
                         Browse Cars
                     </a>
 
-                    <a class="btn btn-outline-light nav-btn border-opacity-10 fw-normal" href="{% url 'financing_page' %}" style="font-family: 'Poppins', sans-serif;">
+                    <a class="nav-link-custom fw-medium text-white" href="{% url 'financing_page' %}">
                         Financing
                     </a>
 
-                    <div class="dropdown">
-                        <button class="btn btn-outline-success nav-btn dropdown-toggle fw-bold d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" style="border-color: #22c55e; color: #22c55e;">
-                            <i class="fas fa-globe-africa me-2"></i> Ecosystem
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-0 rounded-4 mt-2 p-3" style="min-width: 260px;">
-                            
-                            <li><h6 class="dropdown-header text-uppercase text-warning fw-bold small ls-1 mb-2">Our Mission</h6></li>
-                            <li>
-                                <a class="dropdown-item rounded-3 py-2 mb-1 d-flex align-items-center" href="{% url 'impact_page' %}">
-                                    <div class="bg-success bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                        <i class="fas fa-tree text-success"></i>
-                                    </div>
-                                    <div>
-                                        <span class="fw-bold d-block">1 Million Trees</span>
-                                        <small class="text-white-50" style="font-size: 0.75rem;">Live Impact Tracker</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item rounded-3 py-2 mb-1 d-flex align-items-center" href="{% url 'transparency_hub' %}">
-                                    <div class="bg-info bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                        <i class="fas fa-search-dollar text-info"></i>
-                                    </div>
-                                    <div>
-                                        <span class="fw-bold d-block">Transparency</span>
-                                        <small class="text-white-50" style="font-size: 0.75rem;">Open Ledger</small>
-                                    </div>
-                                </a>
-                            </li>
-                            
-                            <li><hr class="dropdown-divider opacity-10 my-2"></li>
-                            
-                            <li><h6 class="dropdown-header text-uppercase text-warning fw-bold small ls-1 mb-2">The Network</h6></li>
-                            <li>
-                                <a class="dropdown-item rounded-3 py-2 mb-1 d-flex align-items-center" href="{% url 'dealership_network' %}">
-                                    <div class="bg-white bg-opacity-10 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                        <i class="fas fa-store text-white"></i>
-                                    </div>
-                                    <span class="fw-normal">Dealer Network</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center" href="{% url 'partners_page' %}">
-                                    <div class="bg-white bg-opacity-10 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                        <i class="fas fa-handshake text-white"></i>
-                                    </div>
-                                    <span class="fw-normal">Partners</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="dropdown ms-lg-2">
-                        <button class="btn btn-outline-secondary dropdown-toggle nav-btn d-flex align-items-center justify-content-center border-secondary text-light border-opacity-25" type="button" data-bs-toggle="dropdown" style="min-width: 100px;">
-                            {% if request.session.currency == 'UGX' %} 🇺🇬 UGX
-                            {% elif request.session.currency == 'TZS' %} 🇹🇿 TZS
-                            {% elif request.session.currency == 'RWF' %} 🇷🇼 RWF
-                            {% elif request.session.currency == 'ETB' %} 🇪🇹 ETB
-                            {% elif request.session.currency == 'NGN' %} 🇳🇬 NGN
-                            {% elif request.session.currency == 'GHS' %} 🇬🇭 GHS
-                            {% elif request.session.currency == 'EGP' %} 🇪🇬 EGP
-                            {% elif request.session.currency == 'ZAR' %} 🇿🇦 ZAR
-                            {% elif request.session.currency == 'NAD' %} 🇳🇦 NAD
-                            {% elif request.session.currency == 'USD' %} 🇺🇸 USD
-                            {% elif request.session.currency == 'GBP' %} 🇬🇧 GBP
-                            {% elif request.session.currency == 'AED' %} 🇦🇪 AED
-                            {% else %} 🇰🇪 KES
-                            {% endif %}
+                    <div class="dropdown mx-lg-2">
+                        <button class="btn btn-sm btn-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe-africa me-2"></i> Ecosystem <i class="fas fa-chevron-down ms-2" style="font-size: 0.7em;"></i>
                         </button>
                         
-                        <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2 rounded-3" style="max-height: 400px; overflow-y: auto;">
-                            <li><h6 class="dropdown-header text-warning small fw-bold">East Africa</h6></li>
+                        <ul class="dropdown-menu shadow-lg border-0 rounded-4 mt-3 p-3 animate-slide-up" style="min-width: 280px;">
+                            <li><h6 class="dropdown-header text-uppercase text-muted fw-bold small ls-1 mb-2">Impact & Trust</h6></li>
+                            
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="KES">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇰🇪</span> KES (Kenya)
-                                    </button>
-                                </form>
+                                <a class="dropdown-item rounded-3 py-2 mb-1 d-flex align-items-center p-2 hover-bg-light" href="{% url 'impact_page' %}">
+                                    <div class="bg-success bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-tree text-success"></i>
+                                    </div>
+                                    <div class="lh-sm">
+                                        <span class="fw-bold d-block text-dark">1 Million Trees</span>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Live tracking dashboard</small>
+                                    </div>
+                                </a>
                             </li>
+                            
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="UGX">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇺🇬</span> UGX (Uganda)
-                                    </button>
-                                </form>
-                            </li>
-                            <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="TZS">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇹🇿</span> TZS (Tanzania)
-                                    </button>
-                                </form>
-                            </li>
-                            <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="RWF">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇷🇼</span> RWF (Rwanda)
-                                    </button>
-                                </form>
-                            </li>
-                            <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="ETB">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇪🇹</span> ETB (Ethiopia)
-                                    </button>
-                                </form>
+                                <a class="dropdown-item rounded-3 py-2 mb-1 d-flex align-items-center p-2 hover-bg-light" href="{% url 'transparency_hub' %}">
+                                    <div class="bg-info bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-search-dollar text-info"></i>
+                                    </div>
+                                    <div class="lh-sm">
+                                        <span class="fw-bold d-block text-dark">Transparency</span>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Open impact ledger</small>
+                                    </div>
+                                </a>
                             </li>
 
-                            <li><hr class="dropdown-divider opacity-25"></li>
-                            <li><h6 class="dropdown-header text-success small fw-bold">West Africa</h6></li>
-                            <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="NGN">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇳🇬</span> NGN (Nigeria)
-                                    </button>
-                                </form>
-                            </li>
-                            <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="GHS">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇬🇭</span> GHS (Ghana)
-                                    </button>
-                                </form>
-                            </li>
+                            <li><hr class="dropdown-divider opacity-10 my-2"></li>
+                            <li><h6 class="dropdown-header text-uppercase text-muted fw-bold small ls-1 mb-2">Partnerships</h6></li>
 
-                            <li><hr class="dropdown-divider opacity-25"></li>
-                            <li><h6 class="dropdown-header text-info small fw-bold">South & North</h6></li>
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="ZAR">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇿🇦</span> ZAR (South Africa)
-                                    </button>
-                                </form>
+                                <a class="dropdown-item rounded-3 py-2 mb-1 d-flex align-items-center p-2 hover-bg-light" href="{% url 'dealership_network' %}">
+                                    <div class="bg-warning bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-store text-warning"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark">Dealer Network</span>
+                                </a>
                             </li>
+                            
                             <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="NAD">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇳🇦</span> NAD (Namibia)
-                                    </button>
-                                </form>
+                                <a class="dropdown-item rounded-3 py-2 d-flex align-items-center p-2 hover-bg-light" href="{% url 'partners_page' %}">
+                                    <div class="bg-primary bg-opacity-10 rounded-3 p-2 me-3">
+                                        <i class="fas fa-handshake text-primary"></i>
+                                    </div>
+                                    <span class="fw-bold text-dark">Become a Partner</span>
+                                </a>
                             </li>
-                            <li>
-                                <form action="{% url 'set_currency' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="currency" value="EGP">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇪🇬</span> EGP (Egypt)
-                                    </button>
-                                </form>
-                            </li>
+                        </ul>
+                    </div>
 
-                            <li><hr class="dropdown-divider opacity-25"></li>
-                            <li><h6 class="dropdown-header text-white small fw-bold">Global</h6></li>
+                    <div class="dropdown">
+                        <button class="nav-link-custom fw-bold border-0 bg-transparent text-white-50 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            {% if request.session.currency %}{{ request.session.currency }}{% else %}KES{% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2">
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">
                                     {% csrf_token %}
-                                    <input type="hidden" name="currency" value="USD">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇺🇸</span> USD (Global)
-                                    </button>
+                                    <button name="currency" value="KES" class="dropdown-item rounded-2 fw-bold small" type="submit">🇰🇪 KES</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">
                                     {% csrf_token %}
-                                    <input type="hidden" name="currency" value="GBP">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇬🇧</span> GBP (UK)
-                                    </button>
+                                    <button name="currency" value="USD" class="dropdown-item rounded-2 fw-bold small" type="submit">🇺🇸 USD</button>
+                                </form>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="{% url 'set_currency' %}" method="POST">
+                                    {% csrf_token %}
+                                    <button name="currency" value="UGX" class="dropdown-item rounded-2 small" type="submit">🇺🇬 UGX</button>
                                 </form>
                             </li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">
                                     {% csrf_token %}
-                                    <input type="hidden" name="currency" value="AED">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center">
-                                        <span class="me-2">🇦🇪</span> AED (Dubai)
-                                    </button>
+                                    <button name="currency" value="TZS" class="dropdown-item rounded-2 small" type="submit">🇹🇿 TZS</button>
                                 </form>
                             </li>
                         </ul>
                     </div>
 
-                    {% if user.is_authenticated %}
-                        <div class="dropdown ms-lg-2">
-                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold d-flex align-items-center justify-content-center border-opacity-25" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif; height: 40px;">
-                                <i class="fas fa-user-circle me-2"></i> {{ user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
-                                {% if user.is_superuser %}
-                                    <li>
-                                        <a class="dropdown-item fw-bold text-danger" href="{% url 'admin_dashboard' %}">
-                                            <i class="fas fa-user-shield me-2"></i> CEO Dashboard
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                {% endif %}
+                    <div class="vr mx-2 d-none d-lg-block text-white opacity-25"></div>
 
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <a class="nav-link-custom fw-bold text-white dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <div class="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-user small"></i>
+                                </div>
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-3 p-2">
                                 {% if user.dealer_profile %}
-                                    <li><a class="dropdown-item" href="{% url 'dealer_dashboard' %}"><i class="fas fa-tachometer-alt me-2 text-muted"></i> Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'dealer_showroom' user.username %}"><i class="fas fa-store me-2 text-muted"></i> My Showroom</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'profile_settings' %}"><i class="fas fa-cog me-2 text-muted"></i> Settings</a></li>
+                                    <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'dealer_dashboard' %}"><i class="fas fa-th-large me-2 text-primary"></i> Dashboard</a></li>
+                                    <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'dealer_showroom' user.username %}"><i class="fas fa-store me-2 text-success"></i> My Showroom</a></li>
                                 {% else %}
-                                    <li><a class="dropdown-item" href="{% url 'renter_dashboard' %}"><i class="fas fa-history me-2 text-muted"></i> My Rentals</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'renter_dashboard' %}"><i class="fas fa-cog me-2 text-muted"></i> Profile</a></li>
+                                    <li><a class="dropdown-item rounded-2 mb-1" href="{% url 'renter_dashboard' %}"><i class="fas fa-user me-2"></i> My Account</a></li>
                                 {% endif %}
-                                
                                 <li><hr class="dropdown-divider"></li>
-                                
                                 <li>
-                                    <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                    <form action="{% url 'logout' %}" method="post">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger fw-bold">
-                                            <i class="fas fa-sign-out-alt me-2"></i> Log Out
-                                        </button>
+                                        <button type="submit" class="dropdown-item rounded-2 text-danger fw-bold"><i class="fas fa-sign-out-alt me-2"></i> Log Out</button>
                                     </form>
                                 </li>
                             </ul>
                         </div>
                     {% else %}
-                        <a class="btn btn-outline-light nav-btn border-opacity-25 ms-lg-2" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif;">
-                            Log In
-                        </a>
-
-                        <a class="btn btn-outline-light nav-btn border-opacity-25" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">
-                            Sign Up
-                        </a>
-                        
-                        <a class="btn btn-danger nav-btn shadow-sm" href="{% url 'sell_page' %}" style="font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;">
+                        <a class="nav-link-custom fw-medium text-white me-2" href="{% url 'login' %}">Log In</a>
+                        <a class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" href="{% url 'sell_page' %}">
                             Start Selling
                         </a>
                     {% endif %}
+
                 </div>
             </div>
         </div>
@@ -312,7 +183,6 @@
                     <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-3 border-0" role="alert">
                         {% if message.tags == 'success' %}<i class="fas fa-check-circle me-2"></i>{% endif %}
                         {% if message.tags == 'error' %}<i class="fas fa-exclamation-circle me-2"></i>{% endif %}
-                        {% if message.tags == 'warning' %}<i class="fas fa-exclamation-triangle me-2"></i>{% endif %}
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
@@ -320,147 +190,72 @@
             </div>
         {% endif %}
 
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
     <footer class="bg-dark text-white pt-5 pb-2 mt-auto border-top border-secondary" style="background-color: #0b1120 !important;">
         <div class="container">
             <div class="row g-4 justify-content-between">
-                
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif;">
-                        BuyCars<span class="text-danger">.Africa</span>
-                    </h5>
-                    <p class="small text-white-50 mb-4" style="line-height: 1.6; max-width: 320px;">
-                        The trusted platform for Africa & the World to buy, inspect, and manage vehicles securely.
-                    </p>
+                    <h5 class="fw-bold mb-3" style="font-family: 'Poppins', sans-serif;">BuyCars<span class="text-danger">.Africa</span></h5>
+                    <p class="small text-white-50 mb-4" style="line-height: 1.6; max-width: 320px;">The trusted platform for Africa & the World to buy, inspect, and manage vehicles securely.</p>
                     <div class="d-flex gap-3">
-                        <a href="https://web.facebook.com/buy.carsafrica" target="_blank" class="social-icon-link"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://x.com/BuyCarsAfrica" target="_blank" class="social-icon-link"><i class="fab fa-twitter"></i></a>
                         <a href="https://www.instagram.com/buy.carsafrica/" target="_blank" class="social-icon-link"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.linkedin.com/company/buycars-africa/" target="_blank" class="social-icon-link"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-
                 <div class="col-lg-2 col-md-6 mb-4">
                     <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Quick Links</h6>
                     <ul class="list-unstyled small text-white-50 gap-2 d-flex flex-column">
-                        <li><a href="#" class="footer-link">About Us</a></li>
-                        <li><a href="{% url 'impact_page' %}" class="footer-link text-success fw-bold">1 Million Trees</a></li>
+                        <li><a href="{% url 'impact_page' %}" class="footer-link text-success">1 Million Trees</a></li>
                         <li><a href="{% url 'sell_page' %}" class="footer-link">Sell Your Car</a></li>
-                        <li><a href="#" class="footer-link">Terms of Service</a></li>
-                        <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="{% url 'partners_page' %}" class="footer-link">Partners</a></li>
                     </ul>
                 </div>
-
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Contact Us</h6>
+                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Contact</h6>
                     <ul class="list-unstyled small text-white-50 gap-3 d-flex flex-column">
-                        <li class="d-flex align-items-start">
-                            <i class="fas fa-map-marker-alt mt-1 me-2 text-danger"></i>
-                            <span>Ngong Road, Nairobi<br>Kenya</span>
-                        </li>
-                        <li class="d-flex align-items-center">
-                            <i class="fas fa-envelope me-2 text-danger"></i>
-                            <a href="mailto:support@buycars.africa" class="text-white-50 text-decoration-none">support@buycars.africa</a>
-                        </li>
-                        <li class="d-flex align-items-center">
-                            <i class="fas fa-phone-alt me-2 text-danger"></i>
-                            <span>+254 727 025 050</span>
-                        </li>
+                        <li class="d-flex align-items-center"><i class="fas fa-envelope me-2 text-danger"></i> <a href="mailto:support@buycars.africa" class="text-white-50 text-decoration-none">support@buycars.africa</a></li>
+                        <li class="d-flex align-items-center"><i class="fas fa-phone-alt me-2 text-danger"></i> +254 727 025 050</li>
                     </ul>
                 </div>
-
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Join the Community</h6>
-                    <p class="small text-white-50 mb-3">Exclusive deals and market insights for Africa.</p>
-                    <form action="#" method="POST">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="email" class="form-control form-control-sm bg-transparent text-white border-secondary" placeholder="Enter email" style="border-right: none;">
-                            <button class="btn btn-danger btn-sm fw-bold" type="button">Join List</button>
-                        </div>
-                    </form>
+                    <h6 class="fw-bold mb-3 text-uppercase small" style="color: #ffc107;">Community</h6>
+                    <p class="small text-white-50 mb-3">Join our newsletter for exclusive deals.</p>
+                    <div class="input-group"><input type="email" class="form-control form-control-sm bg-transparent text-white border-secondary" placeholder="Email"><button class="btn btn-danger btn-sm fw-bold">Join</button></div>
                 </div>
             </div>
-
             <hr class="border-secondary opacity-25 my-4">
-
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="small text-white-50 mb-0">&copy; {% now "Y" %} BuyCars.Africa. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
-                    <p class="small text-white-50 mb-0">
-                        <i class="fas fa-lock me-1"></i> Secure Global Payments (Card & M-PESA)
-                    </p>
-                </div>
-            </div>
+            <div class="text-center small text-white-50">&copy; {% now "Y" %} BuyCars.Africa. Secure Global Payments.</div>
         </div>
     </footer>
 
     <style>
-        /* Uniform Nav Buttons */
-        .nav-btn {
-            border-radius: 50px !important;
-            padding: 8px 24px !important;
-            font-weight: 600 !important;
-            font-size: 14px !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 40px;
-            min-width: 100px; /* Slight adjustment for better fit */
+        /* New Ghost Nav Links */
+        .nav-link-custom {
+            padding: 8px 16px;
+            border-radius: 50px;
+            text-decoration: none;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+        .nav-link-custom:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
         }
 
-        .btn-outline-light.nav-btn:hover {
-            background-color: #fff;
-            color: #000;
-        }
-
-        /* Sticky footer helper */
-        body { min-height: 100vh; }
-
-        /* Footer Styling */
-        .footer-link {
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.5);
-            transition: all 0.2s ease;
-        }
-        .footer-link:hover {
-            color: #fff;
-            padding-left: 5px; 
-        }
+        /* Dropdown Tweaks */
+        .dropdown-menu { animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .social-icon-link {
-            width: 36px;
-            height: 36px;
-            background-color: rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        .social-icon-link:hover {
-            background-color: #dc3545; 
-            color: white;
-            transform: translateY(-3px);
-        }
+        .hover-bg-light:hover { background-color: #f8f9fa; }
         
-        .form-control::placeholder {
-            color: rgba(255,255,255,0.3);
-        }
-        .form-control:focus {
-            background-color: rgba(255,255,255,0.05);
-            box-shadow: none;
-            border-color: #dc3545;
-            color: white;
-        }
+        /* Social Icons */
+        .social-icon-link { width: 36px; height: 36px; background-color: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.3s; }
+        .social-icon-link:hover { background-color: #dc3545; color: white; transform: translateY(-3px); }
+        .footer-link { text-decoration: none; color: rgba(255, 255, 255, 0.5); transition: all 0.2s; }
+        .footer-link:hover { color: #fff; padding-left: 5px; }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
