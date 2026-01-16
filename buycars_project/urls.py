@@ -92,7 +92,9 @@ urlpatterns = [
     
     # --- DEALER SETTINGS & SUPPORT ---
     path('dashboard/settings/', user_views.profile_settings, name='profile_settings'),
-    path('dashboard/support/', user_views.dealer_support, name='dealer_support'),
+    
+    # --- FIXED LINE BELOW (Changed dealer_support -> support_view) ---
+    path('dashboard/support/', user_views.support_view, name='dealer_support'),
     
     # --- EDIT & DELETE ROUTES ---
     path('dashboard/edit/<int:car_id>/', car_views.edit_car, name='edit_car'),
