@@ -10,35 +10,30 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # 1. Handle 'renter' field (SKIP DB CREATION, JUST UPDATE STATE)
         migrations.SeparateDatabaseAndState(
             state_operations=[
+                # 1. Update Django's internal state for 'renter'
                 migrations.AddField(
                     model_name='booking',
                     name='renter',
                     field=models.ForeignKey(
-                        default=1,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='rentals',
                         to=settings.AUTH_USER_MODEL
                     ),
-                    preserve_default=False,
+                ),
+                # 2. Update Django's internal state for 'total_price'
+                migrations.AddField(
+                    model_name='booking',
+                    name='total_price',
+                    field=models.DecimalField(
+                        decimal_places=2,
+                        max_digits=10,
+                        default=0.00
+                    ),
                 ),
             ],
-            # We leave this empty so Postgres doesn't try to create "renter_id" again
+            # Leave database_operations empty because these columns ALREADY EXIST in Postgres
             database_operations=[], 
-        ),
-
-        # 2. Handle 'total_price' (Try to create it normally)
-        # If this also fails with "already exists", we will wrap it like above.
-        migrations.AddField(
-            model_name='booking',
-            name='total_price',
-            field=models.DecimalField(
-                decimal_places=2,
-                default=0.00,
-                max_digits=10
-            ),
-            preserve_default=False,
         ),
     ]
