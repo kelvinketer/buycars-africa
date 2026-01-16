@@ -4,7 +4,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cars', '0001_initial'),
+        # This points to the existing 0002 file found in your error logs
+        ('cars', '0002_searchterm_remove_car_mileage_km_car_body_type_and_more'),
     ]
 
     operations = [
@@ -14,4 +15,3 @@ class Migration(migrations.Migration):
             new_name='renter',
         ),
     ]
-    
