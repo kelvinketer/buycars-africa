@@ -40,22 +40,30 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 ms-auto mt-3 mt-lg-0">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 ms-auto mt-3 mt-lg-0">
                     
-                    <a class="btn btn-outline-light nav-btn" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif;">
+                    <a class="btn btn-outline-light nav-btn border-opacity-10 fw-normal" href="{% url 'home' %}" style="font-family: 'Poppins', sans-serif;">
                         Browse Cars
                     </a>
 
-                    <a class="btn btn-outline-light nav-btn" href="{% url 'financing_page' %}" style="font-family: 'Poppins', sans-serif;">
+                    <a class="btn btn-outline-light nav-btn border-opacity-10 fw-normal" href="{% url 'financing_page' %}" style="font-family: 'Poppins', sans-serif;">
                         Financing
                     </a>
 
-                    <a class="btn btn-outline-success nav-btn" href="{% url 'impact_page' %}" style="font-family: 'Poppins', sans-serif;">
+                    <a class="btn btn-outline-light nav-btn border-opacity-10 fw-normal" href="{% url 'dealership_network' %}" style="font-family: 'Poppins', sans-serif;">
+                        Network
+                    </a>
+
+                    <a class="btn btn-outline-light nav-btn border-opacity-10 fw-normal" href="{% url 'partners_page' %}" style="font-family: 'Poppins', sans-serif;">
+                        Partners
+                    </a>
+
+                    <a class="btn btn-outline-success nav-btn fw-bold ms-lg-2" href="{% url 'impact_page' %}" style="font-family: 'Poppins', sans-serif; border-color: #22c55e; color: #22c55e;">
                         <i class="fas fa-tree me-2"></i> Impact
                     </a>
 
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle nav-btn d-flex align-items-center justify-content-center border-secondary text-light" type="button" data-bs-toggle="dropdown" style="min-width: 100px;">
+                    <div class="dropdown ms-lg-2">
+                        <button class="btn btn-outline-secondary dropdown-toggle nav-btn d-flex align-items-center justify-content-center border-secondary text-light border-opacity-25" type="button" data-bs-toggle="dropdown" style="min-width: 100px;">
                             {% if request.session.currency == 'UGX' %} 🇺🇬 UGX
                             {% elif request.session.currency == 'TZS' %} 🇹🇿 TZS
                             {% elif request.session.currency == 'RWF' %} 🇷🇼 RWF
@@ -73,7 +81,6 @@
                         </button>
                         
                         <ul class="dropdown-menu dropdown-menu-dark shadow border-0 mt-2 rounded-3" style="max-height: 400px; overflow-y: auto;">
-                            
                             <li><h6 class="dropdown-header text-warning small fw-bold">East Africa</h6></li>
                             <li>
                                 <form action="{% url 'set_currency' %}" method="POST">
@@ -205,8 +212,8 @@
                     </div>
 
                     {% if user.is_authenticated %}
-                        <div class="dropdown">
-                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold d-flex align-items-center justify-content-center" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif;">
+                        <div class="dropdown ms-lg-2">
+                            <a class="btn btn-outline-light btn-sm rounded-pill dropdown-toggle px-3 fw-semibold d-flex align-items-center justify-content-center border-opacity-25" href="#" role="button" data-bs-toggle="dropdown" style="font-family: 'Poppins', sans-serif; height: 40px;">
                                 <i class="fas fa-user-circle me-2"></i> {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
@@ -241,11 +248,11 @@
                             </ul>
                         </div>
                     {% else %}
-                        <a class="btn btn-outline-light nav-btn" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif;">
+                        <a class="btn btn-outline-light nav-btn border-opacity-25 ms-lg-2" href="{% url 'login' %}" style="font-family: 'Poppins', sans-serif;">
                             Log In
                         </a>
 
-                        <a class="btn btn-outline-light nav-btn" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">
+                        <a class="btn btn-outline-light nav-btn border-opacity-25" href="{% url 'select_account' %}" style="font-family: 'Poppins', sans-serif;">
                             Sign Up
                         </a>
                         
@@ -354,7 +361,7 @@
     </footer>
 
     <style>
-        /* Make nav buttons perfectly uniform */
+        /* Uniform Nav Buttons */
         .nav-btn {
             border-radius: 50px !important;
             padding: 8px 24px !important;
@@ -364,11 +371,10 @@
             align-items: center;
             justify-content: center;
             height: 40px;
-            min-width: 120px;
+            min-width: 100px; /* Slight adjustment for better fit */
             transition: all 0.3s ease;
         }
 
-        /* Hover effect for outline button to keep it clean */
         .btn-outline-light.nav-btn:hover {
             background-color: #fff;
             color: #000;
@@ -377,7 +383,7 @@
         /* Sticky footer helper */
         body { min-height: 100vh; }
 
-        /* Premium Footer Styling */
+        /* Footer Styling */
         .footer-link {
             text-decoration: none;
             color: rgba(255, 255, 255, 0.5);
@@ -385,7 +391,7 @@
         }
         .footer-link:hover {
             color: #fff;
-            padding-left: 5px; /* Subtle movement effect */
+            padding-left: 5px; 
         }
         
         .social-icon-link {
@@ -401,7 +407,7 @@
             transition: all 0.3s;
         }
         .social-icon-link:hover {
-            background-color: #dc3545; /* Brand Red */
+            background-color: #dc3545; 
             color: white;
             transform: translateY(-3px);
         }
