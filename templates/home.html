@@ -458,38 +458,42 @@
     </div>
 </section>
 
-<section class="py-5 text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-    <div class="container position-relative z-2">
+<section class="py-5" style="background-color: #0F172A;"> <div class="container py-4">
         <div class="row align-items-center g-5">
-            <div class="col-lg-6 border-end border-white border-opacity-10">
-                <span class="badge bg-success mb-3">Asset Finance Ready</span>
-                <h2 class="fw-bold mb-3">Don't let cash flow stop you.</h2>
-                <p class="lead text-white-50 mb-4">We partner with leading Saccos and Banks to offer up to <strong>80% financing</strong>. Get pre-approved in minutes.</p>
+            
+            <div class="col-lg-6">
+                <span class="badge bg-success mb-3 px-3 py-2 rounded-pill">Asset Finance Ready</span>
+                <h2 class="display-5 fw-bold text-white mb-3">Don't let cash flow <span class="text-success">stop you.</span></h2>
+                <p class="lead text-white-50 mb-4">
+                    We partner with leading Saccos and Banks to offer up to 80% financing. Get pre-approved in minutes with our trusted partners.
+                </p>
                 <div class="d-flex gap-3">
-                    <a href="{% url 'financing_page' %}" class="btn btn-light rounded-pill fw-bold px-4">
-                        <i class="fas fa-calculator me-2"></i> Loan Calculator
+                    <a href="{% url 'financing_page' %}" class="btn btn-light rounded-pill px-4 fw-bold">
+                        <i class="fas fa-calculator me-2"></i>Loan Calculator
                     </a>
-                    <a href="{% url 'financing_page' %}#apply" class="btn btn-outline-success rounded-pill fw-bold px-4">
+                    <a href="{% url 'financing_page' %}" class="btn btn-outline-success rounded-pill px-4">
                         Apply Now
                     </a>
                 </div>
             </div>
-            
-            <div class="col-lg-6 ps-lg-5">
-                <h3 class="fw-bold mb-3">For Financial Institutions</h3>
+
+            <div class="col-lg-6 border-start border-secondary border-opacity-25 ps-lg-5">
+                <h3 class="fw-bold text-white mb-3">For Financial Institutions</h3>
                 <p class="text-white-50 mb-4">
-                    Are you a Sacco or Bank? Partner with BuyCars.Africa to access verified asset buyers and support our 
-                    <span class="text-success fw-bold">1 Million Trees Initiative</span>.
+                    Are you a Sacco or Bank? Partner with BuyCars.Africa to access verified asset buyers and support our <span class="text-success fw-bold">1 Million Trees Initiative</span>.
                 </p>
-                <ul class="list-unstyled text-white-50 mb-4 small">
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Access verified vehicle collateral</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Digital loan origination</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> CSR Impact (Tree planting per loan)</li>
+                
+                <ul class="list-unstyled text-white-50 mb-4 space-y-2">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Access verified vehicle collateral</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Digital loan origination</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>CSR Impact (Tree planting per loan)</li>
                 </ul>
-                <a href="mailto:partners@buycars.africa" class="btn btn-outline-light rounded-pill btn-sm fw-bold">
-                    Become a Partner <i class="fas fa-arrow-right ms-2"></i>
+
+                <a href="{% url 'dealer_support' %}" class="text-white text-decoration-none fw-bold small">
+                    Become a Partner <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
+
         </div>
     </div>
 </section>
