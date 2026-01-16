@@ -278,81 +278,63 @@ def diaspora_landing(request):
 
 @login_required
 def dealer_dashboard(request):
+    # 1. Fetch Inventory
     my_cars = Car.objects.filter(dealer=request.user).order_by('-created_at')
-    # Safe sum in case price is None (for rental only cars)
-    total_value = sum(car.price for car in my_cars if car.price) 
     car_count = my_cars.count()
-    profile, created = DealerProfile.objects.get_or_create(user=request.user)
+    total_value = sum(car.price for car in my_cars if car.price) 
     
+    # 2. Get Plan Limits
+    profile, created = DealerProfile.objects.get_or_create(user=request.user)
     user_plan = PLAN_LIMITS.get(profile.plan_type, PLAN_LIMITS['STARTER'])
     limit = user_plan['cars']
-    
-    plan_cost = 0 
-    if profile.plan_type == 'LITE': 
-        plan_cost = 5000
-    elif profile.plan_type == 'PRO': 
-        plan_cost = 12000
-    elif profile.plan_type == 'STARTER':
-        plan_cost = 1500
-        
     can_add = car_count < limit
 
+    # 3. Fetch Leads (Sales Interest - Calls/WhatsApp)
+    recent_leads = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:10]
+    total_leads_count = Lead.objects.filter(car__dealer=request.user).count()
+
+    # 4. Fetch Bookings (Rental Requests) - NEW!
+    # We fetch bookings for cars owned by this dealer
+    rental_bookings = Booking.objects.filter(car__dealer=request.user).order_by('-created_at')
+    pending_bookings = rental_bookings.filter(status='PENDING').count()
+
+    # 5. Chart Data (Leads over last 30 days)
     thirty_days_ago = timezone.now() - timedelta(days=30)
     daily_leads = Lead.objects.filter(
         car__dealer=request.user, 
         timestamp__gte=thirty_days_ago
-    ).annotate(date=TruncDate('timestamp'))\
-     .values('date')\
-     .annotate(count=Count('id'))\
-     .order_by('date')
+    ).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('id')).order_by('date')
 
     leads_dict = {item['date'].strftime('%Y-%m-%d'): item['count'] for item in daily_leads}
-    
     chart_labels = []
     chart_values = []
-    total_leads_30 = 0 
     
     for i in range(30):
         d = (timezone.now() - timedelta(days=29-i)).date()
         d_str = d.strftime('%Y-%m-%d')
-        count = leads_dict.get(d_str, 0)
-        
-        chart_labels.append(d.strftime('%b %d'))
-        chart_values.append(count)
-        total_leads_30 += count 
+        chart_labels.append(d.strftime('%d %b'))
+        chart_values.append(leads_dict.get(d_str, 0))
 
-    cpl = 0
-    if total_leads_30 > 0 and plan_cost > 0:
-        cpl = int(plan_cost / total_leads_30)
-
+    # 6. Inventory Health
     inventory_stats = my_cars.filter(status='AVAILABLE').annotate(view_count=Count('views'))
-    
     hot_car = inventory_stats.order_by('-view_count').first()
     
-    three_days_ago_date = timezone.now() - timedelta(days=3)
-    stale_candidates = inventory_stats.filter(created_at__lte=three_days_ago_date)
-    
-    if stale_candidates.exists():
-        stale_car = stale_candidates.order_by('view_count').first()
-    else:
-        stale_car = inventory_stats.order_by('view_count').first()
-
-    recent = Lead.objects.filter(car__dealer=request.user).order_by('-timestamp')[:5]
-    
     context = {
+        'profile': profile,
         'cars': my_cars, 
+        'rental_bookings': rental_bookings, # Pass bookings to template
+        'recent_leads': recent_leads,
+        
         'total_cars': car_count, 
+        'limit': limit,
+        'can_add': can_add,
         'total_value': total_value,
+        'total_leads': total_leads_count,
+        'pending_bookings': pending_bookings,
+        
         'chart_labels': chart_labels, 
         'chart_values': chart_values,
-        'recent_activity': recent, 
-        'limit': limit, 
-        'can_add': can_add,
         'hot_car': hot_car,
-        'stale_car': stale_car,
-        'plan_cost': plan_cost,
-        'leads_30': total_leads_30,
-        'cpl': cpl,
     }
     return render(request, 'dealer/dashboard.html', context)
 
