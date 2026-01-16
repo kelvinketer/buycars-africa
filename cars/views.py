@@ -671,8 +671,9 @@ def dealership_network(request):
     total_leads_generated = Lead.objects.count()
     active_stock_count = Car.objects.filter(status='AVAILABLE').count()
     
-    # 3. Map Data (Group by city)
-    city_counts = dealers.values('city', 'country').annotate(count=Count('id'))
+    # 3. Map Data (Group by city ONLY - 'country' field does not exist)
+    # FIXED: Removed 'country' from .values() grouping to fix FieldError
+    city_counts = dealers.values('city').annotate(count=Count('id'))
 
     context = {
         'dealers': dealers,
