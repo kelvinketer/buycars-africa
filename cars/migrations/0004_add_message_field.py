@@ -7,9 +7,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='booking',
-            name='message',
-            field=models.TextField(blank=True, null=True),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                # Update Django's internal memory that 'message' exists
+                migrations.AddField(
+                    model_name='booking',
+                    name='message',
+                    field=models.TextField(blank=True, null=True),
+                ),
+            ],
+            # Do NOT run any SQL commands on the database (avoids the crash)
+            database_operations=[],
         ),
     ]
