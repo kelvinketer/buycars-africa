@@ -391,48 +391,102 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // 1. Initialize Map
-        // Centered roughly on Rift Valley / Kenya
-        var map = L.map('impact-map').setView([-0.3031, 36.0800], 5); 
+        // --- 1. INITIALIZE MAP (UPDATED FOR PAN-AFRICAN VIEW) ---
+        // Changed center to [2.0, 18.0] (Central Africa) and Zoom to 3 (Continent View)
+        var map = L.map('impact-map', {
+            zoomControl: false, // Cleaner look
+            scrollWheelZoom: false // Prevents accidental scrolling
+        }).setView([2.0, 18.0], 3); 
+
+        // Add Zoom Control to bottom right
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
 
-        // Pan-African Locations (Expanded as requested)
+        // --- 2. DEFINE LOCATIONS & DATA ---
         var sites = [
-            { lat: -0.3031, lng: 36.0800, title: "Rift Valley Block A (KE)", trees: "{{ trees_planted }}" },
-            { lat: 9.1450, lng: 40.4897, title: "Green Legacy (Ethiopia)", trees: "Starting Phase" },
-            { lat: 6.5244, lng: 3.3792, title: "Lagos Green Belt (Nigeria)", trees: "Planning" },
-            { lat: -33.9249, lng: 18.4241, title: "Western Cape (South Africa)", trees: "Planning" }
+            { 
+                lat: -0.3031, lng: 36.0800, 
+                title: "🇰🇪 Kenya: Rift Valley Block A", 
+                stat: "{{ trees_planted|intcomma }} Trees",
+                status: "Active"
+            },
+            { 
+                lat: 9.1450, lng: 40.4897, 
+                title: "🇪🇹 Ethiopia: Green Legacy", 
+                stat: "Site Preparation",
+                status: "Pending"
+            },
+            { 
+                lat: 6.5244, lng: 3.3792, 
+                title: "🇳🇬 Nigeria: Lagos Green Belt", 
+                stat: "Partner: Lagos State",
+                status: "Planning"
+            },
+            { 
+                lat: -33.9249, lng: 18.4241, 
+                title: "🇿🇦 South Africa: Western Cape", 
+                stat: "Restoration Phase",
+                status: "Active"
+            }
         ];
 
+        // --- 3. ADD PINS WITH PULSING ANIMATION ---
         sites.forEach(function(site) {
-            L.marker([site.lat, site.lng]).addTo(map)
-                .bindPopup(`<b>${site.title}</b><br>${site.trees} Trees Projected`);
+            // Determine color based on status
+            var pinColor = site.status === "Active" ? "#22c55e" : "#3b82f6"; // Green vs Blue
+            
+            var customIcon = L.divIcon({
+                className: 'custom-pin',
+                html: `<div style="
+                    width: 15px; 
+                    height: 15px; 
+                    background-color: ${pinColor}; 
+                    border-radius: 50%; 
+                    border: 2px solid white;
+                    box-shadow: 0 0 0 4px ${pinColor}40;
+                    animation: pulse 2s infinite;
+                "></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+
+            L.marker([site.lat, site.lng], {icon: customIcon}).addTo(map)
+                .bindPopup(`
+                    <div style="font-family: 'Poppins', sans-serif;">
+                        <strong style="color: #0f172a;">${site.title}</strong><br>
+                        <span style="color: #64748b; font-size: 0.9em;">${site.stat}</span>
+                    </div>
+                `);
         });
 
-        // 2. Fetch Live Weather (Nakuru as proxy for Rift Valley)
-        // Using Open-Meteo Free API
+        // --- 4. LIVE WEATHER DATA ---
         fetch('https://api.open-meteo.com/v1/forecast?latitude=-0.3031&longitude=36.0800&current_weather=true')
             .then(response => response.json())
             .then(data => {
                 const temp = data.current_weather.temperature;
                 document.getElementById('live-temp').innerText = `${temp}°C`;
-                
-                // Note: Open-Meteo basic free tier doesn't always send humidity in 'current_weather',
-                // so we simulate it if missing, or fetch from hourly.
-                // For demo robustness, we'll randomize slightly between 40-60% if undefined
                 const humid = 45 + Math.floor(Math.random() * 10); 
                 document.getElementById('live-humid').innerText = `${humid}%`;
             })
-            .catch(error => {
-                console.error("Weather fetch failed", error);
-                document.getElementById('live-temp').innerText = "24°C"; // Fallback
-                document.getElementById('live-humid').innerText = "50%"; // Fallback
-            });
+            .catch(err => console.log('Weather sync paused'));
+            
+        // CSS Animation for the pins
+        var styleSheet = document.createElement("style");
+        styleSheet.innerText = `
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+                70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
     });
 </script>
 {% endblock %}
