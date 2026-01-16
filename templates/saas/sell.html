@@ -2,207 +2,199 @@
 {% load static %}
 
 {% block content %}
-<div class="position-relative overflow-hidden" style="background-color: #0f172a; min-height: 85vh; display: flex; align-items: center;">
+<section class="py-5 bg-dark position-relative overflow-hidden" style="min-height: 70vh; display: flex; align-items: center;">
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(13, 110, 253, 0.1), transparent 50%);"></div>
     
-    <div class="position-absolute top-0 start-0 w-100 h-100" 
-         style="background: radial-gradient(circle at 70% 30%, rgba(220, 53, 69, 0.15), transparent 60%);">
+    <div class="container py-5 position-relative z-2 text-center">
+        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill mb-4 ls-2">DRIVING PROSPERITY</span>
+        <h1 class="display-3 fw-bold text-white mb-4">Turn Mobility Into <span class="text-success">Opportunity.</span></h1>
+        <p class="lead text-white-50 mx-auto mb-5" style="max-width: 700px; font-size: 1.25rem;">
+            Whether you own a showroom full of cars or just have a smartphone and ambition, BuyCars.Africa provides the ecosystem you need to build a business.
+        </p>
+        
+        <div class="d-flex justify-content-center gap-3">
+            <a href="#choose-path" class="btn btn-light rounded-pill px-5 py-3 fw-bold shadow-lg hover-lift">Choose Your Path</a>
+        </div>
     </div>
+</section>
 
-    <div class="container position-relative z-1 py-5">
-        <div class="row align-items-center">
+<section class="py-5 bg-light" id="choose-path" style="margin-top: -100px; padding-bottom: 100px;">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
             
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 mb-4 px-3 py-2 rounded-pill fw-bold ls-1">
-                    FOR CAR DEALERS & YARDS
-                </span>
-                
-                <h1 class="display-3 fw-bold mb-4" style="color: #ffffff !important; line-height: 1.1;">
-                    Turn Your Car Yard <br>
-                    into a <span class="text-danger">Digital Showroom</span>
-                </h1>
-                
-                <p class="lead mb-5 pe-lg-5 fs-5" style="color: rgba(255,255,255,0.8) !important;">
-                    Stop relying on just WhatsApp Status. Get a professional online profile, track verified leads, and reach buyers across Kenya instantly.
-                </p>
-                
-                <div class="d-flex flex-wrap gap-3">
-                    <a href="{% url 'signup' %}" class="btn btn-danger btn-lg rounded-pill fw-bold px-5 py-3 shadow-lg hover-lift">
-                        Start Selling Now
-                    </a>
-                    <a href="#features" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4 py-3">
-                        How It Works
-                    </a>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden hover-lift bg-white">
+                    <div class="card-header bg-white border-0 pt-5 px-5 pb-0 text-center">
+                        <div class="icon-box bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4 shadow-sm" style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-2">For Car Dealers</h3>
+                        <p class="text-muted">Digitize your yard and unlock capital.</p>
+                    </div>
+                    <div class="card-body px-5 pb-5">
+                        <hr class="opacity-10 my-4">
+                        <ul class="list-unstyled space-y-4 mb-5">
+                            <li class="d-flex align-items-start mb-4">
+                                <div class="bg-success bg-opacity-10 rounded-circle p-1 me-3 mt-1">
+                                    <i class="fas fa-coins text-success"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-dark">Inventory Finance</strong>
+                                    <p class="small text-muted mb-0">Get cash loans against your stock to buy more cars.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start mb-4">
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-1 me-3 mt-1">
+                                    <i class="fas fa-globe-americas text-primary"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-dark">Diaspora Access</strong>
+                                    <p class="small text-muted mb-0">Sell directly to verified buyers in the UK, US, and Dubai.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start">
+                                <div class="bg-dark bg-opacity-10 rounded-circle p-1 me-3 mt-1">
+                                    <i class="fas fa-file-invoice text-dark"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block text-dark">Professional Tools</strong>
+                                    <p class="small text-muted mb-0">Auto-generated invoices, agreements, and receipts.</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="d-grid">
+                            <a href="{% url 'signup' %}" class="btn btn-dark rounded-pill py-3 fw-bold shadow-sm">Create Dealer Account</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-6">
-                <div class="position-relative">
-                    <div class="card border-0 shadow-lg rounded-4 p-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); transform: rotate(-2deg);">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary me-3">
-                                <i class="fas fa-chart-line fa-2x"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-bold mb-0 text-dark">Dealer Dashboard</h5>
-                                <small class="text-muted">Real-time stats</small>
-                            </div>
-                        </div>
-                        
-                        <div class="row g-3 mb-4">
-                            <div class="col-6">
-                                <div class="p-3 rounded-3 bg-light text-center border">
-                                    <h3 class="fw-bold text-dark mb-0">24</h3>
-                                    <small class="text-muted">Leads Today</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 rounded-3 bg-light text-center border">
-                                    <h3 class="fw-bold text-success mb-0">Active</h3>
-                                    <small class="text-muted">Status</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-success border-0 d-flex align-items-center mb-0">
-                            <i class="fab fa-whatsapp fa-lg me-3"></i>
-                            <div>
-                                <strong class="d-block text-dark">New Inquiry</strong>
-                                <small class="text-muted">Buyer clicked to chat about "Toyota Prado"</small>
-                            </div>
-                        </div>
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 h-100 overflow-hidden hover-lift bg-success text-white position-relative">
+                    <div class="position-absolute top-0 end-0 p-5 opacity-10">
+                        <i class="fas fa-rocket fa-10x"></i>
                     </div>
 
-                    <div class="position-absolute top-0 start-50 translate-middle rounded-circle bg-danger opacity-25" 
-                         style="width: 300px; height: 300px; filter: blur(60px); z-index: -1;">
+                    <div class="card-header bg-transparent border-0 pt-5 px-5 pb-0 text-center position-relative z-2">
+                        <div class="icon-box bg-white text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-4 shadow-sm" style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="fw-bold mb-2">For Digital Brokers</h3>
+                        <p class="text-white-50">Start a business with zero capital.</p>
+                    </div>
+                    <div class="card-body px-5 pb-5 position-relative z-2">
+                        <hr class="border-white opacity-25 my-4">
+                        <ul class="list-unstyled space-y-4 mb-5">
+                            <li class="d-flex align-items-start mb-4">
+                                <div class="bg-white bg-opacity-25 rounded-circle p-1 me-3 mt-1">
+                                    <i class="fas fa-warehouse text-white"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Virtual Showroom</strong>
+                                    <p class="small text-white-50 mb-0">List cars from verified partners. No stock needed.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start mb-4">
+                                <div class="bg-white bg-opacity-25 rounded-circle p-1 me-3 mt-1">
+                                    <i class="fas fa-hand-holding-usd text-white"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Earn Commissions</strong>
+                                    <p class="small text-white-50 mb-0">Connect buyers to sellers and get paid securely.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex align-items-start">
+                                <div class="bg-white bg-opacity-25 rounded-circle p-1 me-3 mt-1">
+                                    <i class="fas fa-graduation-cap text-white"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Dealer Academy</strong>
+                                    <p class="small text-white-50 mb-0">Free training on how to inspect and sell cars.</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="d-grid">
+                            <a href="{% url 'signup' %}" class="btn btn-white text-success rounded-pill py-3 fw-bold shadow-sm">Start Hustling</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
-</div>
+</section>
 
-<section class="py-5 bg-white" id="features">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h6 class="text-danger fw-bold text-uppercase small mb-2">Why Join?</h6>
-            <h2 class="fw-bold display-6 text-dark">More Than Just a Listing</h2>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="p-4 rounded-4 h-100 bg-light border border-light transition-hover">
-                    <div class="bg-white p-3 rounded-circle d-inline-block shadow-sm mb-4">
-                        <i class="fas fa-store fa-2x text-danger"></i>
+<section class="py-5 bg-white border-top">
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="text-center">
+                    <i class="fas fa-quote-left fa-3x text-muted opacity-25 mb-4"></i>
+                    <h3 class="fw-bold text-dark mb-5 lh-base">
+                        "I started with no capital, just my phone. Using the BuyCars platform, I connected a buyer in Mombasa to a dealer in Nairobi. That single commission paid my rent for 3 months. Now I run my own digital agency."
+                    </h3>
+                    
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="bg-light p-1 rounded-circle me-3 border">
+                            <img src="https://ui-avatars.com/api/?name=Kevin+Mwangi&background=198754&color=fff&size=128" class="rounded-circle" width="64" alt="Kevin">
+                        </div>
+                        <div class="text-start">
+                            <h5 class="fw-bold mb-0 text-dark">Kevin Mwangi</h5>
+                            <small class="text-success fw-bold text-uppercase ls-1">Digital Broker, 24 years old</small>
+                        </div>
                     </div>
-                    <h4 class="fw-bold text-dark">Own Your Showroom</h4>
-                    <p class="text-muted">Get a dedicated link (buycars.africa/showroom/yourname) to share with clients instead of messy photo galleries.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-4 rounded-4 h-100 bg-light border border-light transition-hover">
-                    <div class="bg-white p-3 rounded-circle d-inline-block shadow-sm mb-4">
-                        <i class="fab fa-whatsapp fa-2x text-success"></i>
-                    </div>
-                    <h4 class="fw-bold text-dark">Direct WhatsApp Leads</h4>
-                    <p class="text-muted">Buyers click one button to chat with you directly. No middlemen, no hidden fees per lead.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-4 rounded-4 h-100 bg-light border border-light transition-hover">
-                    <div class="bg-white p-3 rounded-circle d-inline-block shadow-sm mb-4">
-                        <i class="fas fa-magic fa-2x text-primary"></i>
-                    </div>
-                    <h4 class="fw-bold text-dark">AI-Powered Pricing</h4>
-                    <p class="text-muted">Not sure what to charge? Our system suggests the best market price based on year, make, and model.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="py-5" style="background-color: #f8fafc;">
-    <div class="container py-4 text-center">
+<section class="py-5 bg-light">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h6 class="text-muted fw-bold text-uppercase small ls-2">Got Questions?</h6>
+            <h2 class="fw-bold text-dark">Common Questions</h2>
+        </div>
+        
         <div class="row justify-content-center">
-            <div class="col-lg-11">
-                <h2 class="fw-bold mb-4 text-dark">Dealer Plans Tailored for Growth</h2>
-                <p class="lead text-muted mb-3">Choose the capacity that fits your stock level.</p>
-                
-                <div class="row g-4 justify-content-center align-items-center mt-5 pt-3">
+            <div class="col-lg-8">
+                <div class="accordion accordion-flush shadow-sm rounded-4 bg-white" id="sellFaq">
                     
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
-                            <div class="py-3">
-                                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill text-uppercase small fw-bold ls-1 mb-3">Starter</span>
-                                <h2 class="fw-bold display-5 text-dark mb-1">KES 1,500</h2>
-                                <p class="text-muted small">/ month</p>
-                            </div>
-                            <hr class="opacity-10 my-4">
-                            <div class="text-start">
-                                <h6 class="fw-bold text-uppercase small text-muted mb-3 ls-1">Core Features</h6>
-                                <ul class="list-unstyled text-secondary">
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-primary me-3"></i> <strong>5</strong> Active Car Listings</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-primary me-3"></i> <strong>7</strong> Verified Leads/mo</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-primary me-3"></i> Basic Dashboard Access</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fab fa-whatsapp text-success me-3 fa-lg"></i> Direct WhatsApp Integration</li>
-                                </ul>
-                            </div>
-                            <div class="mt-4">
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-3">Get Started</a>
+                    <div class="accordion-item rounded-top-4">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold collapsed py-3" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Do I need to own the car to list it?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#sellFaq">
+                            <div class="accordion-body text-muted small pb-4">
+                                No! If you sign up as a Digital Broker (Standard Plan), you can seek permission from car owners to list their vehicles. We verify the car, you find the buyer, and you keep the commission.
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card border-0 shadow-lg p-4 rounded-4 position-relative" style="background-color: #0b1120; transform: scale(1.05); z-index: 2;">
-                            
-                            <span class="position-absolute start-50 translate-middle badge rounded-pill bg-danger px-4 py-2 fw-bold ls-1" 
-                                  style="top: 0; z-index: 10;">
-                                MOST POPULAR
-                            </span>
-
-                            <div class="py-3">
-                                <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 px-3 py-2 rounded-pill text-uppercase small fw-bold ls-1 mb-3">Lite</span>
-                                <h2 class="fw-bold display-5 mb-1 text-white">KES 5,000</h2>
-                                <p class="text-white-50 small">/ month</p>
-                            </div>
-                            <hr class="opacity-25 my-4 border-white">
-                            <div class="text-start">
-                                <h6 class="fw-bold text-uppercase small text-white-50 mb-3 ls-1">Growth Features</h6>
-                                <ul class="list-unstyled text-white">
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-danger me-3"></i> <strong>15</strong> Active Car Listings</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-danger me-3"></i> <strong>16</strong> Verified Leads/mo</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-certificate text-warning me-3"></i> <strong>Verified Dealer Badge</strong></li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-chart-line text-danger me-3"></i> Lead Trend Analytics</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-arrow-up text-success me-3"></i> Priority Search Ranking</li>
-                                </ul>
-                            </div>
-                            <div class="mt-4">
-                                <a href="{% url 'signup' %}" class="btn btn-danger rounded-pill w-100 fw-bold py-3 shadow-sm">Go Lite</a>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold collapsed py-3" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How does Inventory Finance work?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#sellFaq">
+                            <div class="accordion-body text-muted small pb-4">
+                                For established dealers on Gold/Platinum plans, our banking partners can advance you up to 60% of the value of your stock listed on BuyCars.Africa. This allows you to import more units while waiting for sales.
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-6">
-                        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white h-100 position-relative">
-                             <div class="py-3">
-                                <span class="badge bg-warning bg-opacity-10 text-dark border border-warning px-3 py-2 rounded-pill text-uppercase small fw-bold ls-1 mb-3">Pro</span>
-                                <h2 class="fw-bold display-5 text-dark mb-1">KES 12,000</h2>
-                                <p class="text-muted small">/ month</p>
-                            </div>
-                            <hr class="opacity-10 my-4">
-                            <div class="text-start">
-                                <h6 class="fw-bold text-uppercase small text-muted mb-3 ls-1">Enterprise Features</h6>
-                                <ul class="list-unstyled text-secondary">
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-dark me-3"></i> <strong>50</strong> Active Car Listings</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-check-circle text-dark me-3"></i> <strong>30</strong> Verified Leads/mo</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-crown text-warning me-3"></i> Homepage Spotlight</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-calculator text-dark me-3"></i> Full Asset Valuation</li>
-                                    <li class="mb-3 d-flex align-items-center"><i class="fas fa-file-pdf text-danger me-3"></i> Exportable Business Reports</li>
-                                </ul>
-                            </div>
-                            <div class="mt-4">
-                                <a href="{% url 'signup' %}" class="btn btn-outline-dark rounded-pill w-100 fw-bold py-3">Go Pro</a>
+                    <div class="accordion-item rounded-bottom-4">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold collapsed py-3" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Is there a monthly fee?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#sellFaq">
+                            <div class="accordion-body text-muted small pb-4">
+                                For Brokers (Standard Plan), it's very affordable (KES 2,500/mo) to cover platform costs. For established Dealers requiring finance tools, we have Gold and Platinum tiers. You can view full pricing <a href="{% url 'pricing' %}" class="text-success fw-bold">here</a>.
                             </div>
                         </div>
                     </div>
@@ -214,10 +206,9 @@
 </section>
 
 <style>
-    .hover-lift { transition: transform 0.3s ease; }
-    .hover-lift:hover { transform: translateY(-3px); }
-    .transition-hover { transition: all 0.3s ease; }
-    .transition-hover:hover { background: white !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: transparent !important; }
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-10px); box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; }
     .ls-1 { letter-spacing: 1px; }
+    .ls-2 { letter-spacing: 2px; }
 </style>
 {% endblock %}
