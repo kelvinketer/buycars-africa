@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .bg-finance-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .finance-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .finance-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
+        border-color: #22c55e;
+    }
+
+    .partner-logo-box {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+    }
+</style>
+
+<div class="bg-finance-hero text-white py-5">
+    <div class="container py-5 position-relative z-2">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 mb-4 fw-bold">
+                    🚗 ASSET FINANCING
+                </span>
+                <h1 class="display-3 fw-bold mb-4 ls-tight">Drive Your Dream,<br>Pay at Your Pace.</h1>
+                <p class="lead text-white-50 mb-5">
+                    We partner with leading Banks and Saccos to offer you up to <strong class="text-white">80% financing</strong> on your car purchase. Competitive rates, fast approval.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#calculator" class="btn btn-success btn-lg rounded-pill fw-bold px-5 shadow-lg">Calculate Payments</a>
+                    <a href="#apply" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4">Get Pre-Approved</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block text-center">
+                <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1000&auto=format&fit=crop" 
+                     class="img-fluid rounded-4 shadow-lg border border-white border-opacity-10" 
+                     style="transform: rotate(-2deg); max-width: 90%;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="py-5 bg-white border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h6 class="text-uppercase text-muted fw-bold small ls-1">Our Financing Partners</h6>
+            <h3 class="fw-bold">Trusted by Top Financial Institutions</h3>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-2">
+                <div class="partner-logo-box">
+                    <i class="fas fa-university fa-2x text-muted"></i>
+                    <span class="ms-2 fw-bold text-muted">Tier 1 Bank</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="partner-logo-box">
+                    <i class="fas fa-building fa-2x text-muted"></i>
+                    <span class="ms-2 fw-bold text-muted">Top Sacco</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="partner-logo-box">
+                    <i class="fas fa-hand-holding-usd fa-2x text-muted"></i>
+                    <span class="ms-2 fw-bold text-muted">Micro-Finance</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-2">
+                <div class="partner-logo-box">
+                    <i class="fas fa-briefcase fa-2x text-muted"></i>
+                    <span class="ms-2 fw-bold text-muted">Asset Finance</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="calculator" class="py-5" style="background-color: #f8fafc;">
+    <div class="container py-5">
+        <div class="row g-5">
+            
+            <div class="col-lg-7">
+                <div class="finance-card p-5 h-100">
+                    <h3 class="fw-bold mb-4"><i class="fas fa-calculator me-2 text-success"></i>Loan Calculator</h3>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted">Vehicle Price (KES)</label>
+                        <input type="number" id="fin-price" class="form-control form-control-lg fw-bold" value="1500000" oninput="updateFinance()">
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Down Payment (Min 20%)</label>
+                            <input type="number" id="fin-deposit" class="form-control fw-bold" value="300000" readonly>
+                            <input type="range" class="form-range mt-2" min="20" max="80" value="20" id="fin-deposit-range" oninput="updateFinance()">
+                            <small class="text-muted"><span id="deposit-percent">20</span>% Deposit</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Repayment Period</label>
+                            <select class="form-select fw-bold" id="fin-months" onchange="updateFinance()">
+                                <option value="12">12 Months</option>
+                                <option value="24">24 Months</option>
+                                <option value="36">36 Months</option>
+                                <option value="48" selected>48 Months</option>
+                                <option value="60">60 Months</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Interest Rate (Est.)</small>
+                        <span class="fw-bold">13% p.a reducing balance</span>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <small class="text-uppercase text-muted fw-bold ls-1">Estimated Monthly Installment</small>
+                        <h1 class="display-4 fw-bold text-success my-2" id="fin-monthly">KES 32,500</h1>
+                        <p class="small text-muted">*Figures are estimates. Final rate depends on the lender.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5" id="apply">
+                <div class="finance-card p-5 h-100 bg-dark text-white border-0" style="background: #0f172a;">
+                    <h3 class="fw-bold mb-4 text-white">Get Pre-Approved</h3>
+                    <p class="text-white-50 mb-4">Fill this form and our finance team will connect you with the best bank/sacco for your profile.</p>
+                    
+                    <form>
+                        <div class="mb-3">
+                            <label class="small text-white-50 fw-bold">Full Name</label>
+                            <input type="text" class="form-control border-0 bg-white bg-opacity-10 text-white placeholder-light" placeholder="e.g. John Doe">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-white-50 fw-bold">Phone Number</label>
+                            <input type="tel" class="form-control border-0 bg-white bg-opacity-10 text-white placeholder-light" placeholder="+254...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-white-50 fw-bold">Employment Status</label>
+                            <select class="form-select border-0 bg-white bg-opacity-10 text-white">
+                                <option class="text-dark">Employed</option>
+                                <option class="text-dark">Self-Employed / Business</option>
+                                <option class="text-dark">Diaspora</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-white-50 fw-bold">Estimated Budget</label>
+                            <select class="form-select border-0 bg-white bg-opacity-10 text-white">
+                                <option class="text-dark">KES 800k - 1.5M</option>
+                                <option class="text-dark">KES 1.5M - 3M</option>
+                                <option class="text-dark">KES 3M+</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn btn-success w-100 py-3 rounded-pill fw-bold mt-3 shadow-lg">
+                            Request Callback <i class="fas fa-paper-plane ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    function updateFinance() {
+        const price = parseFloat(document.getElementById('fin-price').value) || 0;
+        const depositPercent = parseInt(document.getElementById('fin-deposit-range').value);
+        const months = parseInt(document.getElementById('fin-months').value);
+        
+        // Update Labels
+        document.getElementById('deposit-percent').innerText = depositPercent;
+        
+        // Calcs
+        const depositAmount = price * (depositPercent / 100);
+        document.getElementById('fin-deposit').value = Math.floor(depositAmount);
+        
+        const principal = price - depositAmount;
+        const rate = 0.13; // 13% annual
+        const monthlyRate = rate / 12;
+        
+        // PMI Formula
+        const x = Math.pow(1 + monthlyRate, months);
+        const monthlyPayment = (principal * x * monthlyRate) / (x - 1);
+        
+        if (isFinite(monthlyPayment)) {
+            document.getElementById('fin-monthly').innerText = "KES " + Math.floor(monthlyPayment).toLocaleString();
+        } else {
+            document.getElementById('fin-monthly').innerText = "---";
+        }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', updateFinance);
+</script>
+{% endblock %}

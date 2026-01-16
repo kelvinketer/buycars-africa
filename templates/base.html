@@ -46,6 +46,10 @@
                         Browse Cars
                     </a>
 
+                    <a class="btn btn-outline-light nav-btn" href="{% url 'financing_page' %}" style="font-family: 'Poppins', sans-serif;">
+                        Financing
+                    </a>
+
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle nav-btn d-flex align-items-center justify-content-center border-secondary text-light" type="button" data-bs-toggle="dropdown" style="min-width: 100px;">
                             {% if request.session.currency == 'UGX' %} 🇺🇬 UGX

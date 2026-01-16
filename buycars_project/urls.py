@@ -57,6 +57,9 @@ urlpatterns = [
     path('impact/', car_views.impact_page, name='impact_page'),
     path('1-million-trees/', car_views.impact_page), # Alias for LinkedIn sharing
 
+    # --- NEW: FINANCING PAGE ---
+    path('financing/', car_views.financing_page, name='financing_page'),
+
     # --- DIASPORA LANDING PAGE ---
     path('diaspora/', car_views.diaspora_landing, name='diaspora_landing'),
 

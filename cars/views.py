@@ -46,7 +46,7 @@ def public_homepage(request):
     
     # --- GET SEARCH PARAMETERS ---
     q = request.GET.get('q')
-    listing_type = request.GET.get('listing_type') # <--- NEW: Get the type (Rent/Sale)
+    listing_type = request.GET.get('listing_type') 
     make = request.GET.get('make')
     region = request.GET.get('region')
     body_type = request.GET.get('body_type') 
@@ -88,8 +88,6 @@ def public_homepage(request):
     if min_price:
         try: 
             # Note: We filter by 'price' (Selling Price) by default. 
-            # Ideally, if Rent is selected, we should filter by 'rent_price_per_day', 
-            # but for simplicity, we stick to the main price or allow the DB to handle it.
             cars = cars.filter(price__gte=min_price)
         except: pass 
     if max_price:
@@ -116,7 +114,7 @@ def public_homepage(request):
     }
     return render(request, 'home.html', context)
 
-# --- NEW: CURRENCY SWITCHER VIEW ---
+# --- CURRENCY SWITCHER VIEW ---
 @require_POST
 def set_currency(request):
     """
@@ -141,7 +139,7 @@ def car_detail(request, car_id):
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
 
-# --- BOOKING LOGIC (UPDATED WITH EMAIL) ---
+# --- BOOKING LOGIC ---
 @login_required
 def book_car(request, car_id):
     """
@@ -262,7 +260,6 @@ def dealer_showroom(request, username):
     
     return render(request, 'dealer/showroom.html', {'dealer': dealer, 'profile': profile, 'cars': cars})
 
-# --- NEW: DIASPORA LANDING PAGE VIEW ---
 def diaspora_landing(request):
     """
     Dedicated landing page for International/Diaspora Ads.
@@ -634,3 +631,10 @@ def impact_page(request):
     Renders the '1 Million Trees' Impact Page.
     """
     return render(request, 'pages/impact.html')
+
+# --- NEW: FINANCING PAGE ---
+def financing_page(request):
+    """
+    Renders the Asset Financing & Loans page.
+    """
+    return render(request, 'pages/financing.html')
