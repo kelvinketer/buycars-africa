@@ -11,21 +11,20 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model 
 import re 
 
-# --- IMPORT FOR MIGRATION FIX ---
+# --- DATABASE & UTILS IMPORTS ---
 from django.core.management import call_command
-
-# --- NEW IMPORTS FOR EMAIL ---
+from django.db import connection # Critical for the SQL Fixer
 from django.core.mail import send_mail
 from django.conf import settings
 
 from users.models import DealerProfile
 from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking 
-from .forms import CarForm, CarBookingForm
+from .forms import CarForm, CarBookingForm, SaleAgreementForm 
 from .utils import render_to_pdf 
 
 User = get_user_model() 
 
-# --- CONFIGURATION: PLAN LIMITS (UPDATED) ---
+# --- CONFIGURATION: PLAN LIMITS ---
 PLAN_LIMITS = {
     'STARTER': {'cars': 10, 'images': 8},
     'LITE':    {'cars': 40, 'images': 15},
@@ -403,6 +402,7 @@ def driving_change_page(request):
     context = {'dealers_empowered': DealerProfile.objects.count(), 'trees_planted': cars_sold * 25, 'capital_unlocked': cars_sold * 1500000}
     return render(request, 'pages/driving_change.html', context)
 
+# --- DEALER ACADEMY VIEWS ---
 @login_required
 def dealer_academy(request):
     modules = [
@@ -414,55 +414,6 @@ def dealer_academy(request):
     resources = [{'name': 'KRA Sale Agreement', 'type': 'PDF', 'size': '1.2 MB'}, {'name': 'Vehicle Inspection Checklist', 'type': 'PDF', 'size': '0.8 MB'}, {'name': 'Q4 2025 Market Index', 'type': 'PDF', 'size': '3.5 MB'}]
     return render(request, 'dealer/academy.html', {'modules': modules, 'resources': resources, 'completion_rate': 35})
 
-# --- EMERGENCY MIGRATION VIEW (RUN ONCE ONLY) ---
-def run_migrations_view(request):
-    if not request.user.is_superuser:
-        return HttpResponse("<h1>Access Denied</h1><p>Only admins can run this.</p>", status=403)
-    try:
-        call_command('migrate')
-        return HttpResponse("<h1>SUCCESS! Database Updated.</h1><p>The 'updated_at' column has been created. <br> <a href='/dashboard/'>Go back to Dashboard</a></p>")
-    except Exception as e:
-        return HttpResponse(f"<h1>Error Running Migration</h1><p>{e}</p>")
-    
-
-# --- ADD AT THE VERY BOTTOM OF cars/views.py ---
-from django.db import connection
-
-def run_migrations_view(request):
-    """
-    ULTIMATE FIXER: Manually creates the missing column using Raw SQL.
-    Bypasses migration conflicts.
-    """
-    if not request.user.is_superuser:
-        return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
-
-    try:
-        with connection.cursor() as cursor:
-            # 1. Fix the Booking Table (The cause of the Dashboard Crash)
-            cursor.execute("""
-                ALTER TABLE cars_booking 
-                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
-            """)
-            
-            # 2. Fix the Car Table (Just in case 'city' is actually missing for some reason, ignore if exists)
-            # We use 'IF NOT EXISTS' to prevent the error you just saw.
-            cursor.execute("""
-                ALTER TABLE cars_car 
-                ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';
-            """)
-
-        return HttpResponse("""
-            <h1 style='color:green'>DATABASE PATCHED SUCCESSFULLY</h1>
-            <p>The 'updated_at' column was forced into the database.</p>
-            <br>
-            <a href='/dashboard/' style='font-size:20px; font-weight:bold; background: #eee; padding: 10px; border-radius: 5px; text-decoration: none;'>
-                &larr; Return to Dashboard (Should work now)
-            </a>
-        """)
-    except Exception as e:
-        return HttpResponse(f"<h1 style='color:red'>SQL ERROR</h1><pre>{e}</pre>")
-    
-    # --- DEALER ACADEMY: LESSON PLAYER ---
 @login_required
 def dealer_academy_lesson(request, module_id):
     """
@@ -493,35 +444,25 @@ def dealer_academy_lesson(request, module_id):
         }
     }
     
-    # 2. Fetch Module or 404
     module = curriculum.get(module_id)
     if not module:
         return redirect('dealer_academy')
 
-    # 3. Simulate "Next Module" logic
     next_id = module_id + 1 if (module_id + 1) in curriculum else None
 
     context = {
-        'module': module,
-        'module_id': module_id,
-        'next_id': next_id,
-        'all_modules': curriculum # To show the sidebar list
+        'module': module, 'module_id': module_id, 'next_id': next_id, 'all_modules': curriculum 
     }
     return render(request, 'dealer/academy_lesson.html', context)
 
 # --- DEALER TOOL: SALES AGREEMENT GENERATOR ---
-from .forms import SaleAgreementForm  # Make sure to import this at the top too if needed
-
 @login_required
 def create_agreement(request):
     if request.method == 'POST':
         form = SaleAgreementForm(request.POST)
         if form.is_valid():
-            # Prepare context for the PDF template
             data = form.cleaned_data
             data['date'] = timezone.now()
-            
-            # Generate PDF
             pdf = render_to_pdf('dealer/tools/agreement_pdf.html', data)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
@@ -530,7 +471,6 @@ def create_agreement(request):
                 return response
             return HttpResponse("Error Generating PDF", status=400)
     else:
-        # Pre-fill seller info from logged-in user profile
         initial_data = {
             'seller_name': request.user.dealer_profile.business_name or request.user.username,
             'seller_phone': request.user.dealer_profile.phone,
@@ -538,3 +478,47 @@ def create_agreement(request):
         form = SaleAgreementForm(initial=initial_data)
 
     return render(request, 'dealer/tools/agreement_form.html', {'form': form})
+
+# --- ULTIMATE MIGRATION FIXER (DB REPAIR TOOL) ---
+def run_migrations_view(request):
+    """
+    ULTIMATE FIXER: Manually creates missing columns using Raw SQL.
+    Includes the fix for Super Admin (SearchTerm.last_searched).
+    """
+    if not request.user.is_superuser:
+        return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
+
+    try:
+        with connection.cursor() as cursor:
+            # 1. Fix Booking Table (Dashboard Crash Fix)
+            cursor.execute("""
+                ALTER TABLE cars_booking 
+                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+            """)
+            
+            # 2. Fix Car Table (City Field Fix)
+            cursor.execute("""
+                ALTER TABLE cars_car 
+                ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';
+            """)
+
+            # 3. Fix Search Terms Table (Super Admin Fix)
+            cursor.execute("""
+                ALTER TABLE cars_searchterm 
+                ADD COLUMN IF NOT EXISTS last_searched TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+            """)
+
+        return HttpResponse("""
+            <h1 style='color:green'>DATABASE PATCHED SUCCESSFULLY</h1>
+            <ul style='font-size:18px;'>
+                <li>✅ 'updated_at' added to Bookings</li>
+                <li>✅ 'city' added to Cars</li>
+                <li>✅ 'last_searched' added to Search Terms</li>
+            </ul>
+            <br>
+            <a href='/super-admin/' style='font-size:20px; font-weight:bold; background: #eee; padding: 10px; border-radius: 5px; text-decoration: none;'>
+                &rarr; Try Super Admin Dashboard Now
+            </a>
+        """)
+    except Exception as e:
+        return HttpResponse(f"<h1 style='color:red'>SQL ERROR</h1><pre>{e}</pre>")
