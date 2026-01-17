@@ -2,8 +2,7 @@
 {% load humanize %}
 {% load custom_filters %} 
 {% load static %}
-
-{% block head_extra %}
+{% load currency_tags %} {% block head_extra %}
 <meta property="og:title" content="{{ profile.business_name }} | BuyCars.Africa">
 <meta property="og:description" content="Check out the latest inventory from {{ profile.business_name }} in {{ profile.city|default:'Kenya' }}. Verified Dealer.">
 <meta property="og:image" content="{% if profile.logo %}{{ profile.logo.url }}{% else %}https://buycars-africa.onrender.com/static/images/preview_default.jpg{% endif %}">
@@ -229,7 +228,11 @@
 
                         <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
                             <h5 class="text-success fw-bold mb-0">
-                                KES {{ car.price|floatformat:0|intcomma }}
+                                {% if car.listing_type == 'RENT' %}
+                                    {% display_price car.rent_price_per_day 'KES' %}<small class="text-muted fs-6 fw-normal">/day</small>
+                                {% else %}
+                                    {% display_price car.price 'KES' %}
+                                {% endif %}
                             </h5>
                             <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold">View Details</a>
                         </div>
