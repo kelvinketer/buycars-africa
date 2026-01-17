@@ -15,7 +15,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 # --- LOCAL IMPORTS ---
-# UPDATED: Added CustomerProfile to imports
 from .models import DealerProfile, CustomerProfile
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CustomerSignUpForm
 from payments.models import Payment   
@@ -96,7 +95,6 @@ def login_view(request):
                 return redirect('dealer_dashboard')
             
             # 4. Renter/Regular User -> Homepage (or Renter Dashboard)
-            # Note: You can change this to 'renter_dashboard' if you prefer them to land there
             return redirect('home')
     else:
         form = AuthenticationForm()
@@ -223,8 +221,9 @@ def admin_dashboard(request):
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # 8. SEARCH ANALYTICS
-    top_searches = SearchTerm.objects.order_by('-count')[:10]
+    # 8. SEARCH ANALYTICS [FIXED]
+    # Replaced aggregation with direct table access to fix 'GROUP BY' error
+    top_searches = SearchTerm.objects.all().order_by('-count')[:10]
 
     # 9. CHURN FORECAST (EXPIRING SOON)
     seven_days_from_now = timezone.now() + timedelta(days=7)
