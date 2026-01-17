@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="bg-light min-vh-100 py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-header bg-dark text-white p-4 rounded-top-4">
+                        <h4 class="mb-0 fw-bold"><i class="fas fa-file-contract me-2"></i> Generate Sales Agreement</h4>
+                        <p class="text-white-50 mb-0 small">Create a legally binding KRA-compliant car sale contract.</p>
+                    </div>
+                    <div class="card-body p-5">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <h6 class="text-success fw-bold text-uppercase small mb-3 border-bottom pb-2">1. The Parties</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">{{ form.seller_name|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.seller_id|as_crispy_field }}</div>
+                                <div class="col-md-12">{{ form.seller_phone|as_crispy_field }}</div>
+                                <div class="col-12"><hr class="opacity-10"></div>
+                                <div class="col-md-6">{{ form.buyer_name|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.buyer_id|as_crispy_field }}</div>
+                                <div class="col-md-12">{{ form.buyer_phone|as_crispy_field }}</div>
+                            </div>
+
+                            <h6 class="text-success fw-bold text-uppercase small mb-3 border-bottom pb-2">2. The Vehicle</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">{{ form.make_model|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.reg_number|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.chassis_number|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.color|as_crispy_field }}</div>
+                            </div>
+
+                            <h6 class="text-success fw-bold text-uppercase small mb-3 border-bottom pb-2">3. Payment Terms</h6>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">{{ form.sale_price|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ form.amount_paid|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ form.balance|as_crispy_field }}</div>
+                                <div class="col-12">{{ form.witness_name|as_crispy_field }}</div>
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow">
+                                <i class="fas fa-print me-2"></i> Generate Contract PDF
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

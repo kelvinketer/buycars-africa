@@ -508,3 +508,33 @@ def dealer_academy_lesson(request, module_id):
         'all_modules': curriculum # To show the sidebar list
     }
     return render(request, 'dealer/academy_lesson.html', context)
+
+# --- DEALER TOOL: SALES AGREEMENT GENERATOR ---
+from .forms import SaleAgreementForm  # Make sure to import this at the top too if needed
+
+@login_required
+def create_agreement(request):
+    if request.method == 'POST':
+        form = SaleAgreementForm(request.POST)
+        if form.is_valid():
+            # Prepare context for the PDF template
+            data = form.cleaned_data
+            data['date'] = timezone.now()
+            
+            # Generate PDF
+            pdf = render_to_pdf('dealer/tools/agreement_pdf.html', data)
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                filename = f"Sale_Agreement_{data['reg_number']}.pdf"
+                response['Content-Disposition'] = f'inline; filename="{filename}"'
+                return response
+            return HttpResponse("Error Generating PDF", status=400)
+    else:
+        # Pre-fill seller info from logged-in user profile
+        initial_data = {
+            'seller_name': request.user.dealer_profile.business_name or request.user.username,
+            'seller_phone': request.user.dealer_profile.phone,
+        }
+        form = SaleAgreementForm(initial=initial_data)
+
+    return render(request, 'dealer/tools/agreement_form.html', {'form': form})

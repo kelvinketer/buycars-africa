@@ -89,3 +89,28 @@ class CarBookingForm(forms.ModelForm):
                 raise forms.ValidationError("End date must be after start date.")
         
         return cleaned_data
+    
+    # --- NEW: SALE AGREEMENT FORM ---
+class SaleAgreementForm(forms.Form):
+    # Seller Details
+    seller_name = forms.CharField(label="Seller's Full Name", max_length=100)
+    seller_id = forms.CharField(label="Seller's ID/Passport No", max_length=50)
+    seller_phone = forms.CharField(label="Seller's Phone", max_length=20)
+    
+    # Buyer Details
+    buyer_name = forms.CharField(label="Buyer's Full Name", max_length=100)
+    buyer_id = forms.CharField(label="Buyer's ID/Passport No", max_length=50)
+    buyer_phone = forms.CharField(label="Buyer's Phone", max_length=20)
+    
+    # Vehicle Details
+    make_model = forms.CharField(label="Vehicle Make & Model", max_length=100, widget=forms.TextInput(attrs={'placeholder': 'e.g. Toyota Fielder'}))
+    reg_number = forms.CharField(label="Registration Number", max_length=20, widget=forms.TextInput(attrs={'placeholder': 'KBC 123A'}))
+    chassis_number = forms.CharField(label="Chassis / VIN Number", max_length=50)
+    engine_number = forms.CharField(label="Engine Number", max_length=50, required=False)
+    color = forms.CharField(label="Color", max_length=30)
+    
+    # Transaction Details
+    sale_price = forms.IntegerField(label="Agreed Price (KES)")
+    amount_paid = forms.IntegerField(label="Amount Paid Now (KES)")
+    balance = forms.IntegerField(label="Balance Remaining (KES)", required=False, initial=0)
+    witness_name = forms.CharField(label="Witness Name", max_length=100, required=False)

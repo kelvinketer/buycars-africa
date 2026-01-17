@@ -92,6 +92,7 @@ urlpatterns = [
     path('dashboard/', car_views.dealer_dashboard, name='dealer_dashboard'),
     path('dashboard/add/', car_views.add_car, name='add_car'), 
     path('dashboard/report/', car_views.download_report, name='download_report'),
+    path('dashboard/tools/agreement/', car_views.create_agreement, name='create_agreement'),
     
     # --- DEALER ACADEMY ---
     path('dashboard/academy/', car_views.dealer_academy, name='dealer_academy'),
