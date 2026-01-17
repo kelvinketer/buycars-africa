@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-light min-vh-100 d-flex flex-column">
+    
+    <div class="bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center sticky-top">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'dealer_academy' %}" class="btn btn-light btn-sm rounded-circle me-3"><i class="fas fa-arrow-left"></i></a>
+            <div>
+                <small class="text-muted text-uppercase fw-bold ls-1" style="font-size: 0.7rem;">Module {{ module_id }}</small>
+                <h5 class="fw-bold mb-0 text-dark">{{ module.title }}</h5>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-none d-md-block text-end">
+                <small class="text-muted d-block">Progress</small>
+                <div class="progress" style="width: 100px; height: 6px;">
+                    <div class="progress-bar bg-success" style="width: 25%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid flex-grow-1">
+        <div class="row h-100">
+            
+            <div class="col-lg-9 p-0 bg-dark d-flex align-items-center justify-content-center" style="min-height: 500px;">
+                <div class="ratio ratio-16x9 w-100 h-100" style="max-height: 80vh;">
+                    <iframe src="https://www.youtube.com/embed/{{ module.video_id }}?rel=0&modestbranding=1" title="YouTube video" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="col-lg-3 bg-white border-start h-100 overflow-auto" style="max-height: 80vh;">
+                <div class="p-4">
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3">Lesson Notes</h6>
+                    <div class="prose text-dark mb-5" style="font-size: 0.95rem; line-height: 1.6;">
+                        {{ module.content|safe }}
+                    </div>
+
+                    <hr class="my-4 opacity-10">
+
+                    <h6 class="fw-bold text-uppercase text-muted small mb-3">Up Next</h6>
+                    <div class="list-group list-group-flush">
+                        {% for id, item in all_modules.items %}
+                        <a href="{% url 'academy_lesson' id %}" class="list-group-item list-group-item-action border-0 px-0 d-flex align-items-center {% if id == module_id %}active-lesson{% endif %}">
+                            <div class="me-3">
+                                {% if id < module_id %}
+                                    <i class="fas fa-check-circle text-success"></i>
+                                {% elif id == module_id %}
+                                    <i class="fas fa-play-circle text-primary"></i>
+                                {% else %}
+                                    <i class="far fa-circle text-muted"></i>
+                                {% endif %}
+                            </div>
+                            <div class="small fw-bold {% if id == module_id %}text-primary{% else %}text-dark{% endif %}">
+                                {{ item.title }}
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-5">
+                        {% if next_id %}
+                            <a href="{% url 'academy_lesson' next_id %}" class="btn btn-success w-100 fw-bold py-3 rounded-pill">
+                                Next Lesson <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'dealer_academy' %}" class="btn btn-dark w-100 fw-bold py-3 rounded-pill">
+                                Finish Course <i class="fas fa-check ms-2"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .active-lesson { background: transparent !important; }
+    .prose ul { padding-left: 1.2rem; margin-bottom: 1rem; }
+    .prose li { margin-bottom: 0.5rem; color: #4b5563; }
+</style>
+{% endblock %}

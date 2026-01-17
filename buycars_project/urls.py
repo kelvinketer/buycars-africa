@@ -120,6 +120,9 @@ urlpatterns = [
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
     path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
+    
+# ... existing academy url ...
+    path('dashboard/academy/lesson/<int:module_id>/', car_views.dealer_academy_lesson, name='academy_lesson'),
 ]
 
 if settings.DEBUG:

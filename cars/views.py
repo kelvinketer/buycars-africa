@@ -461,3 +461,50 @@ def run_migrations_view(request):
         """)
     except Exception as e:
         return HttpResponse(f"<h1 style='color:red'>SQL ERROR</h1><pre>{e}</pre>")
+    
+    # --- DEALER ACADEMY: LESSON PLAYER ---
+@login_required
+def dealer_academy_lesson(request, module_id):
+    """
+    Renders the specific lesson content.
+    """
+    # 1. Define Content (Simulated DB)
+    curriculum = {
+        1: {
+            'title': 'The Digital Broker Mindset',
+            'video_id': 'M7lc1UVf-VE',  # YouTube ID (simulated)
+            'desc': 'Why the old way of selling is dying and how trust is your new currency.',
+            'content': """
+                <p><strong>Welcome to the new era of car selling.</strong></p>
+                <p>In this module, we cover the three pillars of a successful digital broker:</p>
+                <ul>
+                    <li><strong>Transparency:</strong> Why hiding defects kills your long-term revenue.</li>
+                    <li><strong>Speed:</strong> Responding to WhatsApp leads within 5 minutes increases conversion by 400%.</li>
+                    <li><strong>Presentation:</strong> Why 20 photos are better than 5.</li>
+                </ul>
+                <div class="alert alert-info">Tip: Complete this module to unlock the 'Verification' badge on your profile.</div>
+            """
+        },
+        2: {
+            'title': 'Sourcing & Verification',
+            'video_id': 'tgbNymZ7vqY', 
+            'desc': 'How to inspect a car like a pro before you list it.',
+            'content': '<p>Check the logbook, verify the VIN, and look for accident repairs.</p>'
+        }
+    }
+    
+    # 2. Fetch Module or 404
+    module = curriculum.get(module_id)
+    if not module:
+        return redirect('dealer_academy')
+
+    # 3. Simulate "Next Module" logic
+    next_id = module_id + 1 if (module_id + 1) in curriculum else None
+
+    context = {
+        'module': module,
+        'module_id': module_id,
+        'next_id': next_id,
+        'all_modules': curriculum # To show the sidebar list
+    }
+    return render(request, 'dealer/academy_lesson.html', context)
