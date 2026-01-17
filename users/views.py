@@ -186,9 +186,8 @@ def admin_dashboard(request):
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # 8. SEARCH ANALYTICS [FIXED HERE]
-    # We use .values() to force a simple SELECT query, bypassing the GROUP BY error
-    top_searches = SearchTerm.objects.values('term', 'count').order_by('-count')[:10]
+    # 8. SEARCH ANALYTICS [FIXED: No Aggregation, Just Fetch]
+    top_searches = SearchTerm.objects.all().order_by('-count')[:10]
 
     # 9. CHURN FORECAST
     seven_days_from_now = timezone.now() + timedelta(days=7)
