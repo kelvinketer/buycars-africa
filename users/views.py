@@ -186,7 +186,8 @@ def admin_dashboard(request):
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # 8. SEARCH ANALYTICS [FIXED: No Aggregation, Just Fetch]
+    # 8. SEARCH ANALYTICS [CRITICAL FIX HERE]
+    # Replaced .values() with .all() to fix PostgreSQL "GROUP BY" error
     top_searches = SearchTerm.objects.all().order_by('-count')[:10]
 
     # 9. CHURN FORECAST
