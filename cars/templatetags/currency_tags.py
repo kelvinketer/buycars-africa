@@ -3,8 +3,8 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 
 register = template.Library()
 
-# Approximate Exchange Rates (Base: 1 KES) - Updated for Pan-African Expansion
-# NOTE: In a production environment, fetch these from an API (e.g., OpenExchangeRates)
+# --- EXCHANGE RATES (Kept your Pan-African list) ---
+# NOTE: In production, fetch these from an API (e.g., OpenExchangeRates)
 RATES = {
     'KES': 1.0,
     
@@ -34,34 +34,41 @@ RATES = {
 }
 
 @register.simple_tag(takes_context=True)
-def convert_price(context, price, listing_currency):
+def display_price(context, price, listing_currency='KES'):
     """
     Converts the car price from its listing currency to the user's session currency.
+    Usage: {% display_price car.price 'KES' %}
     """
+    # 1. Safety Check: If price is missing or 0
+    if not price:
+        return "Price on Request"
+
     request = context.get('request')
-    
-    # 1. Get User's Preferred Currency (Default to listing currency if not set)
+    target_currency = 'KES' # Default fallback
+
+    # 2. Get User's Preferred Currency
     if request and 'currency' in request.session:
         target_currency = request.session['currency']
-    else:
-        return f"{listing_currency} {intcomma(int(price))}"
 
-    # 2. If currencies match, just return the original
+    # 3. If currencies match, return original immediately
     if listing_currency == target_currency:
         return f"{listing_currency} {intcomma(int(price))}"
 
-    # 3. Perform Conversion
+    # 4. Perform Conversion
     try:
-        base_price_in_kes = float(price) 
-        
-        # If the car itself was NOT listed in KES, normalize it to KES first
+        # Step A: Normalize to KES (if car wasn't listed in KES)
+        base_price_in_kes = float(price)
         if listing_currency != 'KES':
             base_rate = RATES.get(listing_currency, 1.0)
-            base_price_in_kes = float(price) / base_rate
+            base_price_in_kes = base_price_in_kes / base_rate
 
-        # Convert FROM KES to Target
+        # Step B: Convert KES to Target Currency
         target_rate = RATES.get(target_currency, 1.0)
         final_value = base_price_in_kes * target_rate
+        
+        # Formatting for USD/GBP/EUR (2 decimal places), others (Integers)
+        if target_currency in ['USD', 'GBP', 'EUR']:
+            return f"{target_currency} {intcomma(round(final_value, 2))}"
         
         return f"{target_currency} {intcomma(int(final_value))}"
 
