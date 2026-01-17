@@ -204,7 +204,7 @@
                             <h1 class="display-3 fw-bold text-white mb-2">{{ car.year }} {{ car.make }} {{ car.model }}</h1>
                             
                             <h2 class="text-warning fw-bold mb-3">
-                                {% convert_price car.price car.listing_currency %}
+                                {% display_price car.price car.listing_currency %}
                             </h2>
                             
                             <p class="text-white small mb-4 opacity-75">
@@ -560,18 +560,25 @@
                             {% if car.listing_type == 'RENT' %}
                                 <div>
                                     <h6 class="text-primary fw-bold mb-0">
-                                        {% convert_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
+                                        {% display_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
                                     </h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Book</a>
+                            
+                            {% elif car.listing_type == 'BOTH' %}
+                                <div>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% display_price car.price car.listing_currency %}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% display_price car.rent_price_per_day car.listing_currency %}/day</small>
+                                </div>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
 
                             {% else %}
                                 <h6 class="text-success fw-bold mb-0 fs-5">
-                                    {% convert_price car.price car.listing_currency %}
+                                    {% display_price car.price car.listing_currency %}
                                 </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">View</a>
                             {% endif %}
-                            
+
                         </div>
                     </div>
                 </div>
@@ -658,21 +665,21 @@
                             {% if car.listing_type == 'RENT' %}
                                 <div>
                                     <h6 class="text-primary fw-bold mb-0">
-                                        {% convert_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
+                                        {% display_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
                                     </h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
                             
                             {% elif car.listing_type == 'BOTH' %}
                                 <div>
-                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% convert_price car.price car.listing_currency %}</small>
-                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% convert_price car.rent_price_per_day car.listing_currency %}/day</small>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% display_price car.price car.listing_currency %}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% display_price car.rent_price_per_day car.listing_currency %}/day</small>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
 
                             {% else %}
                                 <h6 class="text-success fw-bold mb-0 fs-5">
-                                    {% convert_price car.price car.listing_currency %}
+                                    {% display_price car.price car.listing_currency %}
                                 </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
                             {% endif %}
@@ -685,93 +692,17 @@
             <div class="col-12 text-center py-5">
                 <div class="bg-white rounded-4 p-5 shadow-sm">
                     <i class="fas fa-search fa-3x mb-3 text-muted opacity-50"></i>
-                    <h4>No cars found matching your criteria</h4>
-                    <p class="text-muted">Try adjusting your filters or price range.</p>
-                    <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-pill mt-2">Clear All Filters</a>
+                    {% if request.GET.q %}
+                        <h5>No results found</h5>
+                        <p class="text-muted">We couldn't find any cars matching "{{ request.GET.q }}".</p>
+                        <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-pill mt-2">Clear All Filters</a>
+                    {% else %}
+                        <h5>Inventory Empty</h5>
+                        <p class="text-muted">This dealer hasn't listed any cars yet. Check back soon!</p>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
-        </div>
-    </div>
-</section>
-
-<section class="py-5 bg-white border-top">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h6 class="text-danger fw-bold text-uppercase small mb-2">Success Stories</h6>
-            <h2 class="fw-bold text-dark display-6">Trusted by the East African Community</h2>
-            <p class="text-muted mx-auto" style="max-width: 600px;">
-                From Kampala to Dar es Salaam, we help thousands of buyers find verified vehicles without the headache.
-            </p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-light position-relative">
-                    <div class="position-absolute top-0 start-0 translate-middle p-3 ms-5 mt-2">
-                        <i class="fas fa-quote-left fa-2x text-secondary opacity-25"></i>
-                    </div>
-                    <div class="card-body position-relative z-1">
-                        <div class="d-flex text-warning mb-3">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-dark mb-4 fst-italic">"I was skeptical about buying a car while in London. BuyCars.Africa handled the inspection and the dealer was verified. My mum picked up the Harrier the next day. Zero stress."</p>
-                        <div class="d-flex align-items-center">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle me-3" width="50" height="50" alt="Client">
-                            <div>
-                                <h6 class="fw-bold mb-0 text-dark">David K.</h6>
-                                <small class="text-muted">Purchased from London 🇬🇧</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-light position-relative">
-                    <div class="position-absolute top-0 start-0 translate-middle p-3 ms-5 mt-2">
-                        <i class="fas fa-quote-left fa-2x text-secondary opacity-25"></i>
-                    </div>
-                    <div class="card-body position-relative z-1">
-                        <div class="d-flex text-warning mb-3">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        </div>
-                        <p class="text-dark mb-4 fst-italic">"No brokers, no middlemen. I searched, found a dealer in Westlands, and went for a test drive. The transparency on this platform is what the Kenyan market needed."</p>
-                        <div class="d-flex align-items-center">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" class="rounded-circle me-3" width="50" height="50" alt="Client">
-                            <div>
-                                <h6 class="fw-bold mb-0 text-dark">Sarah M.</h6>
-                                <small class="text-muted">Purchased in Nairobi 🇰🇪</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-light position-relative">
-                    <div class="position-absolute top-0 start-0 translate-middle p-3 ms-5 mt-2">
-                        <i class="fas fa-quote-left fa-2x text-secondary opacity-25"></i>
-                    </div>
-                    <div class="card-body position-relative z-1">
-                        <div class="d-flex text-warning mb-3">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <p class="text-dark mb-4 fst-italic">"Since joining the Pro Plan, I've sold 4 cars to diaspora clients. The platform builds confidence for buyers who can't physically visit my yard. Highly recommended."</p>
-                        <div class="d-flex align-items-center">
-                            <img src="https://randomuser.me/api/portraits/men/85.jpg" class="rounded-circle me-3" width="50" height="50" alt="Client">
-                            <div>
-                                <h6 class="fw-bold mb-0 text-dark">Omar A.</h6>
-                                <small class="text-muted">Verified Dealer, Mombasa</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-primary bg-opacity-10 rounded-4 p-4 mt-5 text-center border border-primary border-opacity-10">
-            <h4 class="fw-bold text-dark mb-2">Ready to find your dream car?</h4>
-            <p class="text-muted mb-4">Browse thousands of verified listings today.</p>
-            <a href="#listings" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">Start Searching</a>
         </div>
     </div>
 </section>
