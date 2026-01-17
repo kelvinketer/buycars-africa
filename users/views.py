@@ -188,7 +188,8 @@ def admin_dashboard(request):
 
     # 8. SEARCH ANALYTICS [CRITICAL FIX HERE]
     # Replaced .values() with .all() to fix PostgreSQL "GROUP BY" error
-    top_searches = SearchTerm.objects.all().order_by('-count')[:10]
+    # 8. SEARCH ANALYTICS (Raw SQL Fallback)
+    top_searches = SearchTerm.objects.raw('SELECT * FROM cars_searchterm ORDER BY count DESC LIMIT 10')
 
     # 9. CHURN FORECAST
     seven_days_from_now = timezone.now() + timedelta(days=7)
