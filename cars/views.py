@@ -476,27 +476,33 @@ def create_agreement(request):
 # --- ULTIMATE MIGRATION FIXER (DB REPAIR TOOL) ---
 def run_migrations_view(request):
     """
-    ULTIMATE FIXER: Manually creates the missing column using Raw SQL.
-    Bypasses migration conflicts.
+    ULTIMATE FIXER: Manually creates missing columns using Raw SQL.
+    Includes the fix for SearchTerm 'count' AND 'last_searched'.
     """
     if not request.user.is_superuser:
         return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
 
     try:
         with connection.cursor() as cursor:
-            # 1. Fix the Booking Table
+            # 1. Fix Booking Table
             cursor.execute("""
                 ALTER TABLE cars_booking 
                 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
             """)
             
-            # 2. Fix the Car Table
+            # 2. Fix Car Table
             cursor.execute("""
                 ALTER TABLE cars_car 
                 ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';
             """)
 
-            # 3. Fix the SearchTerm Table (Super Admin Dashboard)
+            # 3. Fix Search Terms Table (CRITICAL FIX FOR SUPER ADMIN)
+            # Adds 'count' (integer) if missing
+            cursor.execute("""
+                ALTER TABLE cars_searchterm 
+                ADD COLUMN IF NOT EXISTS count INTEGER DEFAULT 1;
+            """)
+            # Adds 'last_searched' (timestamp) if missing
             cursor.execute("""
                 ALTER TABLE cars_searchterm 
                 ADD COLUMN IF NOT EXISTS last_searched TIMESTAMP WITH TIME ZONE DEFAULT NOW();
@@ -507,6 +513,7 @@ def run_migrations_view(request):
             <ul style='font-size:18px;'>
                 <li>✅ 'updated_at' added to Bookings</li>
                 <li>✅ 'city' added to Cars</li>
+                <li>✅ 'count' added to SearchTerm (Fixes Admin Crash)</li>
                 <li>✅ 'last_searched' added to SearchTerm</li>
             </ul>
             <br>
