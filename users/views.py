@@ -27,28 +27,19 @@ User = get_user_model()
 # ==========================================
 
 def select_account(request):
-    """
-    Gateway page where users choose between Renter or Dealer account.
-    """
     return render(request, 'auth/select_account.html')
 
 def customer_signup(request):
-    """
-    Handles registration for Renters (Buyers).
-    Includes UX FIX: Redirects back to the previous page (e.g., Booking) if 'next' is present.
-    """
     if request.method == 'POST':
         form = CustomerSignUpForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Account created successfully! You can now book cars.")
+            messages.success(request, "Account created successfully!")
             
-            # --- UX FIX: Redirect back to the booking page if applicable ---
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
-            # -------------------------------------------------------------
             
             return redirect('home') 
     else:
@@ -56,15 +47,10 @@ def customer_signup(request):
     return render(request, 'auth/customer_signup.html', {'form': form})
 
 def signup_view(request):
-    """
-    Handles registration for Dealers.
-    Redirects to Dealer Dashboard upon success.
-    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Ensure we create the profile immediately for Dealers
             DealerProfile.objects.create(user=user, business_name=f"{user.username}'s Yard")
             login(request, user)
             return redirect('dealer_dashboard')
@@ -73,28 +59,21 @@ def signup_view(request):
     return render(request, 'auth/signup.html', {'form': form})
 
 def login_view(request):
-    """
-    Smart Login: Redirects users based on their Role (Admin, Dealer, or Renter).
-    """
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             
-            # 1. If there is a 'next' param (e.g. they were trying to book), go there first
             if 'next' in request.GET:
                 return redirect(request.GET.get('next'))
             
-            # 2. Super Admin -> CEO Dashboard
             if user.is_superuser:
                 return redirect('admin_dashboard')
             
-            # 3. Dealer -> Dealer Dashboard
             if hasattr(user, 'dealer_profile'):
                 return redirect('dealer_dashboard')
             
-            # 4. Renter/Regular User -> Homepage (or Renter Dashboard)
             return redirect('home')
     else:
         form = AuthenticationForm()
@@ -111,17 +90,11 @@ def logout_view(request):
 
 @login_required
 def renter_dashboard(request):
-    """
-    Dashboard for Renters to view profile status and payment history.
-    """
-    # 1. Security Check: If they are a Dealer, send them to Dealer Dashboard
     if hasattr(request.user, 'dealer_profile'):
         return redirect('dealer_dashboard')
 
-    # 2. Get the Profile
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
 
-    # 3. Handle Profile Updates
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         if u_form.is_valid():
@@ -131,8 +104,6 @@ def renter_dashboard(request):
     else:
         u_form = UserUpdateForm(instance=request.user)
 
-    # 4. Get Rental History (Based on Payments made by their phone number)
-    # We use phone_number because M-Pesa payments are linked to phone
     user_payments = Payment.objects.filter(phone_number=request.user.phone_number).order_by('-id')
 
     context = {
@@ -143,12 +114,11 @@ def renter_dashboard(request):
     return render(request, 'users/renter_dashboard.html', context)
 
 # ==========================================
-#      DEALER SETTINGS & PROFILE
+#      DEALER SETTINGS
 # ==========================================
 
 @login_required
 def profile_settings(request):
-    # Only allow Dealers to access this
     if not hasattr(request.user, 'dealer_profile'):
         messages.error(request, "This page is for Dealers only.")
         return redirect('home')
@@ -160,7 +130,7 @@ def profile_settings(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
-            messages.success(request, 'Your business profile has been updated!')
+            messages.success(request, 'Profile updated!')
             return redirect('profile_settings') 
     else:
         u_form = UserUpdateForm(instance=request.user)
@@ -182,11 +152,6 @@ def is_superuser(user):
 @login_required
 @user_passes_test(is_superuser)
 def admin_dashboard(request):
-    """
-    The 'God View' for the SaaS Founder.
-    Tracks all dealers, system-wide inventory, and platform health.
-    """
-    
     # 1. FINANCIALS
     total_revenue = Payment.objects.filter(status='SUCCESS').aggregate(Sum('amount'))['amount__sum'] or 0
 
@@ -204,7 +169,7 @@ def admin_dashboard(request):
     today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     leads_today = Lead.objects.filter(timestamp__gte=today_start).count()
 
-    # 6. MARKET DOMINANCE (Chart Data)
+    # 6. MARKET DOMINANCE
     brand_stats = Car.objects.values('make').annotate(count=Count('id')).order_by('-count')[:5]
     brand_labels = [entry['make'] for entry in brand_stats]
     brand_counts = [entry['count'] for entry in brand_stats]
@@ -221,13 +186,12 @@ def admin_dashboard(request):
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # 8. SEARCH ANALYTICS [FIXED]
-    # Replaced aggregation with direct table access to fix 'GROUP BY' error
-    top_searches = SearchTerm.objects.all().order_by('-count')[:10]
+    # 8. SEARCH ANALYTICS [FIXED HERE]
+    # We use .values() to force a simple SELECT query, bypassing the GROUP BY error
+    top_searches = SearchTerm.objects.values('term', 'count').order_by('-count')[:10]
 
-    # 9. CHURN FORECAST (EXPIRING SOON)
+    # 9. CHURN FORECAST
     seven_days_from_now = timezone.now() + timedelta(days=7)
-    
     expiring_dealers = User.objects.filter(
         dealer_profile__isnull=False,
         dealer_profile__plan_type__in=['LITE', 'PRO'],
@@ -243,14 +207,13 @@ def admin_dashboard(request):
     recent_transactions = Payment.objects.order_by('-id')[:10]
     for trans in recent_transactions:
         phone = trans.phone_number
-        # Try to find the user associated with this payment
         related_user = User.objects.filter(
             Q(phone_number=phone) | 
             Q(dealer_profile__phone_number=phone)
         ).first()
         trans.related_user = related_user
 
-    # 12. GROWTH ANALYTICS (Last 30 Days)
+    # 12. GROWTH ANALYTICS
     today = timezone.now().date()
     dates = []
     user_counts = []
@@ -259,13 +222,12 @@ def admin_dashboard(request):
     for i in range(29, -1, -1):
         target_date = today - timedelta(days=i)
         dates.append(target_date.strftime('%b %d'))
-        # Track new Dealers specifically
         daily_users = User.objects.filter(date_joined__date=target_date, dealer_profile__isnull=False).count()
         daily_cars = Car.objects.filter(created_at__date=target_date).count()
         user_counts.append(daily_users)
         car_counts.append(daily_cars)
 
-    # 13. MASTER DEALER LIST (The "God View" Table)
+    # 13. MASTER DEALER LIST
     all_dealers = User.objects.filter(dealer_profile__isnull=False).select_related('dealer_profile').order_by('-date_joined')
     
     search_query = request.GET.get('q')
@@ -317,49 +279,33 @@ def verify_dealer(request, user_id):
     return redirect('admin_dashboard')
 
 # ==========================================
-#      MANUAL TRIGGER TOOLS (CEO ONLY)
+#      MANUAL TRIGGER TOOLS
 # ==========================================
 
 @staff_member_required
 def trigger_weekly_report(request):
-    """
-    TEMPORARY DEBUGGER: Tests connection to Gmail directly.
-    Replaces the standard report command to expose errors.
-    """
     try:
-        # 1. Print settings to the screen (Hidden password for security)
         debug_info = f"""
         Testing connection with:
         HOST: {settings.EMAIL_HOST}
-        PORT: {settings.EMAIL_PORT}
-        TLS: {settings.EMAIL_USE_TLS}
         USER: {settings.EMAIL_HOST_USER}
         """
-        
-        # 2. Try to send a simple "Hello" email
         send_mail(
-            subject='Test Connection from Render',
-            message='If you received this, your email settings are PERFECT! 🚀',
+            subject='Test Connection',
+            message='Email settings are working! 🚀',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[request.user.email], # Sends to your admin email
+            recipient_list=[request.user.email],
             fail_silently=False,
         )
-        
         return HttpResponse(f"✅ SUCCESS! Email sent to {request.user.email}. <br><pre>{debug_info}</pre>")
-
     except Exception as e:
-        # 3. If it fails, PRINT THE EXACT ERROR to the browser
         return HttpResponse(f"❌ FAILED. <br> <strong>Error:</strong> {e} <br><pre>{debug_info}</pre>")
 
 @staff_member_required
 def trigger_subscription_check(request):
-    """
-    Manually triggers the subscription enforcer.
-    """
     try:
         call_command('check_expiry')
-        messages.success(request, "✅ SUCCESS: Subscription check complete. Expired users downgraded.")
+        messages.success(request, "✅ SUCCESS: Subscription check complete.")
     except Exception as e:
-        messages.error(request, f"❌ ERROR: Failed to check subscriptions. Details: {e}")
-
+        messages.error(request, f"❌ ERROR: Failed to check subscriptions. {e}")
     return redirect('admin_dashboard')

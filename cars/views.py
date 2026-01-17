@@ -11,9 +11,8 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model 
 import re 
 
-# --- DATABASE & UTILS IMPORTS ---
 from django.core.management import call_command
-from django.db import connection # Critical for the SQL Fixer
+from django.db import connection
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -24,7 +23,6 @@ from .utils import render_to_pdf
 
 User = get_user_model() 
 
-# --- CONFIGURATION: PLAN LIMITS ---
 PLAN_LIMITS = {
     'STARTER': {'cars': 10, 'images': 8},
     'LITE':    {'cars': 40, 'images': 15},
@@ -402,7 +400,6 @@ def driving_change_page(request):
     context = {'dealers_empowered': DealerProfile.objects.count(), 'trees_planted': cars_sold * 25, 'capital_unlocked': cars_sold * 1500000}
     return render(request, 'pages/driving_change.html', context)
 
-# --- DEALER ACADEMY VIEWS ---
 @login_required
 def dealer_academy(request):
     modules = [
@@ -416,14 +413,11 @@ def dealer_academy(request):
 
 @login_required
 def dealer_academy_lesson(request, module_id):
-    """
-    Renders the specific lesson content.
-    """
     # 1. Define Content (Simulated DB)
     curriculum = {
         1: {
             'title': 'The Digital Broker Mindset',
-            'video_id': 'M7lc1UVf-VE',  # YouTube ID (simulated)
+            'video_id': 'M7lc1UVf-VE',
             'desc': 'Why the old way of selling is dying and how trust is your new currency.',
             'content': """
                 <p><strong>Welcome to the new era of car selling.</strong></p>
@@ -482,27 +476,27 @@ def create_agreement(request):
 # --- ULTIMATE MIGRATION FIXER (DB REPAIR TOOL) ---
 def run_migrations_view(request):
     """
-    ULTIMATE FIXER: Manually creates missing columns using Raw SQL.
-    Includes the fix for Super Admin (SearchTerm.last_searched).
+    ULTIMATE FIXER: Manually creates the missing column using Raw SQL.
+    Bypasses migration conflicts.
     """
     if not request.user.is_superuser:
         return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
 
     try:
         with connection.cursor() as cursor:
-            # 1. Fix Booking Table (Dashboard Crash Fix)
+            # 1. Fix the Booking Table
             cursor.execute("""
                 ALTER TABLE cars_booking 
                 ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
             """)
             
-            # 2. Fix Car Table (City Field Fix)
+            # 2. Fix the Car Table
             cursor.execute("""
                 ALTER TABLE cars_car 
                 ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';
             """)
 
-            # 3. Fix Search Terms Table (Super Admin Fix)
+            # 3. Fix the SearchTerm Table (Super Admin Dashboard)
             cursor.execute("""
                 ALTER TABLE cars_searchterm 
                 ADD COLUMN IF NOT EXISTS last_searched TIMESTAMP WITH TIME ZONE DEFAULT NOW();
@@ -513,11 +507,11 @@ def run_migrations_view(request):
             <ul style='font-size:18px;'>
                 <li>✅ 'updated_at' added to Bookings</li>
                 <li>✅ 'city' added to Cars</li>
-                <li>✅ 'last_searched' added to Search Terms</li>
+                <li>✅ 'last_searched' added to SearchTerm</li>
             </ul>
             <br>
             <a href='/super-admin/' style='font-size:20px; font-weight:bold; background: #eee; padding: 10px; border-radius: 5px; text-decoration: none;'>
-                &rarr; Try Super Admin Dashboard Now
+                &rarr; Go to Super Admin Dashboard
             </a>
         """)
     except Exception as e:
