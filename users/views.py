@@ -186,10 +186,9 @@ def admin_dashboard(request):
         leads_generated=Count('cars__leads', distinct=True)
     ).order_by('-leads_generated', '-inventory_count')[:5]
 
-    # 8. SEARCH ANALYTICS [CRITICAL FIX HERE]
-    # Replaced .values() with .all() to fix PostgreSQL "GROUP BY" error
-    # 8. SEARCH ANALYTICS (Raw SQL Fallback)
-    top_searches = SearchTerm.objects.raw('SELECT * FROM cars_searchterm ORDER BY count DESC LIMIT 10')
+    # 8. SEARCH ANALYTICS (Raw SQL Bypass)
+    # This forces a simple SELECT query without any Django ORM grouping logic
+    top_searches = list(SearchTerm.objects.raw('SELECT * FROM cars_searchterm ORDER BY count DESC LIMIT 10'))
 
     # 9. CHURN FORECAST
     seven_days_from_now = timezone.now() + timedelta(days=7)
