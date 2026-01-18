@@ -225,7 +225,7 @@
                             <span class="badge-premium mb-3">The Pan-African Standard</span>
                             <h1 class="display-3 fw-bold text-white mb-3">Africa's Digital<br>Automotive Hub.</h1>
                             <p class="lead text-white opacity-75 mb-4">Connecting buyers in Nairobi, Lagos, and Accra with verified sellers. Secure. Transparent. Tech-Driven.</p>
-                            <a href="{% url 'impact_page' %}" class="btn btn-success rounded-pill px-4 py-2 btn-sm fw-bold">
+                            <a href="{% url 'impact_hub' %}" class="btn btn-success rounded-pill px-4 py-2 btn-sm fw-bold">
                                 <i class="fas fa-tree me-2"></i> Powered by The 2026 Initiative
                             </a>
                         </div>
@@ -269,7 +269,7 @@
                         <span class="badge-premium mb-3 bg-success border-success">Impact Driven 🌱</span>
                         <h1 class="display-3 fw-bold text-white mb-3">Drive Change.<br>Plant a Legacy.</h1>
                         <p class="lead text-white opacity-75 mb-4">For every car sold on BuyCars.Africa, we plant indigenous trees to restore Africa's cover.</p>
-                        <a href="{% url 'impact_page' %}" class="btn btn-success rounded-pill px-5 fw-bold">
+                        <a href="{% url 'impact_hub' %}" class="btn btn-success rounded-pill px-5 fw-bold">
                             Join The Mission
                         </a>
                     </div>
@@ -681,7 +681,7 @@
                                 <h6 class="text-success fw-bold mb-0 fs-5">
                                     {% display_price car.price car.listing_currency %}
                                 </h6>
-                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 fw-bold">View</a>
                             {% endif %}
 
                         </div>
