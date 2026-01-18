@@ -3,8 +3,8 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 
 register = template.Library()
 
-# --- EXCHANGE RATES (Kept your Pan-African list) ---
-# NOTE: In production, fetch these from an API (e.g., OpenExchangeRates)
+# --- EXCHANGE RATES (Pan-African Expansion) ---
+# NOTE: In production, you would fetch these from an API (e.g., OpenExchangeRates)
 RATES = {
     'KES': 1.0,
     
@@ -34,19 +34,19 @@ RATES = {
 }
 
 @register.simple_tag(takes_context=True)
-def display_price(context, price, listing_currency='KES'):
+def convert_price(context, price, listing_currency='KES'):
     """
     Converts the car price from its listing currency to the user's session currency.
-    Usage: {% display_price car.price 'KES' %}
+    Usage: {% convert_price car.price 'KES' %}
     """
     # 1. Safety Check: If price is missing or 0
     if not price:
-        return "Price on Request"
+        return "0"
 
     request = context.get('request')
     target_currency = 'KES' # Default fallback
 
-    # 2. Get User's Preferred Currency
+    # 2. Get User's Preferred Currency from Session
     if request and 'currency' in request.session:
         target_currency = request.session['currency']
 
@@ -60,6 +60,8 @@ def display_price(context, price, listing_currency='KES'):
         base_price_in_kes = float(price)
         if listing_currency != 'KES':
             base_rate = RATES.get(listing_currency, 1.0)
+            # If rate is missing, default to 1.0 to prevent crash
+            if base_rate == 0: base_rate = 1.0 
             base_price_in_kes = base_price_in_kes / base_rate
 
         # Step B: Convert KES to Target Currency
@@ -67,7 +69,7 @@ def display_price(context, price, listing_currency='KES'):
         final_value = base_price_in_kes * target_rate
         
         # Formatting for USD/GBP/EUR (2 decimal places), others (Integers)
-        if target_currency in ['USD', 'GBP', 'EUR']:
+        if target_currency in ['USD', 'GBP', 'EUR', 'AED']:
             return f"{target_currency} {intcomma(round(final_value, 2))}"
         
         return f"{target_currency} {intcomma(int(final_value))}"
