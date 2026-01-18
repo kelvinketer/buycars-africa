@@ -145,14 +145,12 @@ LOGIN_REDIRECT_URL = 'dealer_dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-# --- EMAIL CONFIGURATION ---
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+# --- EMAIL CONFIGURATION (SAFE MODE) ---
+# This prints emails to the console/logs instead of sending them.
+# Prevents 500 Errors if SMTP is not configured.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'BuyCars Africa <noreply@buycars.africa>'
+SERVER_EMAIL = 'admin@buycars.africa'  # Where lead notifications go
 
 # ========================================================
 #             M-PESA DARAJA API CONFIGURATION

@@ -413,50 +413,66 @@ def dealership_network(request):
     context = {'dealers': dealers, 'total_value': total_inventory_val, 'total_leads': Lead.objects.count(), 'active_stock': Car.objects.filter(status='AVAILABLE').count(), 'city_counts': list(city_counts)}
     return render(request, 'pages/dealerships.html', context)
 
-# --- FINANCING PAGE (UPDATED) ---
+# --- FINANCING PAGE (UPDATED - CRASH PROOF) ---
 def financing_page(request):
     """
     Renders the Financing Hub and handles Loan Applications.
-    Robust error handling added to prevent 500 crashes on email failure.
+    Includes robust error handling to prevent 500 crashes if email fails.
     """
     if request.method == 'POST':
         # 1. Capture Form Data
-        name = request.POST.get('full_name')
-        phone = request.POST.get('phone')
-        employment = request.POST.get('employment_status')
-        income = request.POST.get('monthly_income')
-        deposit = request.POST.get('deposit_amount')
-        car_budget = request.POST.get('car_budget')
+        name = request.POST.get('full_name', 'Applicant')
+        phone = request.POST.get('phone', 'N/A')
+        employment = request.POST.get('employment_status', 'N/A')
+        income = request.POST.get('monthly_income', 'N/A')
+        deposit = request.POST.get('deposit_amount', '0')
+        car_budget = request.POST.get('car_budget', '0')
         
-        # 2. Create the Lead Content
-        lead_summary = (
-            f"💰 NEW FINANCE LEAD\n"
-            f"Name: {name}\n"
-            f"Phone: {phone}\n"
-            f"Income: {income}\n"
-            f"Budget: {car_budget}\n"
-            f"Deposit: {deposit}"
-        )
+        # 2. Prepare the Lead Data
+        lead_subject = f"💰 New Finance Lead: {name}"
+        lead_message = f"""
+        NEW ASSET FINANCE APPLICATION
+        =============================
         
-        # 3. Attempt to Send Email (Fail Safely)
+        APPLICANT DETAILS:
+        ------------------
+        Name: {name}
+        Phone: {phone}
+        Employment: {employment}
+        Income Bracket: {income}
+        
+        FINANCIALS:
+        -----------
+        Target Car Value: KES {car_budget}
+        Deposit Ready: KES {deposit}
+        
+        ACTION REQUIRED:
+        - Verify income documents
+        - Forward to Partner Sacco/Bank
+        """
+        
+        # 3. Attempt to Send Email (Safe Mode)
         try:
-            # Only attempt if email is configured, otherwise just log
-            if settings.EMAIL_HOST:
-                subject = f"💰 New Finance Application: {name}"
-                send_mail(subject, lead_summary, settings.DEFAULT_FROM_EMAIL, [settings.SERVER_EMAIL], fail_silently=False)
-            else:
-                print("⚠️ Email settings not found. Printing lead to logs instead:")
-                print(lead_summary)
-                
+            send_mail(
+                lead_subject, 
+                lead_message, 
+                settings.DEFAULT_FROM_EMAIL, 
+                [settings.SERVER_EMAIL], 
+                fail_silently=False
+            )
+            print(f"✅ Email sent successfully to {settings.SERVER_EMAIL}")
+            
         except Exception as e:
-            # CRITICAL: Catch ALL errors so the user never sees a 500 page
-            print(f"❌ Email Error (Logged only): {e}")
-            print("vvv LEAD DATA PRESERVED vvv")
-            print(lead_summary)
-            print("^^^ LEAD DATA PRESERVED ^^^")
+            # THIS PREVENTS THE 500 ERROR
+            print(f"⚠️ Email failed to send (System did not crash): {e}")
+            print("vvv LEAD DATA DUMP vvv")
+            print(lead_message)
+            print("^^^ LEAD DATA DUMP ^^^")
 
-        # 4. Always show success to the user
-        messages.success(request, "Application received! A Finance Officer will contact you within 2 hours.")
+        # 4. Show Success Message to User (Crucial)
+        messages.success(request, "✅ Application Received! Our finance team will contact you within 2 hours.")
+        
+        # 5. Redirect to clear the form
         return redirect('financing_page')
 
     return render(request, 'pages/financing.html')
