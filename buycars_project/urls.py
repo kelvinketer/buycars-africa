@@ -117,6 +117,9 @@ urlpatterns = [
     # --- PAYMENTS & FINANCES ---
     path('payments/', include('payments.urls')), 
     path('wallet/', include('wallet.urls')), 
+    
+    # Add this inside urlpatterns:
+path('admin-tools/fix-chat-db/', car_views.fix_chat_db, name='fix_chat_db'),
 
     # --- ADMIN TOOLS ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
