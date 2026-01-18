@@ -590,21 +590,21 @@
                             {% if car.listing_type == 'RENT' %}
                                 <div>
                                     <h6 class="text-primary fw-bold mb-0">
-                                        {% display_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
+                                        {% convert_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
                                     </h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
                             
                             {% elif car.listing_type == 'BOTH' %}
                                 <div>
-                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% display_price car.price car.listing_currency %}</small>
-                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% display_price car.rent_price_per_day car.listing_currency %}/day</small>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% convert_price car.price car.listing_currency %}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% convert_price car.rent_price_per_day car.listing_currency %}/day</small>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
 
                             {% else %}
                                 <h6 class="text-success fw-bold mb-0 fs-5">
-                                    {% display_price car.price car.listing_currency %}
+                                    {% convert_price car.price car.listing_currency %}
                                 </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">View</a>
                             {% endif %}
@@ -695,21 +695,21 @@
                             {% if car.listing_type == 'RENT' %}
                                 <div>
                                     <h6 class="text-primary fw-bold mb-0">
-                                        {% display_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
+                                        {% convert_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
                                     </h6>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
                             
                             {% elif car.listing_type == 'BOTH' %}
                                 <div>
-                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% display_price car.price car.listing_currency %}</small>
-                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% display_price car.rent_price_per_day car.listing_currency %}/day</small>
+                                    <small class="d-block text-success lh-1 fw-bold">Buy: {% convert_price car.price car.listing_currency %}</small>
+                                    <small class="d-block text-primary lh-1 fw-bold">Rent: {% convert_price car.rent_price_per_day car.listing_currency %}/day</small>
                                 </div>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 py-1 btn-sm fw-bold">View</a>
 
                             {% else %}
                                 <h6 class="text-success fw-bold mb-0 fs-5">
-                                    {% display_price car.price car.listing_currency %}
+                                    {% convert_price car.price car.listing_currency %}
                                 </h6>
                                 <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-dark rounded-pill px-3 fw-bold">View</a>
                             {% endif %}
