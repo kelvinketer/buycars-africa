@@ -125,6 +125,9 @@ def book_car(request, car_id):
             booking = form.save(commit=False)
             booking.car = car
             booking.customer = request.user
+            booking.start_date = form.cleaned_data['start_date']
+            booking.end_date = form.cleaned_data['end_date']
+            
             delta = booking.end_date - booking.start_date
             days = delta.days
             
@@ -280,7 +283,8 @@ def add_car(request):
             for index, img in enumerate(raw_images[:image_limit]):
                 CarImage.objects.create(car=car, image=img, is_main=(index == 0))
 
-            messages.success(request, 'Vehicle uploaded successfully!')
+            # --- UPDATED: SUCCESS MESSAGE FOR POPUP ---
+            messages.success(request, "Your vehicle has been published successfully!")
             return redirect('dealer_dashboard')
     else:
         form = CarForm()
@@ -650,8 +654,6 @@ def policy_page(request, slug):
         return redirect('home')
         
     return render(request, template_path)
-
-# ... (Keep existing imports)
 
 def google_inventory_feed(request):
     """
