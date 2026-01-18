@@ -417,6 +417,7 @@ def dealership_network(request):
 def financing_page(request):
     """
     Renders the Financing Hub and handles Loan Applications.
+    Robust error handling added to prevent 500 crashes on email failure.
     """
     if request.method == 'POST':
         # 1. Capture Form Data
@@ -427,35 +428,35 @@ def financing_page(request):
         deposit = request.POST.get('deposit_amount')
         car_budget = request.POST.get('car_budget')
         
-        # 2. Create the "Hot Lead" Notification
-        subject = f"💰 New Finance Application: {name}"
-        message = f"""
-        A new asset finance lead has been generated.
+        # 2. Create the Lead Content
+        lead_summary = (
+            f"💰 NEW FINANCE LEAD\n"
+            f"Name: {name}\n"
+            f"Phone: {phone}\n"
+            f"Income: {income}\n"
+            f"Budget: {car_budget}\n"
+            f"Deposit: {deposit}"
+        )
         
-        APPLICANT DETAILS:
-        ------------------
-        Name: {name}
-        Phone: {phone}
-        Employment: {employment}
-        Monthly Income: {income}
-        
-        LOAN DETAILS:
-        -------------
-        Target Car Value: {car_budget}
-        Deposit Available: {deposit}
-        
-        ACTION:
-        Contact immediately to forward to Partner Bank/Sacco.
-        """
-        
-        # 3. Send Email to Admin (You)
+        # 3. Attempt to Send Email (Fail Safely)
         try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.SERVER_EMAIL], fail_silently=False)
-            messages.success(request, "Application received! A Finance Officer will contact you within 2 hours.")
+            # Only attempt if email is configured, otherwise just log
+            if settings.EMAIL_HOST:
+                subject = f"💰 New Finance Application: {name}"
+                send_mail(subject, lead_summary, settings.DEFAULT_FROM_EMAIL, [settings.SERVER_EMAIL], fail_silently=False)
+            else:
+                print("⚠️ Email settings not found. Printing lead to logs instead:")
+                print(lead_summary)
+                
         except Exception as e:
-            print(f"Email Error: {e}")
-            messages.success(request, "Application received! We will contact you shortly.") # Fallback success
-            
+            # CRITICAL: Catch ALL errors so the user never sees a 500 page
+            print(f"❌ Email Error (Logged only): {e}")
+            print("vvv LEAD DATA PRESERVED vvv")
+            print(lead_summary)
+            print("^^^ LEAD DATA PRESERVED ^^^")
+
+        # 4. Always show success to the user
+        messages.success(request, "Application received! A Finance Officer will contact you within 2 hours.")
         return redirect('financing_page')
 
     return render(request, 'pages/financing.html')
