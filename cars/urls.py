@@ -35,5 +35,12 @@ urlpatterns = [
 
     # Platform Admin (Staff Only)
     path('platform/', views.platform_dashboard, name='platform_dashboard'),
+    
+    # ... inside urlpatterns list ...
+
+    # --- GOOGLE MERCHANT FEED ---
+    path('feeds/google-cars.xml', car_views.google_inventory_feed, name='google_inventory_feed'),
+
+# ... end urlpatterns ...
 ]
 # FINAL_UPDATE_V3: Force Diaspora Link
