@@ -30,21 +30,10 @@ urlpatterns = [
     path('platform/', car_views.platform_dashboard, name='platform_dashboard'), 
 
     # --- PASSWORD RESET ROUTES ---
-    path('reset_password/', 
-         auth_views.PasswordResetView.as_view(template_name="auth/password_reset.html"), 
-         name='reset_password'),
-
-    path('reset_password_sent/', 
-         auth_views.PasswordResetDoneView.as_view(template_name="auth/password_reset_sent.html"), 
-         name='password_reset_done'),
-
-    path('reset/<uidb64>/<token>/', 
-         auth_views.PasswordResetConfirmView.as_view(template_name="auth/password_reset_form.html"), 
-         name='password_reset_confirm'),
-
-    path('reset_password_complete/', 
-         auth_views.PasswordResetCompleteView.as_view(template_name="auth/password_reset_complete.html"), 
-         name='password_reset_complete'),
+    path('reset_password/', auth_views.PasswordResetView.as_view(template_name="auth/password_reset.html"), name='reset_password'),
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(template_name="auth/password_reset_sent.html"), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="auth/password_reset_form.html"), name='password_reset_confirm'),
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="auth/password_reset_complete.html"), name='password_reset_complete'),
 
     # --- PUBLIC SIDE ---
     path('', car_views.public_homepage, name='home'),
@@ -53,19 +42,17 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
-    # --- INSTITUTIONAL IMPACT (Updated) ---
-    # Points to the new 'impact_hub' view with the stewardship narrative
+    # --- INSTITUTIONAL IMPACT ---
     path('impact/', car_views.impact_hub, name='impact_hub'),
-    path('1-million-trees/', car_views.impact_hub), 
+    path('1-million-trees/', car_views.impact_hub), # SEO Alias
     
-    # --- NEW: GOVERNANCE & LEGAL ROUTES ---
-    # This dynamic route handles: /legal/sustainability/, /legal/abc-policy/, /legal/data-protection/
+    # --- LEGAL & GOVERNANCE ROUTES ---
     path('legal/<slug:slug>/', car_views.policy_page, name='policy_page'),
 
     # --- DRIVING CHANGE MANIFESTO ---
     path('driving-change/', car_views.driving_change_page, name='driving_change'),
 
-    # --- TRANSPARENCY HUB (Live Ledger) ---
+    # --- TRANSPARENCY HUB ---
     path('transparency/', car_views.transparency_hub, name='transparency_hub'),
 
     # --- FINANCING PAGE ---
@@ -123,7 +110,7 @@ urlpatterns = [
     path('payments/', include('payments.urls')), 
     path('wallet/', include('wallet.urls')), 
 
-    # --- ADMIN TOOLS (Including the Migration Fixer) ---
+    # --- ADMIN TOOLS ---
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
     path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),

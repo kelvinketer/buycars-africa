@@ -1,8 +1,17 @@
 User-agent: *
+Allow: /
+
+# --- Block Sensitive Dealer & User Areas ---
 Disallow: /dashboard/
+Disallow: /renter/
+Disallow: /wallet/
+Disallow: /payments/
+
+# --- Block Admin & Staff Tools ---
 Disallow: /admin/
 Disallow: /super-admin/
-Disallow: /payments/
-Disallow: /wallet/
+Disallow: /platform/
+Disallow: /admin-tools/
 
+# --- Sitemap Location ---
 Sitemap: https://buycars-africa.onrender.com/sitemap.xml
