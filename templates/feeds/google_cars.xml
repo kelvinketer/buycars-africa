@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+<channel>
+    <title>BuyCars Africa Inventory</title>
+    <link>https://buycars-africa.onrender.com</link>
+    <description>Verified vehicles from trusted dealers in Kenya.</description>
+    
+    {% for car in cars %}
+    <item>
+        <g:id>{{ car.id }}</g:id>
+        <g:title>{{ car.year }} {{ car.make }} {{ car.model }}</g:title>
+        <g:description>{{ car.description|default:"Verified vehicle available on BuyCars.Africa" }}</g:description>
+        <g:link>https://buycars-africa.onrender.com{% url 'car_detail' car.id %}</g:link>
+        
+        {% if car.images.first %}
+        <g:image_link>{{ car.images.first.image.url }}</g:image_link>
+        {% endif %}
+
+        <g:price>{{ car.price|floatform:0 }} {{ car.listing_currency }}</g:price>
+        <g:availability>{% if car.status == 'AVAILABLE' %}in_stock{% else %}out_of_stock{% endif %}</g:availability>
+        <g:condition>used</g:condition>
+
+        <g:google_product_category>Vehicles &amp; Parts &gt; Land Vehicles &gt; Cars, Trucks &amp; Vans</g:google_product_category>
+        <g:brand>{{ car.make }}</g:brand>
+        <g:color>{{ car.color|default:"White" }}</g:color> <g:vehicle_fulfillment>
+            <g:option>in_store</g:option>
+            <g:store_code>BC_HQ_001</g:store_code>
+        </g:vehicle_fulfillment>
+    </item>
+    {% endfor %}
+</channel>
+</rss>

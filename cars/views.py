@@ -650,3 +650,16 @@ def policy_page(request, slug):
         return redirect('home')
         
     return render(request, template_path)
+
+# ... (Keep existing imports)
+
+def google_inventory_feed(request):
+    """
+    Generates a live XML feed for Google Merchant Center.
+    Google fetches this URL daily to update Vehicle Ads.
+    """
+    # 1. Fetch only Available cars
+    active_cars = Car.objects.filter(status='AVAILABLE').order_by('-created_at')
+    
+    # 2. Render the XML template
+    return render(request, 'feeds/google_cars.xml', {'cars': active_cars}, content_type='application/xml')
