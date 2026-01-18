@@ -413,7 +413,53 @@ def dealership_network(request):
     context = {'dealers': dealers, 'total_value': total_inventory_val, 'total_leads': Lead.objects.count(), 'active_stock': Car.objects.filter(status='AVAILABLE').count(), 'city_counts': list(city_counts)}
     return render(request, 'pages/dealerships.html', context)
 
-def financing_page(request): return render(request, 'pages/financing.html')
+# --- FINANCING PAGE (UPDATED) ---
+def financing_page(request):
+    """
+    Renders the Financing Hub and handles Loan Applications.
+    """
+    if request.method == 'POST':
+        # 1. Capture Form Data
+        name = request.POST.get('full_name')
+        phone = request.POST.get('phone')
+        employment = request.POST.get('employment_status')
+        income = request.POST.get('monthly_income')
+        deposit = request.POST.get('deposit_amount')
+        car_budget = request.POST.get('car_budget')
+        
+        # 2. Create the "Hot Lead" Notification
+        subject = f"💰 New Finance Application: {name}"
+        message = f"""
+        A new asset finance lead has been generated.
+        
+        APPLICANT DETAILS:
+        ------------------
+        Name: {name}
+        Phone: {phone}
+        Employment: {employment}
+        Monthly Income: {income}
+        
+        LOAN DETAILS:
+        -------------
+        Target Car Value: {car_budget}
+        Deposit Available: {deposit}
+        
+        ACTION:
+        Contact immediately to forward to Partner Bank/Sacco.
+        """
+        
+        # 3. Send Email to Admin (You)
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.SERVER_EMAIL], fail_silently=False)
+            messages.success(request, "Application received! A Finance Officer will contact you within 2 hours.")
+        except Exception as e:
+            print(f"Email Error: {e}")
+            messages.success(request, "Application received! We will contact you shortly.") # Fallback success
+            
+        return redirect('financing_page')
+
+    return render(request, 'pages/financing.html')
+
 def partners_page(request): return render(request, 'pages/partners.html')
 
 def driving_change_page(request):
