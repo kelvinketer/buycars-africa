@@ -16,13 +16,15 @@
         <g:image_link>{{ car.images.first.image.url }}</g:image_link>
         {% endif %}
 
-        <g:price>{{ car.price|floatform:0 }} {{ car.listing_currency }}</g:price>
+        <g:price>{{ car.price }} {{ car.listing_currency }}</g:price>
         <g:availability>{% if car.status == 'AVAILABLE' %}in_stock{% else %}out_of_stock{% endif %}</g:availability>
         <g:condition>used</g:condition>
 
         <g:google_product_category>Vehicles &amp; Parts &gt; Land Vehicles &gt; Cars, Trucks &amp; Vans</g:google_product_category>
         <g:brand>{{ car.make }}</g:brand>
-        <g:color>{{ car.color|default:"White" }}</g:color> <g:vehicle_fulfillment>
+        <g:color>White</g:color>
+        
+        <g:vehicle_fulfillment>
             <g:option>in_store</g:option>
             <g:store_code>BC_HQ_001</g:store_code>
         </g:vehicle_fulfillment>
