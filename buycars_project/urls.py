@@ -24,6 +24,9 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     
+    # --- GOOGLE MERCHANT FEED (THIS WAS MISSING) ---
+    path('feeds/google-cars.xml', car_views.google_inventory_feed, name='google_inventory_feed'),
+
     # --- SUPER ADMIN (CEO Dashboard) ---
     path('super-admin/', user_views.admin_dashboard, name='admin_dashboard'),
     path('super-admin/verify/<int:user_id>/', user_views.verify_dealer, name='verify_dealer'),
@@ -44,7 +47,7 @@ urlpatterns = [
     
     # --- INSTITUTIONAL IMPACT ---
     path('impact/', car_views.impact_hub, name='impact_hub'),
-    path('1-million-trees/', car_views.impact_hub), # SEO Alias
+    path('1-million-trees/', car_views.impact_hub), 
     
     # --- LEGAL & GOVERNANCE ROUTES ---
     path('legal/<slug:slug>/', car_views.policy_page, name='policy_page'),
