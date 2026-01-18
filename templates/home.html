@@ -232,7 +232,7 @@
                 <div class="hero-overlay"></div>
                 <div class="container">
                     <div class="hero-content">
-                        <span class="badge-premium mb-3 bg-success border-success">2026 Initiative 🌳</span>
+                        <span class="badge-premium mb-3 bg-success border-success">The 2026 Initiative 🌳</span>
                         <h1 class="display-3 fw-bold text-white mb-3">You Drive.<br>We Restore.</h1>
                         <p class="lead text-white opacity-75 mb-4 mx-auto" style="max-width: 700px;">
                             We don't just sell cars; we pay our debt to the soil. For every vehicle sold, we fund the planting of <strong>25 indigenous trees</strong>.
@@ -593,7 +593,7 @@
                                         {% display_price car.rent_price_per_day car.listing_currency %}<small class="text-muted" style="font-size:0.7em">/day</small>
                                     </h6>
                                 </div>
-                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">Book</a>
+                                <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm fw-bold">Book</a>
                             
                             {% elif car.listing_type == 'BOTH' %}
                                 <div>
@@ -617,6 +617,7 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <section class="py-5 bg-light border-top" id="listings">
     <div class="container">
