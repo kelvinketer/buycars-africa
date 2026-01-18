@@ -244,9 +244,7 @@ class Booking(models.Model):
 
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='bookings')
     
-    # --- REVERTED TO STANDARD: NO DB_COLUMN ---
     # This expects a column named 'renter_id' in the database.
-    # We will create this column in the next step using the migration file.
     renter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rentals')
     
     start_date = models.DateField()
@@ -300,3 +298,30 @@ class SearchTerm(models.Model):
 
     def __str__(self):
         return f"{self.term} ({self.count})"
+
+# --- MESSAGING SYSTEM (NEW) ---
+
+class Conversation(models.Model):
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='conversations')
+    buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='buyer_conversations')
+    dealer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='dealer_conversations')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        unique_together = ['car', 'buyer'] # One conversation per car per buyer
+
+    def __str__(self):
+        return f"{self.buyer.username} - {self.car.make} {self.car.model}"
+
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    is_read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.sender.username} at {self.timestamp}"
+    

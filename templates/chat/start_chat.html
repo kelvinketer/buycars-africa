@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                
+                <div class="bg-light p-4 text-center border-bottom">
+                    {% if car.images.first %}
+                        <img src="{{ car.images.first.image.url }}" class="rounded-3 shadow-sm mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% endif %}
+                    <h5 class="fw-bold mb-1">{{ car.year }} {{ car.make }} {{ car.model }}</h5>
+                    <p class="text-danger fw-bold mb-0">{{ car.price|intcomma }} {{ car.listing_currency }}</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <h6 class="text-muted text-uppercase small fw-bold mb-3">Send Message to Seller</h6>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.content }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-lg rounded-pill fw-bold">
+                                Start Conversation
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'car_detail' car.id %}" class="text-decoration-none text-muted small">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    textarea.form-control {
+        border-radius: 15px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border: 1px solid #eee;
+    }
+    textarea.form-control:focus {
+        border-color: #dc3545;
+        box-shadow: none;
+        background-color: #fff;
+    }
+</style>
+{% endblock %}

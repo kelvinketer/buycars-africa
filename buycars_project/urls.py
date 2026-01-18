@@ -24,7 +24,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     
-    # --- GOOGLE MERCHANT FEED (THIS WAS MISSING) ---
+    # --- GOOGLE MERCHANT FEED ---
     path('feeds/google-cars.xml', car_views.google_inventory_feed, name='google_inventory_feed'),
 
     # --- SUPER ADMIN (CEO Dashboard) ---
@@ -45,6 +45,11 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
+    # --- MESSAGING SYSTEM (NEW) ---
+    path('chat/start/<int:car_id>/', car_views.start_conversation, name='start_conversation'),
+    path('chat/inbox/', car_views.inbox, name='inbox'),
+    path('chat/<int:conversation_id>/', car_views.conversation_detail, name='conversation_detail'),
+
     # --- INSTITUTIONAL IMPACT ---
     path('impact/', car_views.impact_hub, name='impact_hub'),
     path('1-million-trees/', car_views.impact_hub), 

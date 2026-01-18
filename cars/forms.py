@@ -1,6 +1,6 @@
 from django import forms
 from django.utils import timezone
-from .models import Car, Booking 
+from .models import Car, Booking, Message  # Added Message import here
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -90,7 +90,7 @@ class CarBookingForm(forms.ModelForm):
         
         return cleaned_data
     
-    # --- NEW: SALE AGREEMENT FORM ---
+# --- SALE AGREEMENT FORM ---
 class SaleAgreementForm(forms.Form):
     # Seller Details
     seller_name = forms.CharField(label="Seller's Full Name", max_length=100)
@@ -114,3 +114,16 @@ class SaleAgreementForm(forms.Form):
     amount_paid = forms.IntegerField(label="Amount Paid Now (KES)")
     balance = forms.IntegerField(label="Balance Remaining (KES)", required=False, initial=0)
     witness_name = forms.CharField(label="Witness Name", max_length=100, required=False)
+
+# --- NEW: SECURE MESSAGING FORM ---
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3, 
+                'placeholder': 'Hi, is this car still available? I would like to schedule a viewing...'
+            })
+        }

@@ -17,8 +17,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from users.models import DealerProfile
-from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking 
-from .forms import CarForm, CarBookingForm, SaleAgreementForm 
+from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking, Conversation, Message 
+from .forms import CarForm, CarBookingForm, SaleAgreementForm, MessageForm 
 from .utils import render_to_pdf 
 
 User = get_user_model() 
@@ -88,15 +88,9 @@ def public_homepage(request):
     return render(request, 'home.html', context)
 
 def community_pledge_view(request):
-    """
-    Renders the formal BuyCars.Africa Community Pledge.
-    """
     return render(request, 'pages/policies/community_pledge.html')
 
 def abc_policy_view(request):
-    """
-    Renders the formal BuyCars.Africa Anti-Bribery & Corruption Policy.
-    """
     return render(request, 'pages/policies/abc_policy.html')
 
 @require_POST
@@ -283,7 +277,6 @@ def add_car(request):
             for index, img in enumerate(raw_images[:image_limit]):
                 CarImage.objects.create(car=car, image=img, is_main=(index == 0))
 
-            # --- UPDATED: SUCCESS MESSAGE FOR POPUP ---
             messages.success(request, "Your vehicle has been published successfully!")
             return redirect('dealer_dashboard')
     else:
@@ -388,11 +381,7 @@ def platform_dashboard(request):
 # --- INSTITUTIONAL / IMPACT PAGES ---
 
 def impact_hub(request):
-    """
-    Renders the formal Organizational Impact page.
-    """
     total_cars_sold = Car.objects.filter(status='SOLD').count()
-    
     context = {
         'trees_funded': total_cars_sold * 25,
         'carbon_offset_tons': (total_cars_sold * 25 * 20) / 1000,
@@ -417,15 +406,11 @@ def dealership_network(request):
     context = {'dealers': dealers, 'total_value': total_inventory_val, 'total_leads': Lead.objects.count(), 'active_stock': Car.objects.filter(status='AVAILABLE').count(), 'city_counts': list(city_counts)}
     return render(request, 'pages/dealerships.html', context)
 
-# --- FINANCING & PARTNER VIEW (SMART LOGIC) ---
+# --- FINANCING & PARTNER VIEW ---
 def financing_page(request):
-    """
-    Handles both CONSUMER (Car Loan) and INSTITUTIONAL (Partner) forms.
-    """
     if request.method == 'POST':
-        form_type = request.POST.get('form_type', 'finance_application') # Default to finance if missing
+        form_type = request.POST.get('form_type', 'finance_application') 
         
-        # --- LOGIC FOR PARTNER INQUIRY (B2B) ---
         if form_type == 'partner_inquiry':
             org_name = request.POST.get('institution_name', 'Unknown Org')
             email = request.POST.get('email', 'No Email')
@@ -433,70 +418,23 @@ def financing_page(request):
             message_body = request.POST.get('message', '')
             
             subject = f"🤝 New Partner Inquiry: {org_name}"
-            email_body = f"""
-            NEW INSTITUTIONAL PARTNERSHIP REQUEST
-            =====================================
-            
-            Institution: {org_name}
-            Contact Email: {email}
-            Area of Interest: {interest}
-            
-            Message:
-            "{message_body}"
-            
-            ACTION:
-            - Reply with Partnership Deck
-            - Schedule Intro Call
-            """
+            email_body = f"""NEW INSTITUTIONAL PARTNERSHIP REQUEST\nInstitution: {org_name}\nContact Email: {email}\nInterest: {interest}\nMessage: {message_body}"""
             success_msg = "✅ Request Received! Our Partnerships Team will be in touch shortly."
 
-        # --- LOGIC FOR FINANCE APPLICATION (B2C) ---
         else:
             name = request.POST.get('full_name', 'Applicant')
             phone = request.POST.get('phone', 'N/A')
-            employment = request.POST.get('employment_status', 'N/A')
-            income = request.POST.get('monthly_income', 'N/A')
-            deposit = request.POST.get('deposit_amount', '0')
             car_budget = request.POST.get('car_budget', '0')
             
             subject = f"💰 New Finance Lead: {name}"
-            email_body = f"""
-            NEW ASSET FINANCE APPLICATION
-            =============================
-            
-            APPLICANT DETAILS:
-            ------------------
-            Name: {name}
-            Phone: {phone}
-            Employment: {employment}
-            Income Bracket: {income}
-            
-            FINANCIALS:
-            -----------
-            Target Car Value: {car_budget}
-            Deposit Ready: {deposit}
-            
-            ACTION REQUIRED:
-            - Verify income documents
-            - Forward to Partner Sacco/Bank
-            """
+            email_body = f"""NEW ASSET FINANCE APPLICATION\nName: {name}\nPhone: {phone}\nTarget Budget: {car_budget}"""
             success_msg = "✅ Application Received! Our finance team will contact you within 2 hours."
 
-        # --- COMMON SENDING LOGIC (CRASH PROOF) ---
         try:
             if settings.EMAIL_HOST:
                 send_mail(subject, email_body, settings.DEFAULT_FROM_EMAIL, [settings.SERVER_EMAIL], fail_silently=False)
-            else:
-                # Mock output to Render logs if SMTP not configured
-                print(f"\n📨 [MOCK EMAIL SENT] -----------------------")
-                print(f"To: {settings.SERVER_EMAIL}")
-                print(f"Subject: {subject}")
-                print(email_body)
-                print(f"----------------------------------------------\n")
-                
         except Exception as e:
             print(f"❌ Email Error: {e}")
-            print(email_body) # Ensure data is preserved in logs regardless
 
         messages.success(request, success_msg)
         return redirect(request.META.get('HTTP_REFERER', 'financing_page'))
@@ -523,43 +461,16 @@ def dealer_academy(request):
 
 @login_required
 def dealer_academy_lesson(request, module_id):
-    # 1. Define Content (Simulated DB)
+    # Simulated DB Content
     curriculum = {
-        1: {
-            'title': 'The Digital Broker Mindset',
-            'video_id': 'M7lc1UVf-VE',
-            'desc': 'Why the old way of selling is dying and how trust is your new currency.',
-            'content': """
-                <p><strong>Welcome to the new era of car selling.</strong></p>
-                <p>In this module, we cover the three pillars of a successful digital broker:</p>
-                <ul>
-                    <li><strong>Transparency:</strong> Why hiding defects kills your long-term revenue.</li>
-                    <li><strong>Speed:</strong> Responding to WhatsApp leads within 5 minutes increases conversion by 400%.</li>
-                    <li><strong>Presentation:</strong> Why 20 photos are better than 5.</li>
-                </ul>
-                <div class="alert alert-info">Tip: Complete this module to unlock the 'Verification' badge on your profile.</div>
-            """
-        },
-        2: {
-            'title': 'Sourcing & Verification',
-            'video_id': 'tgbNymZ7vqY', 
-            'desc': 'How to inspect a car like a pro before you list it.',
-            'content': '<p>Check the logbook, verify the VIN, and look for accident repairs.</p>'
-        }
+        1: {'title': 'The Digital Broker Mindset', 'video_id': 'M7lc1UVf-VE', 'desc': 'Why trust is your new currency.', 'content': '<p>Welcome to the new era...</p>'},
+        2: {'title': 'Sourcing & Verification', 'video_id': 'tgbNymZ7vqY', 'desc': 'How to inspect a car.', 'content': '<p>Check the logbook...</p>'}
     }
-    
     module = curriculum.get(module_id)
-    if not module:
-        return redirect('dealer_academy')
-
+    if not module: return redirect('dealer_academy')
     next_id = module_id + 1 if (module_id + 1) in curriculum else None
+    return render(request, 'dealer/academy_lesson.html', {'module': module, 'module_id': module_id, 'next_id': next_id})
 
-    context = {
-        'module': module, 'module_id': module_id, 'next_id': next_id, 'all_modules': curriculum 
-    }
-    return render(request, 'dealer/academy_lesson.html', context)
-
-# --- DEALER TOOL: SALES AGREEMENT GENERATOR ---
 @login_required
 def create_agreement(request):
     if request.method == 'POST':
@@ -570,77 +481,25 @@ def create_agreement(request):
             pdf = render_to_pdf('dealer/tools/agreement_pdf.html', data)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                filename = f"Sale_Agreement_{data['reg_number']}.pdf"
-                response['Content-Disposition'] = f'inline; filename="{filename}"'
+                response['Content-Disposition'] = f'inline; filename="Sale_Agreement_{data["reg_number"]}.pdf"'
                 return response
             return HttpResponse("Error Generating PDF", status=400)
     else:
-        initial_data = {
-            'seller_name': request.user.dealer_profile.business_name or request.user.username,
-            'seller_phone': request.user.dealer_profile.phone,
-        }
+        initial_data = {'seller_name': request.user.dealer_profile.business_name or request.user.username, 'seller_phone': request.user.dealer_profile.phone}
         form = SaleAgreementForm(initial=initial_data)
-
     return render(request, 'dealer/tools/agreement_form.html', {'form': form})
 
-# --- ULTIMATE MIGRATION FIXER (DB REPAIR TOOL) ---
+# --- MIGRATION FIXER ---
 def run_migrations_view(request):
-    """
-    ULTIMATE FIXER: Manually creates missing columns using Raw SQL.
-    Includes the fix for SearchTerm 'count' AND 'last_searched'.
-    """
-    if not request.user.is_superuser:
-        return HttpResponse("<h1>Access Denied</h1><p>Log in as admin first.</p>", status=403)
-
-    try:
-        with connection.cursor() as cursor:
-            # 1. Fix Booking Table
-            cursor.execute("""
-                ALTER TABLE cars_booking 
-                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
-            """)
-            
-            # 2. Fix Car Table
-            cursor.execute("""
-                ALTER TABLE cars_car 
-                ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';
-            """)
-
-            # 3. Fix Search Terms Table (CRITICAL FIX FOR SUPER ADMIN)
-            # Adds 'count' (integer) if missing
-            cursor.execute("""
-                ALTER TABLE cars_searchterm 
-                ADD COLUMN IF NOT EXISTS count INTEGER DEFAULT 1;
-            """)
-            # Adds 'last_searched' (timestamp) if missing
-            cursor.execute("""
-                ALTER TABLE cars_searchterm 
-                ADD COLUMN IF NOT EXISTS last_searched TIMESTAMP WITH TIME ZONE DEFAULT NOW();
-            """)
-
-        return HttpResponse("""
-            <h1 style='color:green'>DATABASE PATCHED SUCCESSFULLY</h1>
-            <ul style='font-size:18px;'>
-                <li>✅ 'updated_at' added to Bookings</li>
-                <li>✅ 'city' added to Cars</li>
-                <li>✅ 'count' added to SearchTerm (Fixes Admin Crash)</li>
-                <li>✅ 'last_searched' added to SearchTerm</li>
-            </ul>
-            <br>
-            <a href='/super-admin/' style='font-size:20px; font-weight:bold; background: #eee; padding: 10px; border-radius: 5px; text-decoration: none;'>
-                &rarr; Go to Super Admin Dashboard
-            </a>
-        """)
-    except Exception as e:
-        return HttpResponse(f"<h1 style='color:red'>SQL ERROR</h1><pre>{e}</pre>")
-
-# --- LEGAL & GOVERNANCE VIEW (STEP 1) ---
+    if not request.user.is_superuser: return HttpResponse("Access Denied", status=403)
+    with connection.cursor() as cursor:
+        cursor.execute("ALTER TABLE cars_booking ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();")
+        cursor.execute("ALTER TABLE cars_car ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Nairobi';")
+        cursor.execute("ALTER TABLE cars_searchterm ADD COLUMN IF NOT EXISTS count INTEGER DEFAULT 1;")
+        cursor.execute("ALTER TABLE cars_searchterm ADD COLUMN IF NOT EXISTS last_searched TIMESTAMP WITH TIME ZONE DEFAULT NOW();")
+    return HttpResponse("Database Patched Successfully.")
 
 def policy_page(request, slug):
-    """
-    Renders various legal and governance pages based on the URL slug.
-    This handles: Sustainability, ABC Policy, Data Protection, etc.
-    """
     templates = {
         'sustainability': 'pages/policies/sustainability.html',
         'data-protection': 'pages/policies/data_protection.html',
@@ -648,20 +507,88 @@ def policy_page(request, slug):
         'community-pledge': 'pages/policies/community_pledge.html',
         'whistleblowing': 'pages/policies/whistleblowing.html',
     }
-    
     template_path = templates.get(slug)
-    if not template_path:
-        return redirect('home')
-        
+    if not template_path: return redirect('home')
     return render(request, template_path)
 
 def google_inventory_feed(request):
-    """
-    Generates a live XML feed for Google Merchant Center.
-    Google fetches this URL daily to update Vehicle Ads.
-    """
-    # 1. Fetch only Available cars
     active_cars = Car.objects.filter(status='AVAILABLE').order_by('-created_at')
-    
-    # 2. Render the XML template
     return render(request, 'feeds/google_cars.xml', {'cars': active_cars}, content_type='application/xml')
+
+# --- MESSAGING SYSTEM VIEWS (NEW) ---
+
+@login_required
+def start_conversation(request, car_id):
+    """
+    Initiates a secure chat between buyer and dealer for a specific car.
+    """
+    car = get_object_or_404(Car, pk=car_id)
+    
+    # Prevent dealer from messaging themselves
+    if request.user == car.dealer:
+        messages.warning(request, "You cannot message yourself!")
+        return redirect('car_detail', car_id=car.id)
+
+    # Check if conversation already exists (Idempotency)
+    conversation, created = Conversation.objects.get_or_create(
+        car=car, 
+        buyer=request.user, 
+        dealer=car.dealer
+    )
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.conversation = conversation
+            msg.sender = request.user
+            msg.save()
+            
+            # TODO: Send Email Notification to Dealer here
+            
+            messages.success(request, "Message sent to dealer!")
+            return redirect('conversation_detail', conversation_id=conversation.id)
+    else:
+        form = MessageForm()
+
+    return render(request, 'chat/start_chat.html', {'form': form, 'car': car})
+
+@login_required
+def inbox(request):
+    """
+    Displays all conversations where the user is either the buyer or the dealer.
+    """
+    chats = Conversation.objects.filter(
+        Q(buyer=request.user) | Q(dealer=request.user)
+    ).order_by('-updated_at')
+    
+    return render(request, 'chat/inbox.html', {'chats': chats})
+
+@login_required
+def conversation_detail(request, conversation_id):
+    """
+    The actual chat room view.
+    """
+    conversation = get_object_or_404(Conversation, id=conversation_id)
+    
+    # Security: Ensure user is actually part of this chat
+    if request.user != conversation.buyer and request.user != conversation.dealer:
+        return HttpResponse("Unauthorized", status=403)
+
+    # Handle Reply
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.conversation = conversation
+            msg.sender = request.user
+            msg.save()
+            
+            # Update conversation timestamp to bump it to top of inbox
+            conversation.updated_at = timezone.now()
+            conversation.save()
+            
+            return redirect('conversation_detail', conversation_id=conversation.id)
+    
+    form = MessageForm()
+    return render(request, 'chat/chat_room.html', {'conversation': conversation, 'form': form})
