@@ -40,3 +40,8 @@ class CarSitemap(Sitemap):
     def lastmod(self, obj):
         # Switched to 'created_at' because we are 100% sure this field exists
         return obj.created_at
+
+    # --- THE FIX IS HERE ---
+    def location(self, obj):
+        # Explicitly tells Django: Use the 'car_detail' view and pass the car's ID
+        return reverse('car_detail', args=[obj.id])
