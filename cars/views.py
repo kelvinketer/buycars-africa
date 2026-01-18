@@ -413,67 +413,89 @@ def dealership_network(request):
     context = {'dealers': dealers, 'total_value': total_inventory_val, 'total_leads': Lead.objects.count(), 'active_stock': Car.objects.filter(status='AVAILABLE').count(), 'city_counts': list(city_counts)}
     return render(request, 'pages/dealerships.html', context)
 
-# --- FINANCING PAGE (UPDATED - CRASH PROOF) ---
+# --- FINANCING & PARTNER VIEW (SMART LOGIC) ---
 def financing_page(request):
     """
-    Renders the Financing Hub and handles Loan Applications.
-    Includes robust error handling to prevent 500 crashes if email fails.
+    Handles both CONSUMER (Car Loan) and INSTITUTIONAL (Partner) forms.
     """
     if request.method == 'POST':
-        # 1. Capture Form Data
-        name = request.POST.get('full_name', 'Applicant')
-        phone = request.POST.get('phone', 'N/A')
-        employment = request.POST.get('employment_status', 'N/A')
-        income = request.POST.get('monthly_income', 'N/A')
-        deposit = request.POST.get('deposit_amount', '0')
-        car_budget = request.POST.get('car_budget', '0')
+        form_type = request.POST.get('form_type', 'finance_application') # Default to finance if missing
         
-        # 2. Prepare the Lead Data
-        lead_subject = f"💰 New Finance Lead: {name}"
-        lead_message = f"""
-        NEW ASSET FINANCE APPLICATION
-        =============================
-        
-        APPLICANT DETAILS:
-        ------------------
-        Name: {name}
-        Phone: {phone}
-        Employment: {employment}
-        Income Bracket: {income}
-        
-        FINANCIALS:
-        -----------
-        Target Car Value: KES {car_budget}
-        Deposit Ready: KES {deposit}
-        
-        ACTION REQUIRED:
-        - Verify income documents
-        - Forward to Partner Sacco/Bank
-        """
-        
-        # 3. Attempt to Send Email (Safe Mode)
-        try:
-            send_mail(
-                lead_subject, 
-                lead_message, 
-                settings.DEFAULT_FROM_EMAIL, 
-                [settings.SERVER_EMAIL], 
-                fail_silently=False
-            )
-            print(f"✅ Email sent successfully to {settings.SERVER_EMAIL}")
+        # --- LOGIC FOR PARTNER INQUIRY (B2B) ---
+        if form_type == 'partner_inquiry':
+            org_name = request.POST.get('institution_name', 'Unknown Org')
+            email = request.POST.get('email', 'No Email')
+            interest = request.POST.get('interest', 'General')
+            message_body = request.POST.get('message', '')
             
-        except Exception as e:
-            # THIS PREVENTS THE 500 ERROR
-            print(f"⚠️ Email failed to send (System did not crash): {e}")
-            print("vvv LEAD DATA DUMP vvv")
-            print(lead_message)
-            print("^^^ LEAD DATA DUMP ^^^")
+            subject = f"🤝 New Partner Inquiry: {org_name}"
+            email_body = f"""
+            NEW INSTITUTIONAL PARTNERSHIP REQUEST
+            =====================================
+            
+            Institution: {org_name}
+            Contact Email: {email}
+            Area of Interest: {interest}
+            
+            Message:
+            "{message_body}"
+            
+            ACTION:
+            - Reply with Partnership Deck
+            - Schedule Intro Call
+            """
+            success_msg = "✅ Request Received! Our Partnerships Team will be in touch shortly."
 
-        # 4. Show Success Message to User (Crucial)
-        messages.success(request, "✅ Application Received! Our finance team will contact you within 2 hours.")
-        
-        # 5. Redirect to clear the form
-        return redirect('financing_page')
+        # --- LOGIC FOR FINANCE APPLICATION (B2C) ---
+        else:
+            name = request.POST.get('full_name', 'Applicant')
+            phone = request.POST.get('phone', 'N/A')
+            employment = request.POST.get('employment_status', 'N/A')
+            income = request.POST.get('monthly_income', 'N/A')
+            deposit = request.POST.get('deposit_amount', '0')
+            car_budget = request.POST.get('car_budget', '0')
+            
+            subject = f"💰 New Finance Lead: {name}"
+            email_body = f"""
+            NEW ASSET FINANCE APPLICATION
+            =============================
+            
+            APPLICANT DETAILS:
+            ------------------
+            Name: {name}
+            Phone: {phone}
+            Employment: {employment}
+            Income Bracket: {income}
+            
+            FINANCIALS:
+            -----------
+            Target Car Value: {car_budget}
+            Deposit Ready: {deposit}
+            
+            ACTION REQUIRED:
+            - Verify income documents
+            - Forward to Partner Sacco/Bank
+            """
+            success_msg = "✅ Application Received! Our finance team will contact you within 2 hours."
+
+        # --- COMMON SENDING LOGIC (CRASH PROOF) ---
+        try:
+            if settings.EMAIL_HOST:
+                send_mail(subject, email_body, settings.DEFAULT_FROM_EMAIL, [settings.SERVER_EMAIL], fail_silently=False)
+            else:
+                # Mock output to Render logs if SMTP not configured
+                print(f"\n📨 [MOCK EMAIL SENT] -----------------------")
+                print(f"To: {settings.SERVER_EMAIL}")
+                print(f"Subject: {subject}")
+                print(email_body)
+                print(f"----------------------------------------------\n")
+                
+        except Exception as e:
+            print(f"❌ Email Error: {e}")
+            print(email_body) # Ensure data is preserved in logs regardless
+
+        messages.success(request, success_msg)
+        return redirect(request.META.get('HTTP_REFERER', 'financing_page'))
 
     return render(request, 'pages/financing.html')
 
