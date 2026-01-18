@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-white py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="text-center mb-5 pb-4 border-bottom">
+                    <img src="{% static 'img/logo.png' %}" alt="BuyCars.Africa" height="50" class="mb-4">
+                    <h6 class="text-success fw-bold text-uppercase ls-2 mb-2">The BuyCars.Africa Charter</h6>
+                    <h1 class="display-4 fw-bold text-dark">Our Community Pledge</h1>
+                    <p class="text-muted fst-italic mt-3">"Driving for the continent. Planting for the future. Standing for the truth."</p>
+                </div>
+
+                <div class="pledge-body" style="line-height: 1.8; color: #333;">
+                    <p class="lead mb-5">
+                        At BuyCars.Africa, we recognize that we are not merely building a marketplace; we are stewarding a digital gateway to one of the continent’s most vital industries. Integrity is our primary currency.
+                    </p>
+
+                    <h4 class="fw-bold text-dark mt-5 mb-3">1. Radical Integrity</h4>
+                    <p>
+                        We believe every buyer deserves a marketplace free from corruption. We institutionalize a zero-tolerance policy regarding bribery and fraud through our <strong>Anti-Bribery & Corruption (ABC) Policy</strong>. Furthermore, our secure, anonymous <strong>Whistleblowing Portal</strong> ensures the sanctity of our "Verified Dealer" status remains absolute.
+                    </p>
+
+                    <h4 class="fw-bold text-dark mt-5 mb-3">2. Environmental Stewardship</h4>
+                    <p>
+                        We acknowledge the automotive industry's carbon footprint and commit to paying that debt back to the African soil. For every vehicle successfully sold, we fund the planting of <strong>25 indigenous trees</strong>. We are not just selling cars; we are actively building Africa’s future natural heritage.
+                    </p>
+
+                    <h4 class="fw-bold text-dark mt-5 mb-3">3. Digital Empowerment</h4>
+                    <p>
+                        We believe technology should be a bridge, not a barrier. Through our <strong>Dealer Academy</strong>, we provide regional merchants with world-class digital tools to scale their businesses. Our infrastructure meets <strong>TIER III Design</strong> and <strong>ISO 27001</strong> standards, providing a bank-grade foundation for local trade.
+                    </p>
+
+                    <h4 class="fw-bold text-dark mt-5 mb-3">4. Data Sovereignty</h4>
+                    <p>
+                        Your digital identity is a private asset. We strictly adhere to regional <strong>Data Protection Acts</strong>, ensuring that every financial record and personal detail is secured with global <strong>PCI DSS</strong> standards.
+                    </p>
+                </div>
+
+                <div class="mt-5 pt-5 border-top text-center">
+                    <p class="text-muted small mb-4">Ratified on January 17, 2026, for the BuyCars.Africa Ecosystem.</p>
+                    <div class="mb-4">
+                        <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem;" class="text-dark">The BuyCars.Africa Board</h3>
+                    </div>
+                    <a href="{% url 'impact_hub' %}" class="btn btn-outline-success rounded-pill px-4">View Live Impact Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -53,10 +53,15 @@ urlpatterns = [
     path('brands/', car_views.all_brands, name='brands_list'),
     path('dealer/<str:username>/', car_views.dealer_showroom, name='dealer_showroom'),
     
-    # --- MISSION & IMPACT ---
-    path('impact/', car_views.impact_page, name='impact_page'),
-    path('1-million-trees/', car_views.impact_page), 
+    # --- INSTITUTIONAL IMPACT (Updated) ---
+    # Points to the new 'impact_hub' view with the stewardship narrative
+    path('impact/', car_views.impact_hub, name='impact_hub'),
+    path('1-million-trees/', car_views.impact_hub), 
     
+    # --- NEW: GOVERNANCE & LEGAL ROUTES ---
+    # This dynamic route handles: /legal/sustainability/, /legal/abc-policy/, /legal/data-protection/
+    path('legal/<slug:slug>/', car_views.policy_page, name='policy_page'),
+
     # --- DRIVING CHANGE MANIFESTO ---
     path('driving-change/', car_views.driving_change_page, name='driving_change'),
 
@@ -96,6 +101,7 @@ urlpatterns = [
     
     # --- DEALER ACADEMY ---
     path('dashboard/academy/', car_views.dealer_academy, name='dealer_academy'),
+    path('dashboard/academy/lesson/<int:module_id>/', car_views.dealer_academy_lesson, name='academy_lesson'),
     
     # --- PRICING PAGE ---
     path('pricing/', TemplateView.as_view(template_name='saas/pricing.html'), name='pricing'),
@@ -121,9 +127,6 @@ urlpatterns = [
     path('admin-tools/send-reports/', user_views.trigger_weekly_report, name='trigger_weekly_report'),
     path('admin-tools/check-subs/', user_views.trigger_subscription_check, name='trigger_subscription_check'),
     path('admin-tools/force-migrate/', car_views.run_migrations_view, name='force_migrate'),
-    
-# ... existing academy url ...
-    path('dashboard/academy/lesson/<int:module_id>/', car_views.dealer_academy_lesson, name='academy_lesson'),
 ]
 
 if settings.DEBUG:

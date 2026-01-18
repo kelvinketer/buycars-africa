@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-light py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-header bg-dark text-white py-4 text-center">
+                        <h6 class="text-success fw-bold text-uppercase ls-2 mb-1">Corporate Governance</h6>
+                        <h2 class="fw-bold mb-0">Anti-Bribery & Corruption (ABC) Policy</h2>
+                    </div>
+                    <div class="card-body p-5" style="line-height: 1.8; color: #444;">
+                        
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">1. Statement of Intent</h4>
+                            <p>
+                                BuyCars.Africa maintains a zero-tolerance stance toward all forms of bribery and corruption. We are committed to acting professionally, fairly, and with integrity in all our business dealings and relationships, regardless of the jurisdiction in which we operate.
+                            </p>
+                        </section>
+
+                        <section class="mb-5 text-center">
+                            
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">2. Core Prohibitions</h4>
+                            <p>Our employees, partners, and merchants are strictly prohibited from:</p>
+                            <ul>
+                                <li>Offering, promising, or giving a bribe or kickback to influence a business outcome.</li>
+                                <li>Requesting, agreeing to receive, or accepting a financial or other advantage as an inducement for improper performance.</li>
+                                <li>Engaging in any activity that creates a conflict of interest or undermines the transparency of our marketplace.</li>
+                            </ul>
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">3. Standards of Compliance</h4>
+                            <p>
+                                To ensure institutional credibility, we align our internal systems with <strong>ISO 37001 (Anti-Bribery Management Systems)</strong>. Our financial transactions are processed under <strong>PCI DSS</strong> standards, and our operational data is secured under <strong>ISO 27001</strong> to prevent unauthorized manipulation of merchant records.
+                            </p>
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">4. Whistleblowing & Reporting</h4>
+                            <p>
+                                We empower our community to act as the primary guardians of our integrity. Any suspicion of unethical behavior can be reported anonymously via our <strong>Whistleblowing Portal</strong>. Every report is investigated with institutional rigor, and whistleblowers are protected from any form of retaliation.
+                            </p>
+                            <div class="bg-light p-4 rounded-3 border">
+                                <p class="small mb-2 fw-bold text-danger"><i class="fas fa-exclamation-triangle me-2"></i>ETHICS HOTLINE</p>
+                                <a href="{% url 'policy_page' 'whistleblowing' %}" class="btn btn-danger btn-sm rounded-pill px-4">Access Whistleblowing Portal</a>
+                            </div>
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">5. Merchant Accountability</h4>
+                            <p>
+                                Compliance with this ABC Policy is a mandatory requirement for all <strong>Platinum, Silver, and Emerald</strong> partners. Failure to adhere to these standards results in immediate suspension from the ecosystem and the forfeiture of "Verified Dealer" status.
+                            </p>
+                        </section>
+
+                        <div class="mt-5 pt-4 border-top text-center text-muted small">
+                            <p>Official Document ID: BCA-GOV-2026-ABC | Version 1.0</p>
+                            <p>&copy; 2026 BuyCars.Africa. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

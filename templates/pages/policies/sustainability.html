@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="bg-light py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-header bg-success text-white py-4 text-center">
+                        <h6 class="text-white-50 fw-bold text-uppercase ls-2 mb-1">Environmental Stewardship</h6>
+                        <h2 class="fw-bold mb-0">Sustainability Policy & 2030 Vision</h2>
+                    </div>
+
+                    <div class="card-body p-5" style="line-height: 1.8; color: #444;">
+                        
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">1. Our Commitment to the Continent</h4>
+                            <p>
+                                BuyCars.Africa recognizes a fundamental truth: mobility has an environmental cost. As the digital gateway to Africa's automotive market, we accept the responsibility to pay that debt back to the soil. We are committed to decoupling the growth of our business from the degradation of our environment.
+                            </p>
+                        </section>
+
+                        <section class="mb-5">
+                            <div class="bg-light border border-success rounded-3 p-4 mb-4">
+                                <h4 class="fw-bold text-success mb-2">The "1-for-25" Restoration Pledge</h4>
+                                <p class="mb-0">
+                                    For every vehicle successfully sold through our platform, BuyCars.Africa commits to funding the planting and monitoring of **25 indigenous trees**. This initiative is designed to offset the estimated lifetime carbon emissions of the average imported vehicle.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">2. Alignment with Global Goals</h4>
+                            <p>
+                                Our sustainability framework is not arbitrary. It is engineered to support the United Nations Sustainable Development Goals (SDGs), specifically:
+                            </p>
+                            <ul class="list-unstyled mt-3">
+                                <li class="mb-3 d-flex">
+                                    <i class="fas fa-globe-africa text-success fa-lg mt-1 me-3"></i>
+                                    <div>
+                                        <strong>SDG 13 (Climate Action):</strong> actively sequestering carbon through large-scale reforestation.
+                                    </div>
+                                </li>
+                                <li class="mb-3 d-flex">
+                                    <i class="fas fa-tree text-success fa-lg mt-1 me-3"></i>
+                                    <div>
+                                        <strong>SDG 15 (Life on Land):</strong> Restoring degraded landscapes with indigenous species to protect biodiversity.
+                                    </div>
+                                </li>
+                                <li class="d-flex">
+                                    <i class="fas fa-users text-success fa-lg mt-1 me-3"></i>
+                                    <div>
+                                        <strong>SDG 8 (Decent Work):</strong> Creating green jobs for local communities who are employed to plant and protect these forests.
+                                    </div>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">3. Operational Efficiency</h4>
+                            <p>
+                                Beyond reforestation, we strive for sustainability in our own operations:
+                            </p>
+                            <ul>
+                                <li><strong>Digital-First Infrastructure:</strong> By digitizing the inspection and sales process, we reduce the need for physical travel and paper-based documentation.</li>
+                                <li><strong>Green Hosting:</strong> Our cloud infrastructure is optimized for efficiency, minimizing the energy footprint of every search query.</li>
+                            </ul>
+                        </section>
+
+                        <section class="mb-5">
+                            <h4 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">4. The Role of Our Partners</h4>
+                            <p>
+                                Our **Platinum and Silver Partners** are the engines of this restoration. A portion of every subscription fee is allocated directly to the <strong>BuyCars Community Fund</strong>. By choosing to trade on our platform, our dealers are not just selling cars; they are active investors in Africa's natural capital.
+                            </p>
+                        </section>
+
+                        <div class="mt-5 text-center">
+                            <p class="text-muted small mb-3">Track our progress in real-time on the Impact Hub.</p>
+                            <a href="{% url 'impact_hub' %}" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm">View Live Impact Data</a>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-top text-center text-muted small">
+                            <p>Official Document ID: BCA-GOV-2026-SUS | Version 1.0</p>
+                            <p>&copy; 2026 BuyCars.Africa. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

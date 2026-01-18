@@ -87,6 +87,18 @@ def public_homepage(request):
     }
     return render(request, 'home.html', context)
 
+def community_pledge_view(request):
+    """
+    Renders the formal BuyCars.Africa Community Pledge.
+    """
+    return render(request, 'pages/policies/community_pledge.html')
+
+def abc_policy_view(request):
+    """
+    Renders the formal BuyCars.Africa Anti-Bribery & Corruption Policy.
+    """
+    return render(request, 'pages/policies/abc_policy.html')
+
 @require_POST
 def set_currency(request):
     currency = request.POST.get('currency', 'KES')
@@ -369,12 +381,21 @@ def platform_dashboard(request):
     }
     return render(request, 'saas/platform_dashboard.html', context)
 
-def impact_page(request):
+# --- INSTITUTIONAL / IMPACT PAGES ---
+
+def impact_hub(request):
+    """
+    Renders the formal Organizational Impact page.
+    """
     total_cars_sold = Car.objects.filter(status='SOLD').count()
-    trees_planted = total_cars_sold * 25
-    co2_offset_tons = (trees_planted * 20) / 1000 
-    context = {'trees_planted': trees_planted, 'co2_offset': co2_offset_tons, 'cars_sold': total_cars_sold}
-    return render(request, 'pages/impact.html', context)
+    
+    context = {
+        'trees_funded': total_cars_sold * 25,
+        'carbon_offset_tons': (total_cars_sold * 25 * 20) / 1000,
+        'reforestation_partners': 4,
+        'active_dealers': DealerProfile.objects.filter(user__is_active=True).count(),
+    }
+    return render(request, 'pages/impact_hub.html', context)
 
 def transparency_hub(request):
     impact_events = Car.objects.filter(status='SOLD').order_by('-created_at')[:10]
@@ -523,3 +544,24 @@ def run_migrations_view(request):
         """)
     except Exception as e:
         return HttpResponse(f"<h1 style='color:red'>SQL ERROR</h1><pre>{e}</pre>")
+
+# --- LEGAL & GOVERNANCE VIEW (STEP 1) ---
+
+def policy_page(request, slug):
+    """
+    Renders various legal and governance pages based on the URL slug.
+    This handles: Sustainability, ABC Policy, Data Protection, etc.
+    """
+    templates = {
+        'sustainability': 'pages/policies/sustainability.html',
+        'data-protection': 'pages/policies/data_protection.html',
+        'abc-policy': 'pages/policies/abc_policy.html',
+        'community-pledge': 'pages/policies/community_pledge.html',
+        'whistleblowing': 'pages/policies/whistleblowing.html',
+    }
+    
+    template_path = templates.get(slug)
+    if not template_path:
+        return redirect('home')
+        
+    return render(request, template_path)

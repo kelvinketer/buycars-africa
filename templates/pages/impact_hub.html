@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="bg-light border-bottom py-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h6 class="text-primary fw-bold text-uppercase ls-1 mb-3">Institutional Impact</h6>
+                <h1 class="display-4 fw-bold text-dark mb-4">Driving Sustainable Mobility Across Africa</h1>
+                <p class="lead text-muted mb-0">
+                    BuyCars.Africa is more than a marketplace. We are an organization committed to 
+                    ethical commerce, environmental restoration, and digital transparency. 
+                    Our operations are built on a foundation of professional governance and long-term community value.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4 py-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3">
+                        <i class="fas fa-leaf text-success fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Environmental Stewardship</h5>
+                </div>
+                <p class="small text-muted mb-4">Every vehicle transaction supports our goal of restoring 1 million trees by 2030.</p>
+                <div class="mt-auto border-top pt-3">
+                    <h3 class="fw-bold mb-0 text-success">{{ trees_funded }}</h3>
+                    <small class="text-uppercase text-muted fw-bold ls-1" style="font-size: 0.7rem;">Trees Funded to Date</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                        <i class="fas fa-gavel text-primary fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Integrity & Governance</h5>
+                </div>
+                <p class="small text-muted mb-4">Our zero-tolerance policy on bribery and corruption ensures a fair playing field for all dealers.</p>
+                <a href="{% url 'policy_page' 'abc-policy' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">View ABC Policy</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-dark bg-opacity-10 p-3 rounded-3 me-3">
+                        <i class="fas fa-user-shield text-dark fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold mb-0">Digital Trust</h5>
+                </div>
+                <p class="small text-muted mb-4">Your personal and financial data is handled under strict local and regional protection laws.</p>
+                <a href="{% url 'policy_page' 'data-protection' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">Data Policy</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-dark text-white py-5 mt-4">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-4">Our Community Pledge</h2>
+                <p class="opacity-75 mb-4">
+                    We pledge to empower local merchants with digital tools, to provide buyers with verified data, 
+                    and to invest a portion of every dollar earned back into the African landscape.
+                </p>
+                <a href="{% url 'policy_page' 'community-pledge' %}" class="btn btn-light rounded-pill px-4 fw-bold">Read the Pledge</a>
+            </div>
+            <div class="col-lg-5 offset-lg-1">
+                <div class="card bg-white bg-opacity-10 border-0 p-4">
+                    <h4 class="fw-bold mb-3">Ethics Hotline</h4>
+                    <p class="small opacity-75">Our Whistleblowing Portal allows users to report any unethical behavior anonymously.</p>
+                    <a href="{% url 'policy_page' 'whistleblowing' %}" class="btn btn-danger rounded-pill px-4">Access Portal</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
