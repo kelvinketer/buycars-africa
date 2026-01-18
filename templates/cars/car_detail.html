@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load custom_filters %} 
-{% load currency_tags %}
+{% load currency_tags %} {# CRITICAL: This loads the convert_price tag #}
 
 {% block head_extra %}
     <meta property="og:title" content="{{ car.year }} {{ car.make }} {{ car.model }} | {% if car.listing_type == 'RENT' %}KES {{ car.rent_price_per_day|floatformat:0|intcomma }}/day{% else %}KES {{ car.price|floatformat:0|intcomma }}{% endif %}">
