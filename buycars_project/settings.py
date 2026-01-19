@@ -75,21 +75,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 
-                TEMPLATES = [
-    {
-        # ... other settings ...
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                                # ADD THIS LINE:
+                # --- Custom Context Processors ---
                 'cars.context_processors.unread_messages_count', 
-            ],
-        },
-    },
-]
             ],
         },
     },
