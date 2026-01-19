@@ -17,7 +17,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from users.models import DealerProfile
-from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking, Conversation, Message 
+from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking, Conversation, Message, CarLike, DealerFollow
 from .forms import CarForm, CarBookingForm, SaleAgreementForm, MessageForm 
 from .utils import render_to_pdf 
 
@@ -33,57 +33,50 @@ def sanitize_phone(phone):
     if not phone: return None
     return re.sub(r'\D', '', str(phone))
 
-# --- PUBLIC VIEWS ---
+# --- PUBLIC VIEWS (UPDATED FOR FEED) ---
 
 def public_homepage(request):
-    featured_cars = Car.objects.filter(status='AVAILABLE', is_featured=True).order_by('-created_at')[:8]
-    cars = Car.objects.filter(status__in=['AVAILABLE', 'RESERVED', 'SOLD']).order_by('status', '-created_at')
-    
-    q = request.GET.get('q')
-    listing_type = request.GET.get('listing_type') 
-    make = request.GET.get('make')
-    region = request.GET.get('region')
-    body_type = request.GET.get('body_type') 
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-    min_year = request.GET.get('min_year')   
-    max_year = request.GET.get('max_year')   
+    # 1. Base Query
+    base_qs = Car.objects.filter(status='AVAILABLE').select_related('dealer', 'dealer__dealer_profile')
 
-    if listing_type:
-        if listing_type == 'SALE': cars = cars.filter(listing_type__in=['SALE', 'BOTH'])
-        elif listing_type == 'RENT': cars = cars.filter(listing_type__in=['RENT', 'BOTH'])
-
-    if q:
-        clean_q = q.strip().lower()
-        if len(clean_q) > 2: 
-            obj, created = SearchTerm.objects.get_or_create(term=clean_q)
-            if not created: SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
-        cars = cars.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
+    # 2. Feeds Logic
     
-    if make: cars = cars.filter(make__iexact=make)
-    if region: cars = cars.filter(dealer__dealer_profile__city=region)
-    if body_type: cars = cars.filter(body_type__iexact=body_type)
-    
-    if min_price:
-        try: cars = cars.filter(price__gte=min_price)
-        except: pass 
-    if max_price:
-        try: cars = cars.filter(price__lte=max_price)
-        except: pass
-    if min_year: 
-        try: cars = cars.filter(year__gte=min_year)
-        except: pass
-    if max_year: 
-        try: cars = cars.filter(year__lte=max_year)
-        except: pass
+    # A. Fresh Picks (Newest First)
+    fresh_picks = base_qs.order_by('-created_at')[:12]
 
+    # B. Trending (Most Liked & Viewed)
+    # We annotate (count) likes for each car to sort by popularity
+    trending_cars = base_qs.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')[:12]
+
+    # C. Following Feed (Personalized)
+    following_cars = []
+    if request.user.is_authenticated:
+        # Get IDs of dealers the user follows
+        following_ids = request.user.following.values_list('dealer_id', flat=True)
+        following_cars = base_qs.filter(dealer_id__in=following_ids).order_by('-created_at')[:12]
+
+    # 3. Filter Dropdowns
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
-    regions = DealerProfile.CITY_CHOICES 
+    regions = DealerProfile.CITY_CHOICES
+
+    # 4. Search logic (for the search bar functionality)
+    q = request.GET.get('q')
+    if q:
+        clean_q = q.strip().lower()
+        if len(clean_q) > 2:
+            obj, created = SearchTerm.objects.get_or_create(term=clean_q)
+            if not created: SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
+        # If searching, override the "fresh picks" to show results instead
+        fresh_picks = base_qs.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
 
     context = {
-        'featured_cars': featured_cars, 'cars': cars, 'all_makes': all_makes, 
-        'all_body_types': all_body_types, 'regions': regions, 
+        'fresh_picks': fresh_picks,
+        'trending_cars': trending_cars,
+        'following_cars': following_cars,
+        'all_makes': all_makes,
+        'all_body_types': all_body_types,
+        'regions': regions,
     }
     return render(request, 'home.html', context)
 
@@ -101,10 +94,65 @@ def set_currency(request):
 
 def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
-    ip = request.META.get('REMOTE_ADDR')
-    CarView.objects.create(car=car, ip_address=ip)
+    
+    # Record a View (Simple Analytics)
+    session_key = f'viewed_car_{car_id}'
+    if not request.session.get(session_key, False):
+        car.views.create(ip_address=request.META.get('REMOTE_ADDR'))
+        request.session[session_key] = True
+
+    # Check if user liked/follows
+    is_liked = False
+    is_following = False
+    if request.user.is_authenticated:
+        is_liked = CarLike.objects.filter(user=request.user, car=car).exists()
+        is_following = DealerFollow.objects.filter(follower=request.user, dealer=car.dealer).exists()
+
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
-    return render(request, 'cars/car_detail.html', {'car': car, 'similar_cars': similar_cars})
+    
+    context = {
+        'car': car, 
+        'similar_cars': similar_cars,
+        'is_liked': is_liked,
+        'is_following': is_following
+    }
+    return render(request, 'cars/car_detail.html', context)
+
+# --- SOCIAL ACTIONS (AJAX) ---
+
+@login_required
+@require_POST
+def toggle_follow_dealer(request, dealer_id):
+    try:
+        dealer = User.objects.get(id=dealer_id)
+        if dealer == request.user:
+            return JsonResponse({'error': 'Cannot follow yourself'}, status=400)
+            
+        follow, created = DealerFollow.objects.get_or_create(follower=request.user, dealer=dealer)
+        
+        if not created:
+            follow.delete()
+            action = 'unfollowed'
+        else:
+            action = 'followed'
+            
+        return JsonResponse({'status': 'success', 'action': action})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Dealer not found'}, status=404)
+
+@login_required
+@require_POST
+def toggle_car_like(request, car_id):
+    car = get_object_or_404(Car, id=car_id)
+    like, created = CarLike.objects.get_or_create(user=request.user, car=car)
+    
+    if not created:
+        like.delete()
+        action = 'unliked'
+    else:
+        action = 'liked'
+        
+    return JsonResponse({'status': 'success', 'action': action, 'count': car.likes.count()})
 
 @login_required
 def book_car(request, car_id):
@@ -160,9 +208,8 @@ def book_car(request, car_id):
 def track_action(request, car_id, action_type):
     car = get_object_or_404(Car, id=car_id)
     action_type = action_type.upper()
-    if action_type not in ['CALL', 'WHATSAPP']:
-        return JsonResponse({'status': 'error'}, status=400)
-
+    
+    # Allow tracking calls or clicks
     ip = request.META.get('REMOTE_ADDR')
     Lead.objects.create(car=car, action_type=action_type, ip_address=ip, user=request.user if request.user.is_authenticated else None)
     return JsonResponse({'status': 'success', 'action': action_type})
@@ -575,29 +622,31 @@ def conversation_detail(request, conversation_id):
     if request.user != conversation.buyer and request.user != conversation.dealer:
         return HttpResponse("Unauthorized", status=403)
 
+    # Mark incoming messages as read
+    conversation.messages.exclude(sender=request.user).update(is_read=True)
+
     # Handle Reply
     if request.method == 'POST':
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            msg = form.save(commit=False)
-            msg.conversation = conversation
-            msg.sender = request.user
-            msg.save()
-            
+        content = request.POST.get('content')
+        if content:
+            Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                content=content
+            )
             # Update conversation timestamp to bump it to top of inbox
             conversation.updated_at = timezone.now()
             conversation.save()
             
             return redirect('conversation_detail', conversation_id=conversation.id)
     
-    form = MessageForm()
-    return render(request, 'chat/chat_room.html', {'conversation': conversation, 'form': form})
+    return render(request, 'chat/conversation.html', {'conversation': conversation})
 
-# --- UPDATE THIS FUNCTION AT THE BOTTOM OF cars/views.py ---
+# --- DATABASE FIXER TOOL ---
 
 from django.db import connection
 from django.http import HttpResponse
-from .models import Conversation, Message
+from .models import Conversation, Message, CarLike, DealerFollow
 
 @login_required
 def fix_chat_db(request):
@@ -612,14 +661,15 @@ def fix_chat_db(request):
         with connection.schema_editor() as schema_editor:
             # 1. Create Conversation Table
             schema_editor.create_model(Conversation)
-            
             # 2. Create Message Table
             schema_editor.create_model(Message)
+            # 3. Create Social Tables
+            schema_editor.create_model(CarLike)
+            schema_editor.create_model(DealerFollow)
             
         return HttpResponse("""
-            <h1 style='color:green'>SUCCESS: Chat Tables Created!</h1> 
-            <p>The 'cars_conversation' and 'cars_message' tables are now live.</p>
-            <p>You can go back and click 'Message Seller' now.</p>
+            <h1 style='color:green'>SUCCESS: Tables Created!</h1> 
+            <p>Chat and Social tables (Likes/Follows) are now live.</p>
         """)
         
     except Exception as e:
