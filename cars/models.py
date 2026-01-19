@@ -324,4 +324,51 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender.username} at {self.timestamp}"
-    
+
+# --- SOCIAL FEATURES (Phase 2) ---
+
+class DealerFollow(models.Model):
+    """
+    Allows users to follow dealers to get updates on new stock.
+    """
+    follower = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='following')
+    dealer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='followers')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('follower', 'dealer') # Prevent following the same person twice
+        indexes = [
+            models.Index(fields=['follower', 'dealer']),
+        ]
+
+    def __str__(self):
+        return f"{self.follower} follows {self.dealer}"
+
+
+class CarLike(models.Model):
+    """
+    Stores 'Likes' on cars (The Heart Icon).
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'car') # User can only like a car once
+
+    def __str__(self):
+        return f"{self.user} liked {self.car}"
+
+
+class CarComment(models.Model):
+    """
+    Public comments on car listings.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True) # Soft delete for moderation
+
+    def __str__(self):
+        return f"Comment by {self.user} on {self.car}"
