@@ -12,7 +12,8 @@ from django.contrib.auth import get_user_model
 import re 
 
 from django.core.management import call_command
-from django.db import connection
+from django.db import connection, connections # Updated import
+from django.db.utils import OperationalError, ProgrammingError # Updated import
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -642,10 +643,7 @@ def conversation_detail(request, conversation_id):
     
     return render(request, 'chat/conversation.html', {'conversation': conversation})
 
-# --- ROBUST DATABASE REPAIR TOOL ---
-from django.db import connection, connections
-from django.db.utils import OperationalError, ProgrammingError
-from django.http import HttpResponse
+# --- ROBUST DATABASE REPAIR TOOL (SELF-HEALING) ---
 
 @login_required
 def fix_chat_db(request):
