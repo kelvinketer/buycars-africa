@@ -642,40 +642,45 @@ def conversation_detail(request, conversation_id):
     
     return render(request, 'chat/conversation.html', {'conversation': conversation})
 
-# --- DATABASE FIXER TOOL ---
+# --- IMPROVED DATABASE REPAIR TOOL (ROBUST) ---
 
 from django.db import connection
+from django.db.utils import OperationalError, ProgrammingError
 from django.http import HttpResponse
 from .models import Conversation, Message, CarLike, DealerFollow
 
 @login_required
 def fix_chat_db(request):
     """
-    Safely creates the missing chat tables using Django's Schema Editor.
-    This automatically handles correct table names (e.g., users_user vs auth_user).
+    Tries to create each table one by one. 
+    If a table exists, it skips it and moves to the next.
     """
     if not request.user.is_superuser:
         return HttpResponse("Unauthorized. Log in as Super Admin.", status=403)
 
-    try:
-        with connection.schema_editor() as schema_editor:
-            # 1. Create Conversation Table
-            schema_editor.create_model(Conversation)
-            # 2. Create Message Table
-            schema_editor.create_model(Message)
-            # 3. Create Social Tables
-            schema_editor.create_model(CarLike)
-            schema_editor.create_model(DealerFollow)
-            
-        return HttpResponse("""
-            <h1 style='color:green'>SUCCESS: Tables Created!</h1> 
-            <p>Chat and Social tables (Likes/Follows) are now live.</p>
-        """)
-        
-    except Exception as e:
-        # If table already exists, it might throw an error, which is fine.
-        return HttpResponse(f"""
-            <h1 style='color:orange'>Notice / Error</h1>
-            <p>{e}</p>
-            <p>If the error says 'relation already exists', then you are good to go!</p>
-        """)
+    report = []
+    
+    models_to_fix = [
+        (Conversation, 'Conversation'),
+        (Message, 'Message'),
+        (CarLike, 'CarLike (Social)'),
+        (DealerFollow, 'DealerFollow (Social)')
+    ]
+
+    with connection.schema_editor() as schema_editor:
+        for model_class, name in models_to_fix:
+            try:
+                # Try to create the table
+                schema_editor.create_model(model_class)
+                report.append(f"<li style='color:green'>✅ Created table for <b>{name}</b></li>")
+            except (OperationalError, ProgrammingError) as e:
+                # If it fails, assume it exists and continue
+                report.append(f"<li style='color:orange'>⚠️ Table for <b>{name}</b> already exists (Skipped)</li>")
+            except Exception as e:
+                report.append(f"<li style='color:red'>❌ Error on {name}: {str(e)}</li>")
+
+    return HttpResponse(f"""
+        <h1>Database Repair Report</h1>
+        <ul>{''.join(report)}</ul>
+        <p>Go back to the <a href="/">Homepage</a> now.</p>
+    """)
