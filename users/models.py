@@ -23,7 +23,7 @@ class User(AbstractUser):
         help_text="Format: 254712345678"
     )
     
-    # Trust badge for the website
+    # Trust badge for the website (User level - legacy support)
     is_verified = models.BooleanField(default=False) 
     
     # Flag to differentiate logic if needed
@@ -78,6 +78,10 @@ class DealerProfile(models.Model):
     # --- SUBSCRIPTION FIELDS ---
     plan_type = models.CharField(max_length=10, choices=PLAN_CHOICES, default='FREE')
     subscription_expiry = models.DateTimeField(null=True, blank=True) # Tracks when plan expires
+
+    # --- VERIFICATION BADGE (BLUE TICK) ---
+    # This enables the verified checkmark on the frontend
+    is_verified = models.BooleanField(default=False, help_text="Designates a trusted/pro dealer (Blue Tick)")
 
     def __str__(self):
         return self.business_name

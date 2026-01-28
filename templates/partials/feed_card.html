@@ -1,26 +1,39 @@
 {% load humanize %}
 {% load currency_tags %}
 
-<div class="col-lg-3 col-md-4 col-sm-6">
+<div class="col-lg-3 col-md-4 col-sm-6 mb-4">
     <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
         
         <div class="p-2 d-flex align-items-center justify-content-between bg-white border-bottom border-light">
             <a href="{% url 'dealer_showroom' car.dealer.username %}" class="d-flex align-items-center text-decoration-none text-dark">
-                <div class="bg-light rounded-circle border d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; overflow: hidden;">
-                    {% if car.dealer.dealer_profile.logo %}
-                        <img src="{{ car.dealer.dealer_profile.logo.url }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    {% else %}
-                        <i class="fas fa-user text-muted small"></i>
+                
+                <div class="position-relative me-2">
+                    <div class="bg-light rounded-circle border d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; overflow: hidden;">
+                        {% if car.dealer.dealer_profile.logo %}
+                            <img src="{{ car.dealer.dealer_profile.logo.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-user text-muted small"></i>
+                        {% endif %}
+                    </div>
+
+                    {% if car.dealer.dealer_profile.is_verified %}
+                        <span class="position-absolute bottom-0 end-0 bg-white rounded-circle d-flex align-items-center justify-content-center" 
+                              style="width: 12px; height: 12px; border: 1px solid white;">
+                            <i class="fas fa-check-circle text-primary" style="font-size: 10px;" title="Verified Dealer"></i>
+                        </span>
                     {% endif %}
                 </div>
-                <small class="fw-bold" style="font-size: 0.85rem;">{{ car.dealer.username }}</small>
+
+                <small class="fw-bold text-truncate" style="font-size: 0.85rem; max-width: 100px;">
+                    {{ car.dealer.dealer_profile.business_name|default:car.dealer.username }}
+                </small>
             </a>
-            <small class="text-muted" style="font-size: 0.75rem;">{{ car.created_at|timesince }} ago</small>
+            <small class="text-muted" style="font-size: 0.7rem;">{{ car.created_at|timesince }} ago</small>
         </div>
 
         <div class="position-relative">
             <a href="{% url 'car_detail' car.id %}">
-                <div style="height: 220px; overflow: hidden;">
+                <div style="height: 200px; overflow: hidden;">
                     {% if car.images.first %}
                         <img src="{{ car.images.first.image.url }}" class="w-100 h-100" style="object-fit: cover;">
                     {% else %}
@@ -32,7 +45,7 @@
             </a>
             
             <button onclick="toggleLike(this, {{ car.id }})" class="btn btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; border: none;">
-                <i class="far fa-heart"></i> <span class="d-none like-count">{{ car.likes.count }}</span>
+                <i class="{% if request.user in car.likes.all %}fas text-danger{% else %}far{% endif %} fa-heart"></i>
             </button>
         </div>
 
@@ -43,7 +56,8 @@
             </h6>
             
             <div class="d-flex justify-content-between align-items-center mt-3">
-                <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ car.city }}</small>
+                <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ car.city|default:"Nairobi" }}</small>
+                
                 <a href="{% url 'start_conversation' car.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3" style="font-size: 0.75rem;">
                     Chat
                 </a>
