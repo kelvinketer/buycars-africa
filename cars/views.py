@@ -654,3 +654,15 @@ def fix_chat_db(request):
         <br>
         <a href="/" style="font-size:1.2rem; font-weight:bold; color:blue;">&larr; Go to Homepage</a>
     """)
+    
+    # --- ADD AT THE BOTTOM OF cars/views.py ---
+from django.core.management import call_command
+from django.http import HttpResponse
+from django.contrib.auth.decorators import user_passes_test
+
+# Security: Only allow 'superusers' (Admins) to run this
+@user_passes_test(lambda u: u.is_superuser)
+def trigger_seed(request):
+    # This runs the 'python manage.py seed_inventory' command
+    call_command('seed_inventory')
+    return HttpResponse("<h1>✅ Success! 100 Cars Generated.</h1><p>Go back to <a href='/'>Home</a></p>")

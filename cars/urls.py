@@ -5,10 +5,8 @@ urlpatterns = [
     # --- PUBLIC URLS ---
     path('', views.public_homepage, name='home'),
     
-    # --- THIS IS THE FIX (New Line) ---
     # We map 'inventory/' to the homepage view since that serves as your car list.
     path('inventory/', views.public_homepage, name='car_list'),
-    # ----------------------------------
 
     path('set-currency/', views.set_currency, name='set_currency'),
     path('car/<int:car_id>/', views.car_detail, name='car_detail'),
@@ -27,10 +25,6 @@ urlpatterns = [
     path('chat/start/<int:car_id>/', views.start_conversation, name='start_conversation'),
     path('chat/inbox/', views.inbox, name='inbox'),
     path('chat/conversation/<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
-
-    # --- NOTE: SOCIAL FEATURES REMOVED ---
-    # I removed the 'social/follow' and 'social/like' paths because you deleted 
-    # those functions in views.py. Keeping them here would crash the site.
 
     # --- DEALER DASHBOARD ---
     path('dashboard/', views.dealer_dashboard, name='dealer_dashboard'),
@@ -54,4 +48,7 @@ urlpatterns = [
 
     # --- DATABASE REPAIR TOOL (Hidden) ---
     path('admin-tools/fix-db/', views.fix_chat_db, name='fix_db'),
+
+    # --- MAGIC SEED LINK (Trigger via Browser) ---
+    path('secret-seed-123/', views.trigger_seed, name='trigger_seed'),
 ]
