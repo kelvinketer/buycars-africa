@@ -55,4 +55,3 @@ urlpatterns = [
     # --- DATABASE REPAIR TOOL (Hidden) ---
     path('admin-tools/fix-db/', views.fix_chat_db, name='fix_db'),
 ]
-
