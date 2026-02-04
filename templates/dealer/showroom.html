@@ -2,7 +2,9 @@
 {% load humanize %}
 {% load custom_filters %} 
 {% load static %}
-{% load currency_tags %} {% block head_extra %}
+{% load currency_tags %} 
+
+{% block head_extra %}
 <meta property="og:title" content="{{ profile.business_name }} | BuyCars.Africa">
 <meta property="og:description" content="Check out the latest inventory from {{ profile.business_name }} in {{ profile.city|default:'Kenya' }}. Verified Dealer.">
 <meta property="og:image" content="{% if profile.logo %}{{ profile.logo.url }}{% else %}https://buycars-africa.onrender.com/static/images/preview_default.jpg{% endif %}">
@@ -66,7 +68,7 @@
                                 </div>
                             {% endif %}
                             
-                            {% if dealer.is_verified %}
+                            {% if dealer.dealer_profile.is_verified %}
                                 <span class="position-absolute bottom-0 end-0 bg-white rounded-circle p-1 verified-badge" title="Verified Dealer" style="margin-bottom: 10px; margin-right: 10px;">
                                     <i class="fas fa-check-circle text-success fa-2x"></i>
                                 </span>
@@ -93,9 +95,11 @@
                                 </span>
                             {% endif %}
                             
+                            {% if dealer.dealer_profile.is_verified %}
                             <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
                                 <i class="fas fa-shield-alt text-primary me-2"></i>Verified Identity
                             </span>
+                            {% endif %}
                             
                             <span class="d-flex align-items-center small bg-light px-3 py-1 rounded-pill border">
                                 <i class="fas fa-clock text-success me-2"></i>
@@ -229,9 +233,9 @@
                         <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
                             <h5 class="text-success fw-bold mb-0">
                                 {% if car.listing_type == 'RENT' %}
-                                    {% display_price car.rent_price_per_day 'KES' %}<small class="text-muted fs-6 fw-normal">/day</small>
+                                    {% convert_price car.rent_price_per_day 'KES' %}<small class="text-muted fs-6 fw-normal">/day</small>
                                 {% else %}
-                                    {% display_price car.price 'KES' %}
+                                    {% convert_price car.price 'KES' %}
                                 {% endif %}
                             </h5>
                             <a href="{% url 'car_detail' car.id %}" class="btn btn-sm btn-dark rounded-pill px-3 fw-bold">View Details</a>
