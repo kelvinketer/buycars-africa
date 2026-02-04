@@ -4,6 +4,12 @@ from . import views
 urlpatterns = [
     # --- PUBLIC URLS ---
     path('', views.public_homepage, name='home'),
+    
+    # --- THIS IS THE FIX (New Line) ---
+    # We map 'inventory/' to the homepage view since that serves as your car list.
+    path('inventory/', views.public_homepage, name='car_list'),
+    # ----------------------------------
+
     path('set-currency/', views.set_currency, name='set_currency'),
     path('car/<int:car_id>/', views.car_detail, name='car_detail'),
     path('showroom/<str:username>/', views.dealer_showroom, name='dealer_showroom'),
@@ -22,9 +28,9 @@ urlpatterns = [
     path('chat/inbox/', views.inbox, name='inbox'),
     path('chat/conversation/<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
 
-    # --- SOCIAL FEATURES (AJAX) ---
-    path('social/follow/<int:dealer_id>/', views.toggle_follow_dealer, name='toggle_follow'),
-    path('social/like/<int:car_id>/', views.toggle_car_like, name='toggle_like'),
+    # --- NOTE: SOCIAL FEATURES REMOVED ---
+    # I removed the 'social/follow' and 'social/like' paths because you deleted 
+    # those functions in views.py. Keeping them here would crash the site.
 
     # --- DEALER DASHBOARD ---
     path('dashboard/', views.dealer_dashboard, name='dealer_dashboard'),
@@ -49,3 +55,4 @@ urlpatterns = [
     # --- DATABASE REPAIR TOOL (Hidden) ---
     path('admin-tools/fix-db/', views.fix_chat_db, name='fix_db'),
 ]
+
