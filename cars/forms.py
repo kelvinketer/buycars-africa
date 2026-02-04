@@ -1,6 +1,6 @@
 from django import forms
 from django.utils import timezone
-from .models import Car, Booking, Message  # Added Message import here
+from .models import Car, Booking, Message 
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -16,7 +16,7 @@ class IgnoreValidationFileField(forms.FileField):
         pass
 
 class CarForm(forms.ModelForm):
-    # UPDATED: Use the lenient field class
+    # Lenient field class for multiple image uploads
     image = IgnoreValidationFileField(
         required=False, 
         widget=MultipleFileInput(attrs={
@@ -28,14 +28,17 @@ class CarForm(forms.ModelForm):
 
     class Meta:
         model = Car
-        # Exclude internal fields AND the old legacy 'location' field
-        exclude = ['dealer', 'status', 'is_featured', 'created_at', 'views', 'leads', 'location']
+        # --- UPDATED EXCLUDE LIST ---
+        # Removed 'country', 'listing_currency', and 'drive_side' as they are now hardcoded defaults.
+        exclude = [
+            'dealer', 'status', 'is_featured', 'created_at', 
+            'views', 'leads', 'location', 'country', 
+            'listing_currency', 'drive_side'
+        ]
         
         widgets = {
-            # --- NEW GLOBAL FIELDS ---
-            'country': forms.Select(attrs={'class': 'form-select'}),
-            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Nairobi, Cape Town, Dubai'}),
-            'listing_currency': forms.Select(attrs={'class': 'form-select'}),
+            # --- KENYA-SPECIFIC FIELDS ---
+            'city': forms.Select(attrs={'class': 'form-select'}),
 
             # --- EXISTING FIELDS ---
             'make': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Toyota'}),
@@ -43,21 +46,20 @@ class CarForm(forms.ModelForm):
             'year': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2017'}),
             'registration_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. KDA 123X (Private)'}),
             
-            # Note: We add an ID to 'price' so we can hide it if "For Rent" is selected
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2500000', 'id': 'id_selling_price'}),
             
             'condition': forms.Select(attrs={'class': 'form-select'}),
             'transmission': forms.Select(attrs={'class': 'form-select'}),
             'fuel_type': forms.Select(attrs={'class': 'form-select'}),
             'mileage': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 85000'}),
-            'engine_size': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2000'}),
+            'engine_cc': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2000'}),
             'color': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Pearl White'}),
             'body_type': forms.Select(attrs={'class': 'form-select'}),
+            'drive_type': forms.Select(attrs={'class': 'form-select'}),
             
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe the car...'}),
 
             # --- RENTAL FIELDS ---
-            # We add IDs here to control them with JavaScript (Show/Hide logic)
             'listing_type': forms.Select(attrs={'class': 'form-select', 'id': 'id_listing_type'}),
             'rent_price_per_day': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 3500', 'id': 'id_rent_price'}),
             'min_hire_days': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1', 'id': 'id_min_days'}),
@@ -75,9 +77,6 @@ class CarBookingForm(forms.ModelForm):
         }
 
     def clean(self):
-        """
-        Validates that dates are in the future and end date is after start date.
-        """
         cleaned_data = super().clean()
         start = cleaned_data.get("start_date")
         end = cleaned_data.get("end_date")
@@ -92,30 +91,26 @@ class CarBookingForm(forms.ModelForm):
     
 # --- SALE AGREEMENT FORM ---
 class SaleAgreementForm(forms.Form):
-    # Seller Details
     seller_name = forms.CharField(label="Seller's Full Name", max_length=100)
     seller_id = forms.CharField(label="Seller's ID/Passport No", max_length=50)
     seller_phone = forms.CharField(label="Seller's Phone", max_length=20)
     
-    # Buyer Details
     buyer_name = forms.CharField(label="Buyer's Full Name", max_length=100)
     buyer_id = forms.CharField(label="Buyer's ID/Passport No", max_length=50)
     buyer_phone = forms.CharField(label="Buyer's Phone", max_length=20)
     
-    # Vehicle Details
     make_model = forms.CharField(label="Vehicle Make & Model", max_length=100, widget=forms.TextInput(attrs={'placeholder': 'e.g. Toyota Fielder'}))
     reg_number = forms.CharField(label="Registration Number", max_length=20, widget=forms.TextInput(attrs={'placeholder': 'KBC 123A'}))
     chassis_number = forms.CharField(label="Chassis / VIN Number", max_length=50)
     engine_number = forms.CharField(label="Engine Number", max_length=50, required=False)
     color = forms.CharField(label="Color", max_length=30)
     
-    # Transaction Details
     sale_price = forms.IntegerField(label="Agreed Price (KES)")
     amount_paid = forms.IntegerField(label="Amount Paid Now (KES)")
     balance = forms.IntegerField(label="Balance Remaining (KES)", required=False, initial=0)
     witness_name = forms.CharField(label="Witness Name", max_length=100, required=False)
 
-# --- NEW: SECURE MESSAGING FORM ---
+# --- SECURE MESSAGING FORM ---
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
@@ -127,3 +122,4 @@ class MessageForm(forms.ModelForm):
                 'placeholder': 'Hi, is this car still available? I would like to schedule a viewing...'
             })
         }
+        

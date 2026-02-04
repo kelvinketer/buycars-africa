@@ -8,66 +8,9 @@ from django.utils import timezone
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 class Car(models.Model):
-    # --- GLOBAL DROPDOWN CHOICES (PAN-AFRICAN EXPANSION) ---
-    COUNTRY_CHOICES = [
-        # East Africa (EAC & Horn)
-        ('KE', 'Kenya'),
-        ('UG', 'Uganda'),
-        ('TZ', 'Tanzania'),
-        ('RW', 'Rwanda'),
-        ('SS', 'South Sudan'),
-        ('ET', 'Ethiopia'),
-
-        # West Africa (The Giants)
-        ('NG', 'Nigeria'),
-        ('GH', 'Ghana'),
-
-        # North Africa
-        ('EG', 'Egypt'),
-
-        # Southern Africa
-        ('ZA', 'South Africa'),
-        ('NA', 'Namibia'),
-        ('AO', 'Angola'),
-
-        # Key Import Sources
-        ('GB', 'United Kingdom'),
-        ('JP', 'Japan'),
-        ('AE', 'United Arab Emirates'), # Dubai
-    ]
-
-    CURRENCY_CHOICES = [
-        # East Africa
-        ('KES', 'Kenyan Shilling (KES)'),
-        ('UGX', 'Ugandan Shilling (UGX)'),
-        ('TZS', 'Tanzanian Shilling (TZS)'),
-        ('RWF', 'Rwandan Franc (RWF)'),
-        ('ETB', 'Ethiopian Birr (ETB)'),
-
-        # West Africa
-        ('NGN', 'Nigerian Naira (NGN)'),
-        ('GHS', 'Ghanaian Cedi (GHS)'),
-
-        # North & South
-        ('EGP', 'Egyptian Pound (EGP)'),
-        ('ZAR', 'South African Rand (ZAR)'),
-        ('NAD', 'Namibian Dollar (NAD)'),
-        ('AOA', 'Angolan Kwanza (AOA)'),
-
-        # International Trade
-        ('USD', 'US Dollar (USD)'),
-        ('GBP', 'British Pound (GBP)'),
-        ('AED', 'UAE Dirham (AED)'),
-        ('JPY', 'Japanese Yen (JPY)'),
-    ]
-
-    # --- NEW: DRIVE SIDE (Crucial for Cross-Border) ---
-    DRIVE_SIDE_CHOICES = [
-        ('RHD', 'Right-Hand Drive (RHD)'), # Kenya, SA, UK, Japan, Uganda, TZ
-        ('LHD', 'Left-Hand Drive (LHD)'),  # Nigeria, Ghana, US, Europe, Ethiopia, Rwanda
-    ]
-
-    # --- NEW: DRIVE TYPE (2WD vs 4WD) ---
+    # --- GLOBAL DROPDOWN CHOICES (SIMPLIFIED FOR KENYA) ---
+    
+    # --- DRIVE TYPE (2WD vs 4WD) - Kept visible ---
     DRIVE_TYPE_CHOICES = [
         ('2WD', '2WD (Two Wheel Drive)'),
         ('4WD', '4WD (Four Wheel Drive)'),
@@ -110,6 +53,7 @@ class Car(models.Model):
         ('Bus', 'Bus/Van'),
         ('Truck', 'Truck'),
         ('Convertible', 'Convertible'),
+        ('Wagon', 'Station Wagon'),
     ]
 
     # --- LISTING TYPE FOR RENTALS ---
@@ -117,6 +61,17 @@ class Car(models.Model):
         ('SALE', 'For Sale'),
         ('RENT', 'For Hire'),
         ('BOTH', 'For Sale & Hire'),
+    ]
+
+    CITY_CHOICES = [
+            ('Nairobi', 'Nairobi'),
+            ('Mombasa', 'Mombasa'),
+            ('Kisumu', 'Kisumu'),
+            ('Nakuru', 'Nakuru'),
+            ('Eldoret', 'Eldoret'),
+            ('Kiambu', 'Kiambu'),
+            ('Thika', 'Thika'),
+            ('Naivasha', 'Naivasha'),
     ]
 
     # --- DATABASE FIELDS ---
@@ -130,17 +85,33 @@ class Car(models.Model):
     year = models.IntegerField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     
-    # === NEW GLOBAL FIELDS ===
-    country = models.CharField(max_length=2, choices=COUNTRY_CHOICES, default='KE', help_text="The country where this car is physically located.")
-    city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Lagos, Accra)")
-    listing_currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='KES', help_text="Currency for the listed price.")
+    # === KENYA-ONLY HARDCODED DEFAULTS (HIDDEN FROM FORMS) ===
+    country = models.CharField(
+        max_length=50, 
+        default='KE', 
+        choices=[('KE', 'Kenya')], 
+        editable=False  # Hidden from form
+    )
+
+    city = models.CharField(
+        max_length=100, 
+        default='Nairobi',
+        choices=CITY_CHOICES,
+        help_text="City or Town"
+    )
+
+    listing_currency = models.CharField(
+        max_length=10, 
+        default='KES', 
+        editable=False  # Hidden from form
+    )
     
-    # Traffic Laws
+    # Traffic Laws (Locked to Right Hand Drive)
     drive_side = models.CharField(
-        max_length=3, 
-        choices=DRIVE_SIDE_CHOICES, 
+        max_length=50, 
         default='RHD', 
-        help_text="Select LHD for Nigeria/Ghana/Ethiopia. RHD for Kenya/SA/UK."
+        choices=[('RHD', 'Right Hand Drive')],
+        editable=False  # Hidden from form
     )
 
     # Note: 'location' kept for legacy support/display
@@ -159,7 +130,7 @@ class Car(models.Model):
         decimal_places=2, 
         null=True, 
         blank=True,
-        help_text="Cost per day in Listing Currency (only required if For Hire)"
+        help_text="Cost per day in KES (only required if For Hire)"
     )
     
     min_hire_days = models.PositiveIntegerField(
