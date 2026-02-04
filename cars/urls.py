@@ -51,4 +51,10 @@ urlpatterns = [
 
     # --- MAGIC SEED LINK (Trigger via Browser) ---
     path('secret-seed-123/', views.trigger_seed, name='trigger_seed'),
+    
+    # --- MAGIC SEED LINK (Trigger via Browser) ---
+    path('secret-seed-123/', views.trigger_seed, name='trigger_seed'),
 ]
+
+# Force Git Update (Add this comment. Added)
+
