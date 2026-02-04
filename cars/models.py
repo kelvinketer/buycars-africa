@@ -67,6 +67,13 @@ class Car(models.Model):
         ('LHD', 'Left-Hand Drive (LHD)'),  # Nigeria, Ghana, US, Europe, Ethiopia, Rwanda
     ]
 
+    # --- NEW: DRIVE TYPE (2WD vs 4WD) ---
+    DRIVE_TYPE_CHOICES = [
+        ('2WD', '2WD (Two Wheel Drive)'),
+        ('4WD', '4WD (Four Wheel Drive)'),
+        ('AWD', 'AWD (All Wheel Drive)'),
+    ]
+
     # --- EXISTING DROPDOWN CHOICES ---
     STATUS_CHOICES = (
         ('AVAILABLE', 'Available'),
@@ -82,27 +89,27 @@ class Car(models.Model):
     ]
     
     TRANSMISSION_CHOICES = [
-        ('AUTOMATIC', 'Automatic'),
-        ('MANUAL', 'Manual'),
+        ('Automatic', 'Automatic'),
+        ('Manual', 'Manual'),
         ('CVT', 'CVT'),
     ]
     
     FUEL_CHOICES = [
-        ('PETROL', 'Petrol'),
-        ('DIESEL', 'Diesel'),
-        ('HYBRID', 'Hybrid'),
-        ('ELECTRIC', 'Electric'),
+        ('Petrol', 'Petrol'),
+        ('Diesel', 'Diesel'),
+        ('Hybrid', 'Hybrid'),
+        ('Electric', 'Electric'),
     ]
     
     BODY_TYPE_CHOICES = [
         ('SUV', 'SUV'),
-        ('SEDAN', 'Sedan'),
-        ('HATCHBACK', 'Hatchback'),
-        ('PICKUP', 'Pickup'),
-        ('COUPE', 'Coupe'),
-        ('BUS', 'Bus/Van'),
-        ('TRUCK', 'Truck'),
-        ('CONVERTIBLE', 'Convertible'),
+        ('Sedan', 'Sedan'),
+        ('Hatchback', 'Hatchback'),
+        ('Pickup', 'Pickup'),
+        ('Coupe', 'Coupe'),
+        ('Bus', 'Bus/Van'),
+        ('Truck', 'Truck'),
+        ('Convertible', 'Convertible'),
     ]
 
     # --- LISTING TYPE FOR RENTALS ---
@@ -128,7 +135,7 @@ class Car(models.Model):
     city = models.CharField(max_length=100, default='Nairobi', help_text="City or Town (e.g., Nairobi, Lagos, Accra)")
     listing_currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='KES', help_text="Currency for the listed price.")
     
-    # New Field for Traffic Laws
+    # Traffic Laws
     drive_side = models.CharField(
         max_length=3, 
         choices=DRIVE_SIDE_CHOICES, 
@@ -165,14 +172,19 @@ class Car(models.Model):
 
     mileage = models.IntegerField(default=0, help_text="Mileage in km")
     
-    engine_size = models.IntegerField(help_text="Engine cc", null=True, blank=True)
+    # UPDATED: Renamed from engine_size to engine_cc to match your script
+    engine_cc = models.IntegerField(help_text="Engine cc (e.g. 2000)", null=True, blank=True)
+    
     color = models.CharField(max_length=50, default='White')
     
     condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='FOREIGN')
-    transmission = models.CharField(max_length=20, choices=TRANSMISSION_CHOICES, default='AUTOMATIC')
-    fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES, default='PETROL')
+    transmission = models.CharField(max_length=20, choices=TRANSMISSION_CHOICES, default='Automatic')
+    fuel_type = models.CharField(max_length=20, choices=FUEL_CHOICES, default='Petrol')
     body_type = models.CharField(max_length=20, choices=BODY_TYPE_CHOICES, default='SUV')
     
+    # UPDATED: Added drive_type (2WD/4WD) separate from drive_side (LHD/RHD)
+    drive_type = models.CharField(max_length=10, choices=DRIVE_TYPE_CHOICES, default='2WD', help_text="2WD, 4WD, or AWD")
+
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE')
     is_featured = models.BooleanField(default=False)
@@ -372,3 +384,4 @@ class CarComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user} on {self.car}"
+    
