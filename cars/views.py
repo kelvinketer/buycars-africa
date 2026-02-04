@@ -654,15 +654,30 @@ def fix_chat_db(request):
         <br>
         <a href="/" style="font-size:1.2rem; font-weight:bold; color:blue;">&larr; Go to Homepage</a>
     """)
-    
-    # --- ADD AT THE BOTTOM OF cars/views.py ---
-from django.core.management import call_command
-from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test
 
-# Security: Only allow 'superusers' (Admins) to run this
+# --- REPLACEMENT MAGIC LINK (TRIGGERS SEED + REPAIRS MARIDADY) ---
+
 @user_passes_test(lambda u: u.is_superuser)
 def trigger_seed(request):
-    # This runs the 'python manage.py seed_inventory' command
+    # 1. Run the standard seed
     call_command('seed_inventory')
-    return HttpResponse("<h1>✅ Success! 100 Cars Generated.</h1><p>Go back to <a href='/'>Home</a></p>")
+    
+    # 2. REPAIR MARIDADY CAR
+    try:
+        # Use the User model already defined at module level
+        maridady = User.objects.get(username="MaridadyMotors")
+        car = Car.objects.filter(dealer=maridady).first()
+        
+        if car:
+            car.country = "KE"        # Fix 'Country required'
+            car.city = "Nairobi"      # Fix 'City required'
+            car.drive_side = "RHD"    # Fix 'Drive side required'
+            car.drive_type = "4WD"    # Fix 'Drive type required'
+            car.listing_currency = "KES"
+            car.save()
+            return HttpResponse(f"<h1>✅ Fixed Maridady's Car!</h1><p>Updated: {car.model}</p>")
+            
+    except Exception as e:
+        return HttpResponse(f"<h1>⚠️ Error repairing car: {e}</h1>")
+
+    return HttpResponse("<h1>✅ Seed Complete (No Maridady car found to fix)</h1>")
