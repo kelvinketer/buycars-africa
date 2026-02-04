@@ -34,52 +34,53 @@ def sanitize_phone(phone):
     if not phone: return None
     return re.sub(r'\D', '', str(phone))
 
-# --- PUBLIC VIEWS (UPDATED FOR FEED) ---
+# --- PUBLIC VIEWS (UPDATED FOR SPEED & SIMPLICITY) ---
 
 def public_homepage(request):
     # 1. Base Query
     base_qs = Car.objects.filter(status='AVAILABLE').select_related('dealer', 'dealer__dealer_profile')
 
-    # 2. Feeds Logic
-    
-    # A. Fresh Picks (Newest First)
-    fresh_picks = base_qs.order_by('-created_at')[:12]
+    # 2. Search & Filter Logic
+    q = request.GET.get('q')
+    make = request.GET.get('make')
+    region = request.GET.get('region')
 
-    # B. Trending (Most Liked & Viewed)
-    # We annotate (count) likes for each car to sort by popularity
-    trending_cars = base_qs.annotate(like_count=Count('likes')).order_by('-like_count', '-created_at')[:12]
+    if q:
+        clean_q = q.strip().lower()
+        if len(clean_q) > 2:
+            # Track search terms for analytics
+            obj, created = SearchTerm.objects.get_or_create(term=clean_q)
+            if not created: SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
+        
+        # Search by Make, Model, or Description
+        base_qs = base_qs.filter(
+            Q(make__icontains=q) | 
+            Q(model__icontains=q) | 
+            Q(description__icontains=q)
+        )
 
-    # C. Following Feed (Personalized)
-    following_cars = []
-    if request.user.is_authenticated:
-        # Get IDs of dealers the user follows
-        following_ids = request.user.following.values_list('dealer_id', flat=True)
-        following_cars = base_qs.filter(dealer_id__in=following_ids).order_by('-created_at')[:12]
+    if make:
+        base_qs = base_qs.filter(make__iexact=make)
 
-    # 3. Filter Dropdowns
+    if region:
+        base_qs = base_qs.filter(dealer__dealer_profile__city=region)
+
+    # 3. Final List (Standard Sort)
+    # No more complex "Trending" annotation logic. Pure speed.
+    cars = base_qs.order_by('-created_at')[:24]
+
+    # 4. Filter Dropdown Data
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
     regions = DealerProfile.CITY_CHOICES
 
-    # 4. Search logic (for the search bar functionality)
-    q = request.GET.get('q')
-    if q:
-        clean_q = q.strip().lower()
-        if len(clean_q) > 2:
-            obj, created = SearchTerm.objects.get_or_create(term=clean_q)
-            if not created: SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
-        # If searching, override the "fresh picks" to show results instead
-        fresh_picks = base_qs.filter(Q(make__icontains=q) | Q(model__icontains=q) | Q(description__icontains=q))
-
     context = {
-        'fresh_picks': fresh_picks,
-        'trending_cars': trending_cars,
-        'following_cars': following_cars,
+        'cars': cars,               # Matches the 'for car in cars' loop in home.html
         'all_makes': all_makes,
         'all_body_types': all_body_types,
         'regions': regions,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'cars/home.html', context)
 
 def community_pledge_view(request):
     return render(request, 'pages/policies/community_pledge.html')
@@ -102,58 +103,19 @@ def car_detail(request, car_id):
         car.views.create(ip_address=request.META.get('REMOTE_ADDR'))
         request.session[session_key] = True
 
-    # Check if user liked/follows
-    is_liked = False
-    is_following = False
-    if request.user.is_authenticated:
-        is_liked = CarLike.objects.filter(user=request.user, car=car).exists()
-        is_following = DealerFollow.objects.filter(follower=request.user, dealer=car.dealer).exists()
+    # Removed: Like/Follow checks (De-socialized)
 
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     
     context = {
         'car': car, 
         'similar_cars': similar_cars,
-        'is_liked': is_liked,
-        'is_following': is_following
     }
     return render(request, 'cars/car_detail.html', context)
 
-# --- SOCIAL ACTIONS (AJAX) ---
-
-@login_required
-@require_POST
-def toggle_follow_dealer(request, dealer_id):
-    try:
-        dealer = User.objects.get(id=dealer_id)
-        if dealer == request.user:
-            return JsonResponse({'error': 'Cannot follow yourself'}, status=400)
-            
-        follow, created = DealerFollow.objects.get_or_create(follower=request.user, dealer=dealer)
-        
-        if not created:
-            follow.delete()
-            action = 'unfollowed'
-        else:
-            action = 'followed'
-            
-        return JsonResponse({'status': 'success', 'action': action})
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'Dealer not found'}, status=404)
-
-@login_required
-@require_POST
-def toggle_car_like(request, car_id):
-    car = get_object_or_404(Car, id=car_id)
-    like, created = CarLike.objects.get_or_create(user=request.user, car=car)
-    
-    if not created:
-        like.delete()
-        action = 'unliked'
-    else:
-        action = 'liked'
-        
-    return JsonResponse({'status': 'success', 'action': action, 'count': car.likes.count()})
+# --- SOCIAL ACTIONS (REMOVED) ---
+# The toggle_follow_dealer and toggle_car_like views have been removed 
+# to keep the platform transactional and clean.
 
 @login_required
 def book_car(request, car_id):
