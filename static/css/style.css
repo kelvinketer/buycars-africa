@@ -306,3 +306,21 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
     width: 24px;
     text-align: center;
 }
+
+/* Ensure the navigation bar container has a higher priority */
+.navbar, .header-container {
+    position: relative;
+    z-index: 1050 !important; /* Standard Bootstrap-style priority for navbars */
+}
+
+/* Ensure dropdown menus specifically float above the search ribbon */
+.dropdown-menu {
+    z-index: 1100 !important;
+    position: absolute;
+}
+
+/* If the search ribbon has a custom class, ensure its index is lower */
+.search-ribbon, .filter-section {
+    position: relative;
+    z-index: 1; /* Lower priority so it stays behind dropdowns */
+}

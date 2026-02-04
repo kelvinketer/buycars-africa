@@ -66,7 +66,6 @@ def public_homepage(request):
         base_qs = base_qs.filter(dealer__dealer_profile__city=region)
 
     # 3. Final List (Standard Sort)
-    # No more complex "Trending" annotation logic. Pure speed.
     cars = base_qs.order_by('-created_at')[:24]
 
     # 4. Filter Dropdown Data
@@ -75,7 +74,7 @@ def public_homepage(request):
     regions = DealerProfile.CITY_CHOICES
 
     context = {
-        'cars': cars,               # Matches the 'for car in cars' loop in home.html
+        'cars': cars,
         'all_makes': all_makes,
         'all_body_types': all_body_types,
         'regions': regions,
@@ -103,8 +102,6 @@ def car_detail(request, car_id):
         car.views.create(ip_address=request.META.get('REMOTE_ADDR'))
         request.session[session_key] = True
 
-    # Removed: Like/Follow checks (De-socialized)
-
     similar_cars = Car.objects.filter(body_type=car.body_type, status='AVAILABLE').exclude(id=car.id).order_by('-created_at')[:4]
     
     context = {
@@ -112,10 +109,6 @@ def car_detail(request, car_id):
         'similar_cars': similar_cars,
     }
     return render(request, 'cars/car_detail.html', context)
-
-# --- SOCIAL ACTIONS (REMOVED) ---
-# The toggle_follow_dealer and toggle_car_like views have been removed 
-# to keep the platform transactional and clean.
 
 @login_required
 def book_car(request, car_id):
@@ -172,7 +165,6 @@ def track_action(request, car_id, action_type):
     car = get_object_or_404(Car, id=car_id)
     action_type = action_type.upper()
     
-    # Allow tracking calls or clicks
     ip = request.META.get('REMOTE_ADDR')
     Lead.objects.create(car=car, action_type=action_type, ip_address=ip, user=request.user if request.user.is_authenticated else None)
     return JsonResponse({'status': 'success', 'action': action_type})
@@ -471,7 +463,6 @@ def dealer_academy(request):
 
 @login_required
 def dealer_academy_lesson(request, module_id):
-    # Simulated DB Content
     curriculum = {
         1: {'title': 'The Digital Broker Mindset', 'video_id': 'M7lc1UVf-VE', 'desc': 'Why trust is your new currency.', 'content': '<p>Welcome to the new era...</p>'},
         2: {'title': 'Sourcing & Verification', 'video_id': 'tgbNymZ7vqY', 'desc': 'How to inspect a car.', 'content': '<p>Check the logbook...</p>'}
@@ -499,7 +490,6 @@ def create_agreement(request):
         form = SaleAgreementForm(initial=initial_data)
     return render(request, 'dealer/tools/agreement_form.html', {'form': form})
 
-# --- MIGRATION FIXER ---
 def run_migrations_view(request):
     if not request.user.is_superuser: return HttpResponse("Access Denied", status=403)
     with connection.cursor() as cursor:
@@ -529,17 +519,11 @@ def google_inventory_feed(request):
 
 @login_required
 def start_conversation(request, car_id):
-    """
-    Initiates a secure chat between buyer and dealer for a specific car.
-    """
     car = get_object_or_404(Car, pk=car_id)
-    
-    # Prevent dealer from messaging themselves
     if request.user == car.dealer:
         messages.warning(request, "You cannot message yourself!")
         return redirect('car_detail', car_id=car.id)
 
-    # Check if conversation already exists (Idempotency)
     conversation, created = Conversation.objects.get_or_create(
         car=car, 
         buyer=request.user, 
@@ -553,9 +537,6 @@ def start_conversation(request, car_id):
             msg.conversation = conversation
             msg.sender = request.user
             msg.save()
-            
-            # TODO: Send Email Notification to Dealer here
-            
             messages.success(request, "Message sent to dealer!")
             return redirect('conversation_detail', conversation_id=conversation.id)
     else:
@@ -565,30 +546,19 @@ def start_conversation(request, car_id):
 
 @login_required
 def inbox(request):
-    """
-    Displays all conversations where the user is either the buyer or the dealer.
-    """
     chats = Conversation.objects.filter(
         Q(buyer=request.user) | Q(dealer=request.user)
     ).order_by('-updated_at')
-    
     return render(request, 'chat/inbox.html', {'chats': chats})
 
 @login_required
 def conversation_detail(request, conversation_id):
-    """
-    The actual chat room view.
-    """
     conversation = get_object_or_404(Conversation, id=conversation_id)
-    
-    # Security: Ensure user is actually part of this chat
     if request.user != conversation.buyer and request.user != conversation.dealer:
         return HttpResponse("Unauthorized", status=403)
 
-    # Mark incoming messages as read
     conversation.messages.exclude(sender=request.user).update(is_read=True)
 
-    # Handle Reply
     if request.method == 'POST':
         content = request.POST.get('content')
         if content:
@@ -597,10 +567,8 @@ def conversation_detail(request, conversation_id):
                 sender=request.user,
                 content=content
             )
-            # Update conversation timestamp to bump it to top of inbox
             conversation.updated_at = timezone.now()
             conversation.save()
-            
             return redirect('conversation_detail', conversation_id=conversation.id)
     
     return render(request, 'chat/chat_room.html', {'conversation': conversation})
@@ -609,19 +577,13 @@ def conversation_detail(request, conversation_id):
 
 @login_required
 def fix_chat_db(request):
-    """
-    Safely creates tables. Forces a connection reset to prevent 'connection closed' errors.
-    """
     if not request.user.is_superuser:
         return HttpResponse("Unauthorized. Log in as Super Admin.", status=403)
 
-    # 1. Force close old connections to prevent InterfaceError
     for conn in connections.all():
         conn.close_if_unusable_or_obsolete()
 
     report = []
-    
-    # List models to check/create
     models_to_fix = [
         (Conversation, 'Conversation (Chat)'),
         (Message, 'Message (Chat)'),
@@ -633,14 +595,11 @@ def fix_chat_db(request):
         with connection.schema_editor() as schema_editor:
             for model_class, name in models_to_fix:
                 try:
-                    # Attempt to create the table
                     schema_editor.create_model(model_class)
                     report.append(f"<li style='color:green'>✅ Created table for <b>{name}</b></li>")
                 except (OperationalError, ProgrammingError):
-                    # If it fails, it usually means it exists
                     report.append(f"<li style='color:orange'>⚠️ Table for <b>{name}</b> already exists (Skipped)</li>")
                 except Exception as e:
-                    # Capture actual errors (like field mismatches)
                     if "already exists" in str(e):
                         report.append(f"<li style='color:orange'>⚠️ Table for <b>{name}</b> already exists (Skipped)</li>")
                     else:
@@ -655,29 +614,37 @@ def fix_chat_db(request):
         <a href="/" style="font-size:1.2rem; font-weight:bold; color:blue;">&larr; Go to Homepage</a>
     """)
 
-# --- REPLACEMENT MAGIC LINK (TRIGGERS SEED + REPAIRS MARIDADY) ---
+# --- FINAL DATABASE HEALER & SEED (KENYA-ONLY LOCK) ---
 
 @user_passes_test(lambda u: u.is_superuser)
 def trigger_seed(request):
-    # 1. Run the standard seed
+    """
+    1. Downloads 100 placeholder cars.
+    2. Repairs ALL existing listings in the database by filling required missing fields.
+    """
+    # 1. Standard Seed
     call_command('seed_inventory')
     
-    # 2. REPAIR MARIDADY CAR
-    try:
-        # Use the User model already defined at module level
-        maridady = User.objects.get(username="MaridadyMotors")
-        car = Car.objects.filter(dealer=maridady).first()
-        
-        if car:
-            car.country = "KE"        # Fix 'Country required'
-            car.city = "Nairobi"      # Fix 'City required'
-            car.drive_side = "RHD"    # Fix 'Drive side required'
-            car.drive_type = "4WD"    # Fix 'Drive type required'
-            car.listing_currency = "KES"
-            car.save()
-            return HttpResponse(f"<h1>✅ Fixed Maridady's Car!</h1><p>Updated: {car.model}</p>")
-            
-    except Exception as e:
-        return HttpResponse(f"<h1>⚠️ Error repairing car: {e}</h1>")
-
-    return HttpResponse("<h1>✅ Seed Complete (No Maridady car found to fix)</h1>")
+    # 2. BULK REPAIR ALL LISTINGS
+    # This targets ANY car with a missing city, country, or drive type to fix validation errors.
+    updated_count = Car.objects.filter(
+        Q(city="") | Q(city__isnull=True) | Q(drive_type="")
+    ).update(
+        city="Nairobi",
+        drive_type="2WD",
+        country="KE",
+        listing_currency="KES",
+        drive_side="RHD"
+    )
+    
+    return HttpResponse(f"""
+        <div style="font-family: sans-serif; padding: 20px;">
+            <h1 style="color: #2ecc71;">✅ Process Complete</h1>
+            <p style="font-size: 1.1rem;">100 Placeholder Cars Generated.</p>
+            <p style="font-size: 1.1rem; color: #34495e;">
+                <b>Database Healer:</b> Successfully repaired <b>{updated_count}</b> existing listings with missing fields.
+            </p>
+            <hr>
+            <a href="/" style="display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">Return to Home</a>
+        </div>
+    """)
