@@ -1,50 +1,49 @@
 from django.db import migrations
-from django.core.files.base import ContentFile
-from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 import urllib.request
+from django.core.files.base import ContentFile
 
 def add_maridady_listing(apps, schema_editor):
-    # We use apps.get_model to safely get models during migrations
-    User = get_user_model() 
+    # 1. Load the "Historical" models to avoid type mismatches
+    # We assume your custom user app is named 'users' and model is 'User'
+    User = apps.get_model('users', 'User') 
     DealerProfile = apps.get_model('users', 'DealerProfile')
     Car = apps.get_model('cars', 'Car')
     CarImage = apps.get_model('cars', 'CarImage')
 
-    # 1. Create the Dealer User
-    # Note: We can't use .create_user() in migrations easily, so we use objects.create() 
-    # and set password manually if needed, but for migrations, simple creation is safer.
-    if User.objects.filter(username="MaridadyMotors").exists():
-        dealer = User.objects.get(username="MaridadyMotors")
-    else:
+    # 2. Get or Create the Dealer User
+    # We use filter().first() safely
+    dealer = User.objects.filter(username="MaridadyMotors").first()
+    
+    if not dealer:
         dealer = User.objects.create(
             username="MaridadyMotors",
             email="info@maridadymotors.com",
             is_staff=False,
-            is_active=True
+            is_active=True,
+            password=make_password("Maridady@2026") # Securely hash the password
         )
-        dealer.set_password("Maridady@2026")
-        dealer.save()
 
-    # 2. Create/Update Profile (Blue Tick)
-    # We use update_or_create to ensure we don't duplicate if run twice
+    # 3. Create/Update Profile (Blue Tick)
+    # FIX: We use 'user_id' instead of 'user' to avoid "Must be User instance" errors
     DealerProfile.objects.update_or_create(
-        user=dealer,
+        user_id=dealer.id,
         defaults={
             "business_name": "Maridady Motors",
             "phone_number": "0709888777",
             "city": "NBI",
             "address": "Kiambu Road, Ridgeways Nairobi",
             "plan_type": "PRO",
-            "is_verified": True  # The critical Blue Tick
+            "is_verified": True
         }
     )
 
-    # 3. Create the Car
-    # Check if car exists to avoid duplicates
-    if not Car.objects.filter(dealer=dealer, model="Outlander", year=2018).exists():
+    # 4. Create the Car
+    # FIX: Use 'dealer_id' instead of 'dealer'
+    if not Car.objects.filter(dealer_id=dealer.id, model="Outlander", year=2018).exists():
         car = Car.objects.create(
-            dealer=dealer,
+            dealer_id=dealer.id,
             make="Mitsubishi",
             model="Outlander",
             year=2018,
@@ -65,7 +64,7 @@ def add_maridady_listing(apps, schema_editor):
             created_at=timezone.now()
         )
 
-        # 4. Add Images
+        # 5. Add Images
         image_urls = [
             "https://media.ed.edmunds-media.com/mitsubishi/outlander-sport/2018/oem/2018_mitsubishi_outlander-sport_4dr-suv_24-se_fq_oem_1_1600.jpg",
             "https://media.ed.edmunds-media.com/mitsubishi/outlander/2018/oem/2018_mitsubishi_outlander_4dr-suv_gt_f_oem_1_1600.jpg",
@@ -74,12 +73,11 @@ def add_maridady_listing(apps, schema_editor):
 
         for index, url in enumerate(image_urls):
             try:
-                # Use urllib to download
                 response = urllib.request.urlopen(url)
                 if response.status == 200:
                     image_content = ContentFile(response.read())
-                    car_img = CarImage(car=car, is_main=(index == 0))
-                    # Assign name and file content
+                    # Use car_id to be safe
+                    car_img = CarImage(car_id=car.id, is_main=(index == 0))
                     filename = f"outlander_{car.id}_{index}.jpg"
                     car_img.image.save(filename, image_content, save=True)
             except Exception as e:
@@ -88,7 +86,7 @@ def add_maridady_listing(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cars', '0003_remove_car_engine_size_car_drive_type_car_engine_cc_and_more'), # Ensure this matches your last migration name
+        ('cars', '0003_remove_car_engine_size_car_drive_type_car_engine_cc_and_more'),
         ('users', '0008_dealerprofile_is_verified'),
     ]
 
