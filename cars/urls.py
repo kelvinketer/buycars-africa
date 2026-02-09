@@ -4,8 +4,6 @@ from . import views
 urlpatterns = [
     # --- PUBLIC URLS ---
     path('', views.public_homepage, name='home'),
-    
-    # We map 'inventory/' to the homepage view since that serves as your car list.
     path('inventory/', views.public_homepage, name='car_list'),
 
     path('set-currency/', views.set_currency, name='set_currency'),
@@ -21,10 +19,11 @@ urlpatterns = [
     # --- LEAD TRACKING ---
     path('cars/track-action/<int:car_id>/<str:action_type>/', views.track_action, name='track_action'),
 
-    # --- MESSAGING SYSTEM (NEW) ---
+    # --- MESSAGING & BIDDING SYSTEM ---
     path('chat/start/<int:car_id>/', views.start_conversation, name='start_conversation'),
     path('chat/inbox/', views.inbox, name='inbox'),
     path('chat/conversation/<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
+    path('bid/<int:auction_id>/', views.place_bid, name='place_bid'), # <--- NEW BIDDING URL
 
     # --- DEALER DASHBOARD ---
     path('dashboard/', views.dealer_dashboard, name='dealer_dashboard'),
@@ -51,10 +50,4 @@ urlpatterns = [
 
     # --- MAGIC SEED LINK (Trigger via Browser) ---
     path('secret-seed-123/', views.trigger_seed, name='trigger_seed'),
-    
-    # --- MAGIC SEED LINK (Trigger via Browser) ---
-    path('secret-seed-123/', views.trigger_seed, name='trigger_seed'),
 ]
-
-# Force Git Update (Add this comment. Added)
-
