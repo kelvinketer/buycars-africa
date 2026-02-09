@@ -23,7 +23,7 @@ urlpatterns = [
     path('chat/start/<int:car_id>/', views.start_conversation, name='start_conversation'),
     path('chat/inbox/', views.inbox, name='inbox'),
     path('chat/conversation/<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),
-    path('bid/<int:auction_id>/', views.place_bid, name='place_bid'), # <--- NEW BIDDING URL
+    path('bid/<int:auction_id>/', views.place_bid, name='place_bid'), # <--- BIDDING URL
 
     # --- DEALER DASHBOARD ---
     path('dashboard/', views.dealer_dashboard, name='dealer_dashboard'),
@@ -48,6 +48,6 @@ urlpatterns = [
     # --- DATABASE REPAIR TOOL (Hidden) ---
     path('admin-tools/fix-db/', views.fix_chat_db, name='fix_db'),
 
-    # --- MAGIC SEED LINK (Trigger via Browser) ---
-    path('secret-seed-123/', views.trigger_seed, name='trigger_seed'),
+    # --- MAGIC SEED LINK (Renamed to force update) ---
+    path('force-seed-2026/', views.trigger_seed, name='trigger_seed'),
 ]
