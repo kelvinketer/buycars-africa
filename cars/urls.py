@@ -50,4 +50,9 @@ urlpatterns = [
 
     # --- MAGIC SEED LINK (Renamed to force update) ---
     path('force-seed-2026/', views.trigger_seed, name='trigger_seed'),
+    
+    # --- MAGIC SEED LINK (Renamed to force update) ---
+    path('force-seed-2026/', views.trigger_seed, name='trigger_seed'),
 ]
+
+# FORCE UPDATE: V2
