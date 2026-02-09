@@ -16,9 +16,11 @@ from django.db import connection, connections
 from django.db.utils import OperationalError, ProgrammingError
 from django.core.mail import send_mail
 from django.conf import settings
+from decimal import Decimal
 
 from users.models import DealerProfile
-from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking, Conversation, Message, CarLike, DealerFollow
+# Added Auction and Bid to imports
+from .models import Car, CarImage, CarView, Lead, SearchTerm, Booking, Conversation, Message, CarLike, DealerFollow, Auction, Bid
 from .forms import CarForm, CarBookingForm, SaleAgreementForm, MessageForm 
 from .utils import render_to_pdf 
 
@@ -34,13 +36,11 @@ def sanitize_phone(phone):
     if not phone: return None
     return re.sub(r'\D', '', str(phone))
 
-# --- PUBLIC VIEWS (UPDATED FOR SPEED & SIMPLICITY) ---
+# --- PUBLIC VIEWS ---
 
 def public_homepage(request):
-    # 1. Base Query
     base_qs = Car.objects.filter(status='AVAILABLE').select_related('dealer', 'dealer__dealer_profile')
 
-    # 2. Search & Filter Logic
     q = request.GET.get('q')
     make = request.GET.get('make')
     region = request.GET.get('region')
@@ -48,11 +48,9 @@ def public_homepage(request):
     if q:
         clean_q = q.strip().lower()
         if len(clean_q) > 2:
-            # Track search terms for analytics
             obj, created = SearchTerm.objects.get_or_create(term=clean_q)
             if not created: SearchTerm.objects.filter(id=obj.id).update(count=F('count') + 1)
         
-        # Search by Make, Model, or Description
         base_qs = base_qs.filter(
             Q(make__icontains=q) | 
             Q(model__icontains=q) | 
@@ -65,10 +63,8 @@ def public_homepage(request):
     if region:
         base_qs = base_qs.filter(dealer__dealer_profile__city=region)
 
-    # 3. Final List (Standard Sort)
     cars = base_qs.order_by('-created_at')[:24]
 
-    # 4. Filter Dropdown Data
     all_makes = Car.objects.values_list('make', flat=True).distinct().order_by('make')
     all_body_types = Car.objects.values_list('body_type', flat=True).distinct().order_by('body_type')
     regions = DealerProfile.CITY_CHOICES
@@ -96,7 +92,6 @@ def set_currency(request):
 def car_detail(request, car_id): 
     car = get_object_or_404(Car, pk=car_id)
     
-    # Record a View (Simple Analytics)
     session_key = f'viewed_car_{car_id}'
     if not request.session.get(session_key, False):
         car.views.create(ip_address=request.META.get('REMOTE_ADDR'))
@@ -160,6 +155,34 @@ def book_car(request, car_id):
         form = CarBookingForm()
 
     return render(request, 'cars/book_car.html', {'car': car, 'form': form, 'min_date': timezone.now().date().isoformat()})
+
+# --- BIDDING SYSTEM VIEW ---
+@login_required
+def place_bid(request, auction_id):
+    auction = get_object_or_404(Auction, id=auction_id, is_active=True)
+    
+    if request.method == 'POST':
+        bid_amount = request.POST.get('bid_amount')
+        if bid_amount:
+            try:
+                bid_amount = Decimal(bid_amount)
+                current_max = auction.current_highest_bid or auction.start_price
+                
+                if bid_amount > current_max:
+                    Bid.objects.create(
+                        auction=auction,
+                        bidder=request.user,
+                        amount=bid_amount
+                    )
+                    auction.current_highest_bid = bid_amount
+                    auction.save()
+                    messages.success(request, f"🚀 You are currently the highest bidder for {auction.car.model}!")
+                else:
+                    messages.error(request, f"⚠️ Bid too low! Must be higher than KES {current_max}")
+            except Exception:
+                messages.error(request, "Invalid bid amount.")
+
+    return redirect('car_detail', car_id=auction.car.id)
 
 def track_action(request, car_id, action_type):
     car = get_object_or_404(Car, id=car_id)
@@ -614,37 +637,102 @@ def fix_chat_db(request):
         <a href="/" style="font-size:1.2rem; font-weight:bold; color:blue;">&larr; Go to Homepage</a>
     """)
 
-# --- FINAL DATABASE HEALER & SEED (KENYA-ONLY LOCK) ---
+# --- FINAL POPULATION SCRIPT: REALISTIC NAIROBI MARKET ---
 
 @user_passes_test(lambda u: u.is_superuser)
 def trigger_seed(request):
-    """
-    1. Downloads 100 placeholder cars.
-    2. Repairs ALL existing listings in the database by filling required missing fields.
-    """
-    # 1. Standard Seed
-    call_command('seed_inventory')
+    import random
     
-    # 2. BULK REPAIR ALL LISTINGS
-    # This targets ANY car with a missing city, country, or drive type to fix validation errors.
-    updated_count = Car.objects.filter(
-        Q(city="") | Q(city__isnull=True) | Q(drive_type="")
-    ).update(
-        city="Nairobi",
-        drive_type="2WD",
-        country="KE",
-        listing_currency="KES",
-        drive_side="RHD"
-    )
-    
+    # 1. Create the "Big Dealer"
+    dealer_name = "Nairobi Auto Hub"
+    dealer_user, created = User.objects.get_or_create(username="NairobiAutoHub")
+    if created:
+        dealer_user.set_password("Nairobi@2026")
+        dealer_user.email = "sales@nairobiautohub.co.ke"
+        dealer_user.save()
+        # Create Profile
+        DealerProfile.objects.create(
+            user=dealer_user,
+            business_name=dealer_name,
+            phone="0722000000",
+            city="Nairobi",
+            is_verified=True,
+            plan_type="PRO"
+        )
+
+    # 2. Realistic Market Data (Model, Year, Min Price, Max Price, Body)
+    inventory_types = [
+        ("Toyota", "Vitz", 2018, 950000, 1200000, "Hatchback", 1000),
+        ("Mazda", "Demio", 2019, 850000, 1100000, "Hatchback", 1300),
+        ("Honda", "Fit", 2018, 900000, 1150000, "Hatchback", 1300),
+        ("Toyota", "Fielder", 2017, 1550000, 1850000, "Wagon", 1500),
+        ("Subaru", "Forester", 2016, 2400000, 2900000, "SUV", 2000),
+        ("Toyota", "Prado TX", 2020, 6500000, 8500000, "SUV", 2800),
+        ("Isuzu", "D-Max", 2021, 3800000, 5200000, "Pickup", 3000),
+        ("Nissan", "Note", 2018, 800000, 950000, "Hatchback", 1200),
+        ("Mercedes-Benz", "C200", 2017, 3200000, 3800000, "Sedan", 1800),
+        ("Toyota", "Axela", 2018, 1400000, 1700000, "Sedan", 1500),
+        ("Volkswagen", "Golf", 2016, 1300000, 1600000, "Hatchback", 1400),
+        ("Mitsubishi", "Outlander", 2017, 2600000, 3200000, "SUV", 2400),
+    ]
+
+    locations = ["Ngong Road", "Westlands", "Mombasa Road", "Kiambu Road", "Karen"]
+    colors = ["Pearl White", "Silver", "Black", "Wine Red", "Blue", "Grey"]
+
+    # 3. Generate 50 Cars
+    created_count = 0
+    for i in range(50):
+        # Pick a random car model from our list
+        make, model, base_year, min_p, max_p, body, cc = random.choice(inventory_types)
+        
+        # Add some variety to the year and price
+        year = base_year + random.randint(0, 3) # e.g., 2018 to 2021
+        price = random.randint(min_p, max_p)
+        
+        # Round price to nearest thousand for realism (e.g., 1,253,000)
+        price = round(price, -3)
+
+        car = Car.objects.create(
+            dealer=dealer_user,
+            make=make,
+            model=model,
+            year=year,
+            price=price,
+            body_type=body,
+            engine_cc=cc,
+            color=random.choice(colors),
+            transmission="Automatic",
+            fuel_type="Petrol" if body != "Pickup" else "Diesel",
+            mileage=random.randint(20000, 90000),
+            condition="FOREIGN",
+            description=f"Fresh import {make} {model}. Immaculate condition. Buy and drive. Financing arranged. Located at {random.choice(locations)}.",
+            
+            # KENYA DEFAULTS
+            country="KE",
+            city="Nairobi",
+            listing_currency="KES",
+            drive_side="RHD",
+            drive_type="4WD" if body in ["SUV", "Pickup"] else "2WD",
+            status="AVAILABLE"
+        )
+        
+        # Add a placeholder image (using a robust public placeholder service or your uploads)
+        CarImage.objects.create(
+            car=car,
+            # We use a cycle of 4 placeholders to ensure all cars have images
+            image=f"car_images/placeholder_{i % 4}.jpg", 
+            is_main=True
+        )
+        created_count += 1
+
     return HttpResponse(f"""
-        <div style="font-family: sans-serif; padding: 20px;">
-            <h1 style="color: #2ecc71;">✅ Process Complete</h1>
-            <p style="font-size: 1.1rem;">100 Placeholder Cars Generated.</p>
-            <p style="font-size: 1.1rem; color: #34495e;">
-                <b>Database Healer:</b> Successfully repaired <b>{updated_count}</b> existing listings with missing fields.
-            </p>
+        <div style='font-family:sans-serif; padding:20px; background:#f0fdf4; border:1px solid #22c55e; border-radius:10px;'>
+            <h1 style='color:#166534;'>✅ Nairobi Inventory Live!</h1>
+            <p><strong>Dealer:</strong> Nairobi Auto Hub</p>
+            <p><strong>Stock Added:</strong> {created_count} Vehicles</p>
+            <p><strong>Market Context:</strong> Real-world prices applied (Feb 2026).</p>
             <hr>
-            <a href="/" style="display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">Return to Home</a>
+            <a href='/' style='background:#166534; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;'>View Showroom</a>
         </div>
     """)
+    
